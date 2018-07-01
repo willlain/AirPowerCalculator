@@ -1,0 +1,844 @@
+/**
+ * ==========================================================
+ * デッキビルダー・記録関係
+ * ==========================================================
+ */
+
+/**
+ * [inputDeckbuilder デッキビルダー入力を反映する]
+ * トリガー：デッキビルダー入力ボタンを押す
+ * JSON形式が異なっている場合はエラーを出力する
+ */
+function inputDeckbuilder() {
+    try {
+        var input = JSON.parse($("#deckbuilder").val());
+    } catch (e) {
+        openMessageDialog("deckbuilder", "入力が不正です。<br>" + e.message);
+        return;
+    }
+    Object.keys(input).forEach(function(key){
+        switch (key) {
+            case "f1":
+            case "f2":
+            case "f3":
+                var num = (Number(key.substr(-1))-1)*6;
+                Object.keys(input[key]).forEach(function(key2,index2){
+                    var element_ship_id = index2 + num;
+                    // var element_ship = $("#ship-name-" + element_ship_id);
+                    var ship_id = this[key2].id
+                    var element_grade = $("#grade-" + element_ship_id);
+                    setShipItem(ship_id, element_ship_id, 1);
+                    Object.keys(input[key][key2].items).forEach(function(key3,index3){
+                        var equipment_id = this[key3].id;
+                        var equipment_type = data_equipment_id_ship[equipment_id].type
+
+                        setEquipmentItem("ship", element_ship_id, index3, equipment_type, equipment_id, this[key3].rf, this[key3].mas)
+
+                    }, input[key][key2].items)
+                }, input[key])
+                break;
+            default:
+        }
+    });
+    updateRecord(0, false)
+}
+
+/**
+ * [outputDeckbuilder 現在の艦娘編成をデッキビルダー形式で出力する]
+ * トリガー：デッキビルダー出力ボタンを押す
+ * Lvは99、運は初期運を出力する
+ * 出力内容はクリップボードにコピーされた状態になる
+ * デッキビルダーで反映されない場合あり（デッキビルダー側のバグ？）
+ */
+function outputDeckbuilder() {
+    var output = {
+        "version": 4,
+        "f1": {},
+        "f2": {},
+        "f3": {}
+    }
+    Object.keys(record_ship).forEach(function(key) {
+        if (record_ship[key].id != 0) {
+            var fleet = (key == 18) ? "f3" : "f" + (Math.floor(key/6)+1);
+            var ship_num = (key == 18) ? "s7" : "s" + (key%6 + 1)
+
+            output[fleet][ship_num] = {
+                "id": record_ship[key].id,
+                "lv": 99,
+                "luck": data_ship_id[record_ship[key].id].luck_min,
+                "items": {}
+            }
+            Object.keys(record_ship[key]).forEach(function(key2) {
+                if (key2 != "id" && Number(key2) <= data_ship_id[this.id].slot && this[key2].id != 0) {
+                    var item_num = (Number(key2) == data_ship_id[this.id].slot) ? "ix" : "i" + (Number(key2)+1)
+                    output[fleet][ship_num]["items"][item_num] = {
+                        "id": this[key2].id,
+                        "rf": this[key2].improvement,
+                        "mas": this[key2].skill
+                    }
+                }
+            }, record_ship[key]);
+        }
+    });
+
+    $("#deckbuilder").val(JSON.stringify(output));
+    document.getElementById("deckbuilder").select();
+    document.execCommand("Copy");
+    $("[data-toggle='tooltip']").on('hidden.bs.tooltip', function(){
+        $(this).tooltip('dispose');
+    });
+    $("[data-toggle='tooltip']").tooltip({delay:{show:0, hide:1000}}).tooltip('show').tooltip('toggle');
+}
+
+/**
+ * [expandRecord 履歴をlocalStorageから読み込み、反映させる]
+ * @param  {int} num [反映させる記録番号]
+ * トリガー：履歴反映ボタンを押した際、初期読み込み時
+ * localStorageが利用できない場合は利用できない
+ */
+function expandRecord(num) {
+    if (('localStorage' in window) && (window.localStorage !== null) && localStorage.getItem("record")) {
+        record = JSON.parse(localStorage.getItem("record"));
+        record_base = JSON.parse(localStorage.getItem("record"))[num].base;
+        record_ship = JSON.parse(localStorage.getItem("record"))[num].ship;
+        record_map = JSON.parse(localStorage.getItem("record"))[num].map;
+        Object.keys(record[num].base).forEach(function(key){
+            Object.keys(this[key]).forEach(function(key2){
+                if (this[key2].id != 0) {
+                    setEquipmentItem("base", key, key2, data_equipment_id_ship[this[key2].id].type, this[key2].id, this[key2].improvement, this[key2].skill)
+                    $("#space-base-" + key + "-" + key2).val(this[key2].space).selectpicker('refresh');
+                }
+            }, record[num].base[key])
+        }, record[num].base);
+        Object.keys(record[num].ship).forEach(function(key){
+            if (this[key].id != 0) {
+                setShipItem(this[key].id, key, 1);
+            }
+            Object.keys(this[key]).forEach(function(key2){
+                if (key2 != "id" && this[key2].id != 0) {
+                    setEquipmentItem("ship", key, key2, data_equipment_id_ship[this[key2].id].type, this[key2].id, this[key2].improvement, this[key2].skill)
+                    $("#space-ship-" + key + "-" + key2).val(this[key2].space).selectpicker('refresh');
+                }
+            }, record[num].ship[key])
+        }, record[num].ship);
+        Object.keys(record[num].map).forEach(function(key){
+
+        }, record[num].map);
+    } else {
+        for (var i=0; i<3; i++) {
+            record_base[i] = {}
+            for (var j=0; j<4; j++) {
+                record_base[i][j] = {
+                    "id": 0,
+                    "improvement": 0,
+                    "skill": 0,
+                    "space": 18
+                }
+            }
+        }
+        for (var i=0; i<19; i++) {
+            record_ship[i] = {"id":0}
+            for (var j=0; j<6; j++) {
+                record_ship[i][j] = {
+                    "id": 0,
+                    "improvement": 0,
+                    "skill": 0,
+                    "space": 0
+                }
+            }
+        }
+        record_map = {
+            "map": 0,
+            "difficulty": 0,
+            "cell": 0,
+            "step": 0,
+            "fleet": [0,0,0,0,0,0,0,0,0,0,0,0]
+        }
+    }
+}
+
+/**
+ * [updateRecord 履歴の更新を行う]
+ * @param  {int}    num      [記録番号]
+ * @param  {boolen} del_flag [削除処理のフラグ]
+ * トリガー：履歴保存または削除ボタンを押した際
+ */
+function updateRecord(num, del_flag) {
+    if (('localStorage' in window) && (window.localStorage !== null)) {
+        if (del_flag) {
+            delete record[num];
+        } else {
+            var name = "";
+            record[num] = {
+                "name": name,
+                "base": record_base,
+                "ship": record_ship,
+                "map": record_map
+            }
+        }
+
+        localStorage.removeItem("record");
+        localStorage.setItem("record", JSON.stringify(record));
+    }
+}
+
+/**
+ * ==========================================================
+ * 艦娘・装備関係
+ * ==========================================================
+ */
+
+/**
+ * [selectItem dialogから選択された結果を反映する]
+ * dialogのリストから1つを選択し、OKボタンを押すと発火
+ * @param  {string} type [equipment(装備) or ship(艦娘)]
+ */
+function selectItem(type) {
+    if (type == "equipment") {
+        $("div[class*=active]").each(function(){
+            var pattern = /^info-equipment/;
+            if (pattern.test($(this).attr('id'))) {
+                var equipment_type = Number($(this).attr('id').split('-')[2]);
+                var equipment_id = $(this).attr('id').split('-')[3];
+                var element_type = record_target.attr('id').split('-')[2];
+                var element_target_id = record_target.attr('id').split('-')[3];
+                var element_equipment_id = record_target.attr('id').split('-')[4];
+
+                setEquipmentItem(element_type, element_target_id, element_equipment_id, equipment_type, equipment_id);
+            }
+        });
+        $("#dialog-select-equipment").dialog('close');
+    } else {
+        $("div[class*=active]").each(function(){
+            var pattern = /^info-ship/;
+            if (pattern.test($(this).attr('id'))) {
+                var ship_id = Number($(this).attr('id').split('-')[3]);
+                var element_id = record_target.attr('id').split('-')[2];
+                setShipItem(ship_id, element_id, 1);
+            }
+        });
+        $("#dialog-select-ship").dialog('close');
+    }
+    updateRecord(0, false)
+}
+
+/**
+ * [removeItem 選択された項目を外す]
+ * 画面上の×ボタンまたはdialogの外すボタンを押すと発火
+ * @param  {string} type                 [base or ship]
+ * @param  {int}    element_target_id    [表の行数のid]
+ * @param  {int}    element_equipment_id [装備番号、ただし、艦娘または基地航空隊全体の選択時は指定されない]
+ */
+function removeItem(type, element_target_id, element_equipment_id) {
+    if (element_equipment_id !== undefined) {
+        var element_equipment = $("#equipment-name-" + type + "-" + element_target_id + "-" + element_equipment_id);
+        var element_skill = $("#skill-" + type + "-" + element_target_id + "-" + element_equipment_id);
+        var element_improvement = $("#improvement-" + type + "-" + element_target_id + "-" + element_equipment_id);
+        if (type == "ship") {
+            var ship_id = Number($("#grade-" + element_target_id).val())
+            var slot = data_ship_id[ship_id].slot
+            record_ship[element_target_id][element_equipment_id].id = 0;
+            record_ship[element_target_id][element_equipment_id].improvement = 0;
+            record_ship[element_target_id][element_equipment_id].skill = 0;
+            if (element_equipment_id == slot) {
+                element_equipment.attr("draggable", false).empty().html(" 補強増設");
+            } else {
+                element_equipment.attr("draggable", false).empty().html(" 装備選択");
+            }
+        } else {
+            record_base[element_target_id][element_equipment_id].id = 0;
+            record_base[element_target_id][element_equipment_id].improvement = 0;
+            record_base[element_target_id][element_equipment_id].skill = 0;
+            element_equipment.attr("draggable", false).empty().html(" 装備選択");
+            updateCombatRadius(element_target_id, element_equipment_id, 0)
+        }
+        toggleEnabledSelection(element_improvement, true, 0);
+        toggleEnabledSelection(element_skill, true, 0);
+        updateAirPowerFrends(type, element_target_id, element_equipment_id)
+    } else {
+        if (type == "base") {
+            var num = 4;
+        } else {
+            var num = 6;
+            var element_ship = $("#ship-name-" + element_target_id);
+            var element_grade = $("#grade-" + element_target_id);
+            toggleEnabledSelection(element_grade, true, 0, $('<option>').val(0).text("-"))
+            record_ship[element_target_id].id = 0;
+            element_ship.empty().text("艦娘" + (Number(element_target_id)+1))
+        }
+        for (var i=0; i<num; i++) {
+            var element_equipment = $("#equipment-name-" + type + "-" + element_target_id + "-" + i);
+            var element_skill = $("#skill-" + type + "-" + element_target_id + "-" + i);
+            var element_improvement = $("#improvement-" + type + "-" + element_target_id + "-" + i);
+            var element_space = $("#space-" + type + "-" + element_target_id + "-" + i);
+            if (type == "base") {
+                record_base[element_target_id][i].id = 0;
+                record_base[element_target_id][i].improvement = 0;
+                record_base[element_target_id][i].skill = 0;
+                record_base[element_target_id][i].space = 18;
+                element_space.val(18).selectpicker('refresh');
+                element_equipment.attr("draggable", false).empty().html(" 装備選択");
+                updateCombatRadius(element_target_id, element_equipment_id, 0)
+            } else {
+                record_ship[element_target_id][i].id = 0;
+                record_ship[element_target_id][i].improvement = 0;
+                record_ship[element_target_id][i].skill = 0;
+                record_ship[element_target_id][i].space = 0;
+                toggleEnabledSelection(element_space, true, 0, $('<option>').val(0).text(0));
+                element_equipment.attr("draggable", false).empty().css('visibility','hidden');
+            }
+            toggleEnabledSelection(element_improvement, true, 0);
+            toggleEnabledSelection(element_skill, true, 0);
+            updateAirPowerFrends(type, element_target_id, i)
+        }
+    }
+    updateRecord(0, false)
+}
+
+/**
+ * [initEquipmentCell 装備欄の初期化]
+ * @param {int} ship_id    [セットされた艦娘の識別番号]
+ * @param {int} element_id [対応する列番号]
+ */
+function initEquipmentCell(ship_id, element_target_id) {
+    for (var i=0; i<6; i++) {
+        var element_equipment = $("#equipment-name-ship-" + element_target_id + "-" + i);
+        var element_space = $("#space-ship-" + element_target_id + "-" + i);
+        var element_skill = $("#skill-ship-" + element_target_id + "-" + i);
+        var element_improvement = $("#improvement-ship-" + element_target_id + "-" + i);
+
+        record_ship[element_target_id][i].id = 0
+        record_ship[element_target_id][i].improvement = 0
+        record_ship[element_target_id][i].skill = 0;
+        record_ship[element_target_id][i].space = 0;
+
+        element_space.empty()
+
+        if (i < data_ship_id[ship_id].slot) {
+            var html = "";
+            element_equipment.attr("draggable", false).empty().html(" 装備選択").css('visibility','visible');
+            for (var j=data_ship_id[ship_id].space[i]; j>=0; j--) {
+                html += "<option value='" + j + "'>" + j + "</option>"
+            }
+            record_ship[element_target_id][i].space = data_ship_id[ship_id].space[i];
+            toggleEnabledSelection(element_space, false, data_ship_id[ship_id].space[i], $(html))
+        } else if (i == data_ship_id[ship_id].slot) {
+            var html = "";
+            element_equipment.attr("draggable", false).empty().html(" 補強増設").css('visibility','visible');
+            toggleEnabledSelection(element_space, true, 0, $('<option>').val(0).text(0))
+        } else {
+            element_equipment.attr("draggable", false).empty().css('visibility','hidden');
+            toggleEnabledSelection(element_space, true, 0, $('<option>').val(0).text(0))
+        }
+        toggleEnabledSelection(element_improvement, true, 0)
+        updateAirPowerFrends("ship", element_target_id, i)
+    }
+}
+
+/**
+ * [toggleEnabledSelection セレクトの有効無効の切り替え]
+ * @param  {selection}  element  [ターゲットの要素]
+ * @param  {int}        flag     [有効・無効フラグ]
+ * @param  {int}        value    [選択されるvalue]
+ * @param  {string}     html     [セレクタの中身]
+ */
+function toggleEnabledSelection(element, flag, value, html) {
+    if (html !== undefined) {
+        element.empty().append(html);
+    }
+    element.val(value).prop('disabled', flag).selectpicker('refresh');
+    element.siblings('button').prop('disabled', flag);
+}
+
+/**
+ * [toggleDisplayEquipment 装備欄のnext/prevの切り替え]
+ * @param  {string} type      [next or prev]
+ * @param  {int}    target_id [対象の列番号]
+ */
+function toggleDisplayEquipment(type, target_id) {
+    if (type == "next") {
+        $("#equipment-main-" + target_id).css("display", "none");
+        $("#equipment-sub-" + target_id).css("display", "flex");
+    } else {
+        $("#equipment-main-" + target_id).css("display", "flex");
+        $("#equipment-sub-" + target_id).css("display", "none");
+    }
+}
+
+/**
+ * [setEquipmentItem 選択された装備をセットする]
+ * @param {string}  element_type         [base or ship]
+ * @param {int}     element_target_id    [対象の列番号]
+ * @param {int}     element_equipment_id [対象の行番号]
+ * @param {int}     equipment_type       [装備の種別]
+ * @param {int}     equipment_id         [装備番号]
+ * @param {int}     improvement          [改修値]
+ * @param {int}     skill                [熟練度]
+ */
+function setEquipmentItem(element_type, element_target_id, element_equipment_id, equipment_type, equipment_id, improvement, skill) {
+    var element_improvement = $("#improvement-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+    var element_skill = $("#skill-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+    var element_equipment = $("#equipment-name-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+    var element_airPower_target = $("#airpower-" + element_type + "-" + element_target_id);
+
+    if (element_type == "base") {
+        record_base[element_target_id][element_equipment_id].id = equipment_id
+        record_base[element_target_id][element_equipment_id].improvement = 0
+        record_base[element_target_id][element_equipment_id].skill = 0;
+        updateCombatRadius(element_target_id, element_equipment_id, equipment_id)
+    } else {
+        record_ship[element_target_id][element_equipment_id].id = equipment_id
+        record_ship[element_target_id][element_equipment_id].improvement = 0
+        record_ship[element_target_id][element_equipment_id].skill = 0;
+    }
+
+    element_equipment.attr("draggable", true).empty().append($("<img src='img/equipment/icon/" + equipment_type + ".png'>")).append(data_equipment_id_ship[equipment_id].name);
+
+    if (data_equipment_id_ship[equipment_id].improvement) {
+        if (improvement === undefined) {
+            toggleEnabledSelection(element_improvement, false, 0)
+        } else {
+            toggleEnabledSelection(element_improvement, false, improvement);
+            if (element_type == "base") {
+                record_base[element_target_id][element_equipment_id].improvement = improvement
+            } else {
+                record_ship[element_target_id][element_equipment_id].improvement = improvement
+            }
+        }
+    } else {
+        toggleEnabledSelection(element_improvement, true, 0)
+    }
+
+    switch (equipment_type) {
+        case 6:
+        case 45:
+        case 48:
+        case 49:
+        case 52:
+            if (skill === undefined) {
+                if ($("#skill-max-" + element_type + "-0").is(":checked")) {
+                    toggleEnabledSelection(element_skill, false, 7)
+                    if (element_type == "base") {
+                        record_base[element_target_id][element_equipment_id].skill = 7
+                    } else {
+                        record_ship[element_target_id][element_equipment_id].skill = 7
+                    }
+                } else {
+                    toggleEnabledSelection(element_skill, false, 0)
+                }
+            } else {
+                toggleEnabledSelection(element_skill, false, skill)
+                if (element_type == "base") {
+                    record_base[element_target_id][element_equipment_id].skill = skill
+                } else {
+                    record_ship[element_target_id][element_equipment_id].skill = skill
+                }
+            }
+            break;
+        case 7:
+        case 8:
+        case 11:
+        case 47:
+        case 53:
+        case 54:
+        case 57:
+            if (skill === undefined) {
+                if ($("#skill-max-" + element_type + "-1").is(":checked")) {
+                    toggleEnabledSelection(element_skill, false, 7)
+                    if (element_type == "base") {
+                        record_base[element_target_id][element_equipment_id].skill = 7
+                    } else {
+                        record_ship[element_target_id][element_equipment_id].skill = 7
+                    }
+                } else {
+                    toggleEnabledSelection(element_skill, false, 0)
+                }
+            } else {
+                toggleEnabledSelection(element_skill, false, skill)
+                if (element_type == "base") {
+                    record_base[element_target_id][element_equipment_id].skill = skill
+                } else {
+                    record_ship[element_target_id][element_equipment_id].skill = skill
+                }
+            }
+            break;
+        case 9:
+        case 10:
+        case 41:
+        case 56:
+            if (skill === undefined) {
+                toggleEnabledSelection(element_skill, false, 7)
+                if (element_type == "base") {
+                    record_base[element_target_id][element_equipment_id].skill = 7
+                } else {
+                    record_ship[element_target_id][element_equipment_id].skill = 7
+                }
+            } else {
+                toggleEnabledSelection(element_skill, false, skill)
+                if (element_type == "base") {
+                    record_base[element_target_id][element_equipment_id].skill = skill
+                } else {
+                    record_ship[element_target_id][element_equipment_id].skill = skill
+                }
+            }
+            break;
+        default:
+            toggleEnabledSelection(element_skill, true, 0)
+    }
+    updateAirPowerFrends(element_type, element_target_id, element_equipment_id)
+}
+
+/**
+ * [setShipItem 選択された艦娘をセットする]
+ * @param {int}     ship_id    [艦娘番号]
+ * @param {int}     element_id [対応する列番号]
+ * @param {boolen}  flag       [改装段階を変更するかのフラグ]
+ */
+function setShipItem(ship_id, element_id, flag) {
+    var element_ship = $("#ship-name-" + element_id);
+    record_ship[element_id].id = ship_id
+
+    element_ship.empty().append($("<img src='img/ship/banner/" + ship_id + ".png'>"));
+    initEquipmentCell(ship_id, element_id);
+    if (flag !== undefined) {
+        setGradeItem(ship_id, element_id);
+    }
+}
+
+/**
+ * [setGradeItem 改装段階のセレクタの項目を設定する]
+ * @param {int} id              [艦娘の識別番号]
+ * @param {selection} element   [対象の改装段階のセレクト]
+ */
+function setGradeItem(id, element_id) {
+    var html = "";
+    var element_grade = $("#grade-" + element_id);
+
+    switch (id) {
+        case 49:
+        case 253:
+        case 464:
+        case 470:
+            var grade_name = ["未改","改","改二","改二乙"];
+            // var grade_last = 3;
+            // var ship_id_grade = [49,253,464,470];
+            break;
+        case 116:
+        case 117:
+        case 555:
+        case 560:
+            var grade_name = ["未改","改","改二","改二乙"];
+            // var grade_last = 3;
+            // var ship_id_grade = [116,117,555,560];
+            break;
+        case 95:
+        case 248:
+        case 463:
+        case 468:
+            var grade_name = ["未改","改","改二","改二丁"];
+            // var grade_last = 3;
+            // var ship_id_grade = [95,248,463,468];
+            break;
+        case 110:
+        case 288:
+        case 461:
+        case 466:
+            var grade_name = ["未改","改","改二","改二甲"];
+            // var grade_last = 3;
+            // var ship_id_grade = [110,288,461,466];
+            break;
+        case 111:
+        case 112:
+        case 462:
+        case 467:
+            var grade_name = ["未改","改","改二","改二甲"];
+            // var grade_last = 3;
+            // var ship_id_grade = [111,112,462,467];
+            break;
+        case 433:
+        case 438:
+        case 545:
+        case 550:
+            var grade_name = ["未改","改","Mk.Ⅱ","Mod.2"];
+            // var grade_last = 3;
+            // var ship_id_grade = [433,438,545,550]
+            break;
+        case 124:
+        case 129:
+        case 503:
+        case 508:
+            var grade_name = ["未改","改","改二","航改二"];
+            // var grade_last = 3;
+            // var ship_id_grade = [124,129,503,508]
+            break;
+        case 125:
+        case 130:
+        case 504:
+        case 509:
+            var grade_name = ["未改","改","改二","航改二"];
+            // var grade_last = 3;
+            // var ship_id_grade = [125,130,504,509]
+            break;
+        case 102:
+        case 104:
+        case 106:
+        case 108:
+        case 291:
+        case 296:
+            var grade_name = ["未改","改","甲","航","航改","航改二"];
+            // var grade_last = 5;
+            // var ship_id_grade = [102,104,106,108,291,296]
+            break;
+        case 103:
+        case 105:
+        case 107:
+        case 109:
+        case 292:
+        case 297:
+            var grade_name = ["未改","改","甲","航","航改","航改二"];
+            // var grade_last = 5;
+            // var ship_id_grade = [103,105,107,109,292,297]
+            break;
+        case 184:
+        case 185:
+        case 318:
+            var grade_name = ["大鯨","龍鳳","龍鳳改"];
+            // var grade_last = 2;
+            // var ship_id_grade = [184,185,318]
+            break;
+        case 162:
+        case 499:
+        case 500:
+            var grade_name = ["未改","改","改母"]
+            // var grade_last = 2;
+            // var ship_id_grade = [162,499,500]
+            break;
+        case 171:
+        case 172:
+        case 173:
+        case 178:
+            var grade_name = ["未改","改","zwei","drei"];
+            // var grade_last = 3;
+            // var ship_id_grade = [171,172,173,178];
+            break;
+        case 174:
+        case 310:
+        case 179:
+            var grade_name = ["未改","改","zwei","drei"];
+            // var grade_last = 2;
+            // var ship_id_grade = [174,310,179];
+            break;
+        case 175:
+        case 311:
+        case 180:
+            var grade_name = ["未改","改","zwei","drei"];
+            // var grade_last = 2;
+            // var ship_id_grade = [175,311,180];
+            break;
+        case 521:
+        case 526:
+        case 380:
+        case 529:
+            var grade_name = ["春日丸","大鷹","改","改二"];
+            // var grade_last = 3;
+            // var ship_id_grade = [521,526,380,529]
+            break;
+        case 167:
+        case 320:
+        case 557:
+            var grade_name = ["未改","改","改乙"];
+            // var grade_last = 2;
+            // var ship_id_grade = [167,320,557]
+            break;
+        case 170:
+        case 312:
+        case 558:
+            var grade_name = ["未改","改","改乙"];
+            // var grade_last = 2;
+            // var ship_id_grade = [170,312,558]
+            break;
+        case 448:
+        case 358:
+        case 496:
+            var grade_name = ["未改","改","due"];
+            // var grade_last = 2;
+            // var ship_id_grade = [448,358,496]
+            break;
+        default:
+            var grade_name = ["未改","改","改二","改三","改四"];
+    }
+    var ship_id = id;
+    var grade_last = 0;
+    var ship_id_grade = [ship_id];
+    for (var i=data_ship_id[id].grade;;i--) {
+        ship_id = data_ship_id[ship_id].before;
+        if (ship_id == 0) {
+            break;
+        }
+        ship_id_grade.unshift(ship_id);
+    }
+    ship_id = id;
+    for (var i=data_ship_id[id].grade;;i++) {
+        if (data_ship_id[ship_id].after == 0 || ship_id_grade.indexOf(data_ship_id[ship_id].after) != -1) {
+            grade_last = data_ship_id[ship_id].grade;
+            break;
+        } else {
+            ship_id = data_ship_id[ship_id].after;
+            ship_id_grade.push(ship_id);
+        }
+    }
+    for (var i=grade_last; i>=0; i--) {
+        html += "<option value='" + ship_id_grade[i] + "'>" + grade_name[i] + "</option>"
+    }
+    toggleEnabledSelection(element_grade, false, id, $(html))
+}
+
+/**
+ * ==========================================================
+ * MAP関係
+ * ==========================================================
+ */
+
+/**
+ * [changeArea 海域変更：マップ画像、難易度セレクトの表示非表示、マスセレクトの内容変更]
+ * マップセレクトを変更すると発火
+ * @param  {string} area [海域番号(x-y)]
+ */
+function changeArea(area) {
+    var html = "";
+    var map_cell = $("#map-cell");
+    html += "<option value='0' selected>マス</option>"
+    record_map["area"] = area;
+    record_map["cell"] = 0;
+    record_map["difficulty"] = 0;
+
+    clearEnemyFleet();
+    if (area != 0) {
+        var difficulty = data_map[area.split("-")[0]][area.split("-")[1]]
+        var cell = difficulty[0]
+        $("#map-img").empty().append($("<img src='img/map/" + area + ".png' width=\"500\" height=\"320\">"));
+
+        if (Object.keys(difficulty).length != 1) {
+            $("#difficulty").css('display','flex');
+        } else {
+            $("[name=difficulty]").val(["0"])
+            $("#difficulty").css('display','none');
+        }
+        Object.keys(cell).forEach(function(key){
+            html += "<option value='" + key + "'>" + key + "</option>"
+        }, cell);
+        toggleEnabledSelection(map_cell, false, 0, $(html))
+    } else {
+        $("[name=difficulty]").val(["0"]);
+        $("#difficulty").css('display','none');
+        $("#map-img").empty();
+        toggleEnabledSelection(map_cell, true, 0, $(html))
+    }
+}
+
+/**
+ * [changeDiffculty 海域難易度の変更]
+ * @param  {int} difficulty [難易度に対応した番号]
+ * トリガー：難易度をラジオボタンで変更した際
+ */
+function changeDiffculty(difficulty) {
+    var area = $("#map-area").val()
+    var cell = $("#map-cell").val()
+    record_map["difficulty"] = difficulty;
+
+    if (cell != 0) {
+        var step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
+        if (Object.keys(step).indexOf("1") != -1) {
+            var fleet = step[$("[name=enemy-fleet-step]:checked").val()].fleet;
+            record_map["step"] = Number($("[name=enemy-fleet-step]:checked").val());
+            $("#enemy-fleet-step").css('display','flex');
+        } else {
+            var fleet = step[0].fleet;
+            record_map["step"] = 0;
+            $("[name=enemy-fleet-step]").val(["0"])
+            $("#enemy-fleet-step").css('display','none');
+        }
+        for (var i=0; i<12; i++) {
+            $("#enemy-name-" + i).empty();
+            $("#airpower-enemy-" + i).empty();
+            record_map["fleet"][i] = fleet[i]
+            if (fleet[i] != 0) {
+                $("#enemy-name-" + i).append($("<img src='img/enemy/banner/" + fleet[i] + ".png'>"))
+            }
+        }
+        updateAirPowerEnemy();
+    }
+}
+
+/**
+ * [changeCell マス変更：ゲージ段階セレクトの表示非表示、敵編成の変更]
+ * マスセレクトを変更した際に発火
+ * @param  {string} cell [マスのアルファベット]
+ */
+function changeCell(cell) {
+    var area = $("#map-area").val()
+    var difficulty = $("[name=difficulty]:checked").val()
+    record_map["cell"] = cell;
+
+    if (cell != 0) {
+        var step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
+        if (Object.keys(step).indexOf("1") != -1) {
+            var fleet = step[$("[name=enemy-fleet-step]:checked").val()].fleet;
+            record_map["step"] = Number($("[name=enemy-fleet-step]:checked").val());
+            $("#enemy-fleet-step").css('display','flex');
+        } else {
+            var fleet = step[0].fleet;
+            record_map["step"] = 0;
+            $("[name=enemy-fleet-step]").val(["0"])
+            $("#enemy-fleet-step").css('display','none');
+        }
+        for (var i=0; i<12; i++) {
+            $("#enemy-name-" + i).empty();
+            $("#airpower-enemy-" + i).empty();
+            record_map["fleet"][i] = fleet[i]
+            if (fleet[i] != 0) {
+                $("#enemy-name-" + i).append($("<img src='img/enemy/banner/" + fleet[i] + ".png'>"))
+            }
+        }
+        updateAirPowerEnemy();
+    } else {
+        clearEnemyFleet();
+    }
+}
+
+/**
+ * [changeStep ゲージ段階変更：敵編成の変更]
+ * ゲージ段階セレクトが変更された際に発火
+ * @param  {int} step [0(前哨戦) or 1(ラスダン)]
+ */
+function changeStep(step) {
+    var area = $("#map-area").val()
+    var difficulty = $("[name=difficulty]:checked").val()
+    var cell = $("#map-cell").val()
+    var fleet = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell][step].fleet;
+    record_map["step"] = step;
+
+    for (var i=0; i<12; i++) {
+        $("#enemy-name-" + i).empty();
+        record_map["fleet"][i] = fleet[i];
+        if (fleet[i] != 0) {
+            $("#enemy-name-" + i).append($("<img src='img/enemy/banner/" + fleet[i] + ".png'>"))
+        }
+    }
+    updateAirPowerEnemy();
+}
+
+/**
+ * [clearEnemyFleet 編成初期化、クリア]
+ */
+function clearEnemyFleet() {
+    for (var i=0; i<12; i++) {
+        record_map["fleet"][i] = 0;
+        $("#enemy-name-" + i).empty();
+        $("#airpower-enemy-" + i).empty();
+    }
+    record_map["step"] = 0;
+    $("[name=enemy-fleet-step]").val(["0"])
+    $("#enemy-fleet-step").css('display','none');
+    updateAirPowerEnemy();
+}

@@ -1,0 +1,570 @@
+body {
+    margin: 0;
+    padding: 0;
+    line-height:1.4;
+    color:#333;
+    font-family:Arial, sans-serif;
+    font-size:0.9em;
+}
+
+img {
+    outline:none;
+    border-style:none;
+}
+
+a {
+    color:#81DAF5;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+a:hover {
+    color: #F5A862;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+/*****HEADER*****/
+header{
+    display: block;
+    width:950px;
+    padding:0px 10px 0px 10px;
+    overflow: hidden;
+    margin: auto;
+}
+header h1{
+    font-size:2rem;
+    padding-top: 10px;
+    /* letter-spacing: 3px; */
+    /* font-weight:400; */
+}
+
+/*****ARTICLE*****/
+article{
+    display: block;
+    width: 950px;
+    padding-bottom: 10px;
+    overflow: hidden;
+    margin: auto;
+}
+section{
+    /* width: 950px; */
+    padding: 10px 10px 0 10px;
+    /* margin: 1.5%; */
+    background-color: #f9f9f9;
+    overflow: hidden;
+    /* float: left; */
+}
+
+section h1{
+    width: 100%;
+    font-size: 150%;
+    letter-spacing: 3px;
+    padding-bottom:2px;
+    /* padding-top: 10px; */
+    border-bottom: 1px solid #bababa;
+    margin-bottom: 10px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+
+/*****FOOTER*****/
+footer{
+    font-size: 100%;
+    width: 100%;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #313131;
+}
+
+footer div {
+    color: #fff;
+}
+
+/*****select*****/
+/* select {
+    height: 26px;
+	vertical-align:middle;
+    font-size: 85%;
+} */
+.bootstrap-select:disabled, .bootstrap-select>.disabled {
+    background-image: none;
+    background-color: #ccc;
+    border-color: #ccc;
+}
+
+/* ###############################
+    option-input
+############################### */
+div.option-input {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-end;
+    justify-content: flex-end;
+    -webkit-align-items: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+div.option-input input.checkbox {
+    width: 20px;
+    height: 20px;
+}
+div.option-input button {
+    padding: 3px;
+    font-size: 85%;
+}
+div.deckbuilder {
+    margin-right: auto;
+    width: 300px;
+}
+.drag-over {
+    border: 2px dashed #000;
+}
+
+/* ###############################
+    input tab-fleet
+############################### */
+div#tab-fleet div.input-content {
+    padding: 3px;
+}
+div#tab-fleet ul {
+    display: none;
+}
+div#fleet-1, div#fleet-2 {
+    display: none;
+}
+
+/* ###############################
+    input target
+############################### */
+div.input-line {
+    width: 100%;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    -webkit-align-items: center;
+    align-items: center;
+}
+div.base, div.ship {
+    height: 60px;
+    border: #cdc9ba 1px solid;
+}
+div.base div.top, div.ship div.top {
+    width: 160px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    /* -webkit-align-items: center;
+    align-items: center; */
+}
+div.ship div.top .grade {
+    margin-left: auto;
+}
+div.grade button.btn {
+    font-size: 14px;
+    padding: 0;
+}
+div.ship div.ship-name, div.base div.base-name {
+    width: 160px;
+    height: 40px;
+    font-family: "ＭＳ Ｐ明朝", sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content:center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
+    cursor: pointer;
+}
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+div.base div.top .input-group {
+    width: 100px;
+}
+div.ship div.top .input-group {
+    width: 80px;
+}
+div.input-group {
+    width: auto;
+}
+input.airpower {
+    padding: 0 3px;
+    font-size: 12px;
+}
+button.remove {
+    height: 20px;
+    padding: 0 2px;
+    line-height: normal;
+}
+div.bootstrap-select button.dropdown-toggle div.filter-option {
+    /* height: 18px; */
+    text-align: center;
+}
+.bootstrap-select .dropdown-toggle:before, .bootstrap-select .dropdown-toggle:after, .dropdown-toggle:after {
+    display: none;
+}
+
+/* ###############################
+    input equipment
+############################### */
+div.equipment-main, div.equipment-sub {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    -webkit-align-items: center;
+    align-items: center;
+}
+div.equipment {
+    height: 60px;
+    width: 178px;
+    border: #cdc9ba 1px solid;
+}
+div.equipment-sub {
+    display: none;
+}
+div.equipment div.top, div.equipment div.bottom {
+    width: 178px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+}
+
+div.top .input-group {
+    width: 80px;
+}
+div.top-right {
+    margin-left: auto;
+}
+div.equipment div.bottom {
+    -webkit-align-items: center;
+    align-items: center;
+}
+div.equipment select.improvement {
+    margin-left: auto;
+}
+div.equipment div.equipment-name-base, div.equipment div.equipment-name-ship {
+    width: 145px;
+    height: 40px;
+    font-family: メイリオ, sans-serif;
+    font-size: 13px;
+    padding: 3px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    -webkit-align-items: center;
+    align-items: center;
+    cursor: pointer;
+}
+div.equipment div.equipment-name-ship {
+    visibility: hidden;
+}
+div.equipment-name-base img, div.equipment-name-ship img {
+    margin-right: 5px;
+}
+span.airpower {
+    background-color: #dfd;
+    padding: 0 5px;
+    width: 35px;
+    height: 20px;
+    margin: 0;
+    line-height: 20px;
+    vertical-align: middle;
+    text-align: center;
+}
+span.radius {
+    background-color: #ddf;
+    padding: 0 5px;
+    width: 27px;
+    height: 20px;
+    margin: 0;
+    line-height: 20px;
+    vertical-align: middle;
+    text-align: center;
+}
+div.top div.improvement {
+    margin-left: auto;
+}
+div.skill button.btn, div.improvement button.btn {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0;
+}
+div.top div.skill {
+    margin: 0 2px 0 1px;
+}
+div.space-base button.btn, div.space-ship button.btn {
+    padding: 3px 0;
+    margin-left: auto;
+}
+
+div.equipment-toggle {
+    width: 40px;
+    height: 60px;
+    cursor: pointer;
+}
+div.next-icon, div.prev-icon {
+    width: 40px;
+    height: 35px;
+    font-size: 20px;
+    font-weight: 700;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: flex-end;
+    align-items: flex-end;
+}
+div.next-text, div.prev-text {
+    width: 40px;
+    height: 25px;
+    font-size: 15px;
+    font-weight: 700;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: flex-start;
+    align-items: flex-start;
+}
+
+/* ###############################
+    input map
+############################### */
+div#map-content {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+}
+div#map-content-left {
+    width: 510px;
+    height: 370px;
+}
+div#map-content-right {
+    width: 420px;
+    height: 370px;
+}
+
+div.area button.btn, div.cell button.btn {
+    padding: 7px 0;
+}
+div#difficulty, div#enemy-fleet-step {
+    margin-left: 10px;
+    display: none;
+}
+
+p#map-img {
+    /* text-align:center; */
+    margin: 10px 0 0;
+}
+table#info-enemy-fleet {
+    table-layout: fixed;
+    /* width: 100%; */
+    font-size: 85%;
+    margin-top:10px;
+}
+table#info-enemy-fleet tr th {
+    border: 1px solid #DDD;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    height: 25px;
+    /* padding: 0 10px; */
+}
+table#info-enemy-fleet tr th.column-name {
+    width: 160px;
+    /* height: 40px; */
+}
+table#info-enemy-fleet tr th.column-airpower {
+    width: 45px;
+    /* height: 40px; */
+}
+table#info-enemy-fleet tr td {
+    border: 1px solid #DDD;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+td>input.airpower {
+    width: 35px;
+    margin-left: auto;
+    margin-right: auto;
+}
+div.enemy-name {
+    width: 160px;
+    height: 40px;
+    font-family: "ＭＳ Ｐ明朝", sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content:center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+/* ###############################
+    output
+############################### */
+div.option-output {
+    width: 100%;
+}
+label.activate-base-label {
+    width: 265px;
+    text-align: right;
+    margin-bottom: 0px;
+}
+div#result-content {
+    margin-top: 10px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+}
+div#myChart {
+     width: 550px;
+     height: 200px;
+}
+table#result-info {
+    table-layout: fixed;
+    /* width: 100%; */
+    font-size: 85%;
+    margin-left: 10px;
+}
+table#result-info tr th {
+    border: 1px solid #DDD;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    height: 25px;
+    /* padding: 0 10px; */
+}
+table#result-info tr th.column-phase {
+    width: 50px;
+}
+table#result-info tr th.column-airpower, table#result-info tr th.column-state {
+    width: 60px;
+}
+table#result-info tr td {
+    border: 1px solid #DDD;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0;
+    height: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ###############################
+    dialog
+############################### */
+div#dialog-message {
+    text-align: center;
+}
+div.dialog {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+}
+div.dialog-left {
+    width:500px;
+}
+div.dialog-right {
+    width:350px;
+    margin-left:10px;
+}
+div.btn-toolbar {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    margin:5px 0;
+    /* height:31px; */
+}
+div.action {
+    margin-left: auto;
+}
+div.data-list {
+    height:500px;
+    overflow-y:auto;
+}
+div.list-group {
+    display:block;
+    padding-left: 0;
+    list-style: none;
+    font-size:0;
+}
+a.list-group-item {
+    width:50%;
+    height:48px;
+    display:inline-block;
+    font-size:16px;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    -webkit-text-overflow: ellipsis; /* Safari */
+    -o-text-overflow: ellipsis; /* Opera */
+}
+span.select-name {
+    font-family: Meiryo UI;
+    font-size:30px;
+    color:#c1a555
+}
+label.form-check-label {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    padding-right: 10px;
+}
+p.info-img {
+    text-align:center;
+    margin:0;
+}
+table.info-data {
+    margin-top:10px;
+    font-size:15px;
+    /* width: 100%; */
+    table-layout: fixed;
+}
+table.info-data tr {
+    height: 25px;
+}
+table.info-data tr td {
+    border: 1px solid #DDD;
+    vertical-align: middle;
+    text-align: center;
+    /* padding: 5px 3px; */
+    /* padding: 0;
+    margin-left: auto;
+    margin-right: auto; */
+}
+table.info-data tr td.item {
+    width: 140px;
+}
+table.info-data tr td.value {
+    width: 40px;
+}
