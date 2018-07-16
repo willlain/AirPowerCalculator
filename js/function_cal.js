@@ -170,31 +170,98 @@ function updateAirPowerEnemy() {
     }
 }
 
+
+// function rate() {
+    // 制空状態の撃墜率の乱数（4～121パターン）
+    // →各スロットごとの残機数の確率（0～最大機数パターン）
+    // →各スロットごとの制空値（対空*√機数）の確率（0～対空*√機数の最大値のパターン）
+    // ⇒1空母分の制空値の確率（0～対空*√機数の最大値のパターンのスロットごとで乗算）
+    // ⇒1艦隊の制空値の確率（）
+
+    // let rand_fleet_info = {
+    //     // phase
+    //     0: {
+    //         "rand_fleet": {
+    //             "x": 1
+    //         },
+    //     },
+    //     1: {
+    //
+    //     }
+    // }
+    // let rand_enemy_info = {
+    //     // 艦隊番号
+    //     0: {
+    //         "rand_enemy": {
+    //             "x": 1
+    //         },
+    //
+    //     }
+    // }
+    //
+    // let rand_slot_info = {
+    //     // 装備番号
+    //     0: {
+    //         "rand_space": {
+    //             "x": 1
+    //         }
+    //         "rand_equipment": {
+    //             "x": 1
+    //         },
+    //     }
+    // }
+    //
+    // let  down_rate_table = []
+    // for (let i=0; i<rand_max; i++) {
+    //     for (let j=0; j<rand_max; j++){
+    //         down_rate_table.push(0.35*i + 0.65*j);
+    //     }
+    // }
+    // down_rate_table.sort(function (a, b) { return a - b; });
+    //
+    // for (let i=0; i < down_rate_table.length; i++) {
+    //     Object.keys(rand_info[0][0][0].rand_space).forEach(function(key) {
+    //         let space = key;
+    //         space -= parseInt(space*down_rate_table[i]);
+    //         let probe = 1 / down_rate_table.length
+    //         rand_info[1][0][0].rand_space[space] += probe
+    //     }, rand_info[0][0][0].rand_space)
+    // }
+
+// }
+
 /**
  * [simulatePhase description]
  * @return {[type]} [description]
  */
 function simulatePhase() {
-    var enemy_info = {
+    let result = {
+        "state": [],
+        "airPower_enemy": [],
+        "airPower_ship": []
+    };
+
+    let enemy_info = {
         // "0": {
         //     "0": {
         //         "id":0,
         //         "antiAir_base":0,
         //         "antiAir_ship":0,
-        //         "space":0
+        //         "space":0,
+        //         "rand": {
+        //             0: 1
+        //         }
         //     }
         // }
     };
-    for (var i=0; i<12; i++) {
-        var enemy_id = record_map.fleet[i];
-        if (enemy_id == 0) {
-            continue;
-        }
+    for (let i=0; i<12; i++) {
+        if (record_map.fleet[i] == 0) continue;
+        let enemy_id = record_map.fleet[i];
 
         enemy_info[i] = {}
-        for (var j=0; j<data_enemy_id[enemy_id].slot; j++) {
-            var equipment_id = data_enemy_id[enemy_id].equipment[j]
-            var equipment_type = data_equipment_id_enemy[equipment_id].type
+        for (let j=0; j<data_enemy_id[enemy_id].slot; j++) {
+            let equipment_id = data_enemy_id[enemy_id].equipment[j]
+            let equipment_type = data_equipment_id_enemy[equipment_id].type
             enemy_info[i][j] = {
                 "id": equipment_id,
                 "space": data_enemy_id[enemy_id].space[j]
@@ -204,7 +271,7 @@ function simulatePhase() {
                 case 10:
                 case 41:
                 case 56:
-                    enemy_info[i][j].antiAir_base = data_equipment_id_ship[equipment_id].antiAir
+                    enemy_info[i][j].antiAir_base = data_equipment_id_enemy[equipment_id].antiAir
                     enemy_info[i][j].antiAir_ship = 0
                     break;
                 case 6:
@@ -219,124 +286,132 @@ function simulatePhase() {
                 case 53:
                 case 54:
                 case 57:
-                    enemy_info[i][j].antiAir_base = data_equipment_id_ship[equipment_id].antiAir
-                    enemy_info[i][j].antiAir_ship = data_equipment_id_ship[equipment_id].antiAir
+                    enemy_info[i][j].antiAir_base = data_equipment_id_enemy[equipment_id].antiAir
+                    enemy_info[i][j].antiAir_ship = data_equipment_id_enemy[equipment_id].antiAir
                     break;
                 default:
+                    enemy_info[i][j].antiAir_base = 0;
+                    enemy_info[i][j].antiAir_ship = 0;
             }
         }
     }
 
-    var ship_airPower = []
-    for (var i=0; i<3; i++) {
-        ship_airPower.push(Number($("#airpower-base-" + i).val()))
-        ship_airPower.push(Number($("#airpower-base-" + i).val()))
+    for (let i=0; i<3; i++) {
+        result["airPower_ship"].push(Number($("#airpower-base-" + i).val()))
+        result["airPower_ship"].push(Number($("#airpower-base-" + i).val()))
     }
-    var power = 0;
-    switch ($("[name=fleet]:checked").val()) {
+    let power = 0;
+    switch (Number($("[name=fleet]:checked").val())) {
         case 1:
-            for (var i=0; i<6; i++) {
+            for (let i=0; i<6; i++) {
                 power += Number($("#airpower-ship-" + i).val())
             }
-            ship_airPower.push(power);
-            for (var i=6; i<12; i++) {
+            result["airPower_ship"].push(power);
+            for (let i=6; i<12; i++) {
                 power += Number($("#airpower-ship-" + i).val())
             }
-            ship_airPower.push(power);
-            break
+            result["airPower_ship"].push(power);
+            break;
         case 2:
-            for (var i=12; i<19; i++) {
+            for (let i=12; i<19; i++) {
                 power += Number($("#airpower-ship-" + i).val())
             }
-            ship_airPower.push(power);
-            break
+            result["airPower_ship"].push(power);
+            break;
         default:
-            for (var i=0; i<6; i++) {
+            for (let i=0; i<6; i++) {
                 power += Number($("#airpower-ship-" + i).val())
             }
-            ship_airPower.push(power);
+            result["airPower_ship"].push(power);
     }
 
     // 基地航空隊
-    for (var i=0; i<6; i++) {
+    for (let i=0; i<6; i++) {
+        let quotient, down_rate, rand_max;
+        let rand_table = [];
+
+        power = 0;
+        Object.keys(enemy_info).forEach(function(key) {
+            Object.keys(this[key]).forEach(function(key2) {
+                power += parseInt(this[key2].antiAir_base*Math.sqrt(this[key2].space))
+            }, enemy_info[key])
+        }, enemy_info)
+        result["airPower_enemy"].push(power);
+
         // resultオプションチェック
         // 無効の場合は、continue
-        switch ($("[name=activate-base-" + i + "]:checked").val()) {
+        down_rate = 0;
+        switch (Number($("[name=activate-base-" + i + "]:checked").val())) {
             case 1:
-                var down_rate = 0.2;
-                break;
-            case 2:
-                var down_rate = 0.5;
+                down_rate = Number($("#downRate-" + i).val()) / 100;
                 break;
             default:
-                result_status_arr.push("-");
+                result["status"].push("-");
+                // result["probe"][i+1][0] = "-";
                 continue;
         }
 
-        var enemy_airPower = 0;
-        Object.keys(enemy_info).forEach(function(key) {
-            Object.keys(this[key]).forEach(function(key2) {
-                enemy_airPower += parseInt(this[key2].antiAir_base*Math.sqrt(this[key2].space))
-            }, enemy_info[key])
-        }, enemy_info)
-
-        if (enemy_airPower != 0) {
-            var quotient = Math.round(ship_airPower[i]*10000/enemy_airPower)/10000;
+        quotient = Math.round(result["airPower_ship"][i]*10000/power)/10000;
+        if (power != 0) {
             if (quotient <= 1/3) {
-                status = "喪失";
+                result["status"].push("喪失");
+                rand_max = 1;
                 down_rate *= 0.1;
             } else if (quotient <= 2/3) {
-                status = "劣勢";
+                result["status"].push("劣勢");
+                rand_max = 4;
                 down_rate *= 0.4;
             } else if (quotient < 3/2) {
-                status = "均衡";
+                result["status"].push("均衡");
+                rand_max = 6;
                 down_rate *= 0.6;
             } else if (quotient < 3) {
-                status = "優勢";
+                result["status"].push("優勢");
+                rand_max = 8;
                 down_rate *= 0.8;
             } else {
-                status = "確保";
+                result["status"].push("確保");
+                rand_max = 10;
                 down_rate *= 1.0;
             }
         } else {
-            status = "確保";
+            result["status"].push("確保");
             down_rate *= 1.0;
         }
 
         Object.keys(enemy_info).forEach(function(key) {
             Object.keys(this[key]).forEach(function(key2) {
-                var space = this[key2].space;
+                let space = this[key2].space;
                 space -= parseInt(space*down_rate)
                 this[key2].space = space;
             }, enemy_info[key])
         }, enemy_info)
     }
+
     // 通常航空戦
-    var enemy_airPower = 0;
+    power = 0;
     Object.keys(enemy_info).forEach(function(key) {
         Object.keys(this[key]).forEach(function(key2) {
-            enemy_airPower += parseInt(this[key2].antiAir_base*Math.sqrt(this[key2].space))
+            power += parseInt(this[key2].antiAir_ship*Math.sqrt(this[key2].space))
         }, enemy_info[key])
     }, enemy_info)
-    if (enemy_airPower != 0) {
-        if (data_map) {
-            var quotient = Math.round((ship_airPower[6]+ship_airPower[7])*10000/enemy_airPower)/10000;
-        } else {
-            var quotient = Math.round(ship_airPower[6]*10000/enemy_airPower)/10000;
-        }
+    result["airPower_enemy"].push(power);
+
+    if (power != 0) {
+        quotient = (Number($("[name=fleet]:checked").val()) === 1) ? Math.round((result["airPower_ship"][6]+result["airPower_ship"][7])*10000/power)/10000 : Math.round(result["airPower_ship"][6]*10000/power)/10000;
         if (quotient <= 1/3) {
-            status = "喪失";
+            result["status"].push("喪失");
         } else if (quotient <= 2/3) {
-            status = "劣勢";
+            result["status"].push("劣勢");
         } else if (quotient < 3/2) {
-            status = "均衡";
+            result["status"].push("均衡");
         } else if (quotient < 3) {
-            status = "優勢";
+            result["status"].push("優勢");
         } else {
-            status = "確保";
+            result["status"].push("確保");
         }
     } else {
-        status = "確保";
+        result["status"].push("確保");
     }
 
     // for (var i=1; i<result_ships_arr.length; i++) {
@@ -474,4 +549,8 @@ function simulatePhase() {
     // $("#table-result").DataTable().row(1).data(result_enemy_arr);
     // $("#table-result").DataTable().row(2).data(result_status_arr);
     // $("#table-result").DataTable().draw();
+}
+
+function checkCombatRadius(){
+
 }

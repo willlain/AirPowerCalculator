@@ -5,261 +5,136 @@
     <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
     <title>艦これ 制空計算機B</title>
-    <meta name="description" content="ブラウザ版艦これの計算機です。基地航空隊による敵制空値減少を推定し、制空権（制空状態）を表示します。18冬イベ対応済み、改良・機能実装中">
-    <link href="css/jquery-ui.min.css" rel="stylesheet">
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/datatables.min.css" rel="stylesheet">
-    <link href="css/custom.css" rel="stylesheet">
+    <meta name="description" content="ブラウザ版艦これの計算機です。基地航空隊による敵制空値減少を推定し、制空権（制空状態）を表示します。">
+    <link href="css/jquery-ui.min.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="css/index.css" rel="stylesheet" />
+    <link href="css/highcharts.css" rel="stylesheet" />
 
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/popper.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-select.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="js/datatables.min.js"></script>
-    <script type="text/javascript" src="js/chart.min.js"></script>
     <script type="text/javascript" src="js/footerFixed.js"></script>
+    <script type="text/javascript" src="js/highcharts.js"></script>
+    <script type="text/javascript" src="js/highcharts-more.js"></script>
 
-    <script type="text/javascript" src="js/dataList.js"></script>
-    <script type="text/javascript" src="js/common.js"></script>
-    <script type="text/javascript" src="js/function_cal.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/function_html.js"></script>
+    <script type="text/javascript" src="js/function_common.js"></script>
+    <script type="text/javascript" src="js/function_input.js"></script>
+    <script type="text/javascript" src="js/function_dnd.js"></script>
+    <script type="text/javascript" src="js/function_cal.js"></script>
 </head>
 <body>
     <div class="wrapper">
         <header>
-            <h1>制空計算機B【v1.3.0（18冬）】</h1>
+            <h1>制空計算機B改【v2.0.0β】</h1>
             <div style="margin-bottom:5px;">本サイトはブラウザ版艦これの計算機です。基地航空隊による敵制空値減少を推定し、制空状態を表示します。</div>
         </header>
         <article>
-            <section>
-                <div id="comment-history" style="float:left; margin-bottom:10px;"></div>
-                <div id="history" style="float:right; display:none;">
-                    <div class="form-inline">
-                        <div class="form-group">
-                            <input type="text" class="form-control form-control-sm" placeholder="履歴名"></input>
-                            <button type="button" class="btn btn-primary btn-sm">保存</button>
-                            <button type="button" class="btn btn-primary btn-sm" onclick="$('#dialog-history').dialog('open')">履歴一覧</button>
+            <!-- <div id="comment-history" style="float:left; margin-bottom:10px;"></div> -->
+            <!-- <div id="history" style="float:right;">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <select class="form-control form-control-sm"></select>
+                        <button type="button" class="btn btn-primary btn-sm">保存</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="$('#dialog-history').dialog('open')">履歴一覧</button>
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div style="clear:both;"></div> -->
+            <section id="base">
+                <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-base">△</button>&nbsp;基地航空隊</h1>
+                <div id="base-content">
+                    <div class="option-input">
+                        <div id="radius-enemy">必要航続距離：<span id='radius-enemy-value'>0</div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">熟練度</label>
+                            <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-base-0" checked>戦闘機</label>
+                            <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-base-1">攻撃機</label>
+                            <button type="button" class="btn btn-primary btn-sm" id="reset-base">リセット</button>
                         </div>
                     </div>
+                    <script type="text/javascript">displayBase()</script>
                 </div>
-                <div style="clear:both;"></div>
-                <h1>基地航空隊</h1>
-                <div id="comment-AB">敵艦載機撃墜率を　平均＝最大値の50%　【推奨】低乱数＝最大値の20%として計算する</div>
-                <div class="option form-check form-check-inline">
-                    <input type="checkbox" class="input-checkbox-AB form-check-input" id="checkbox-AB-3"></input>
-                    <label class="form-check-label" for="checkbox-AB-3" style="padding-right:25px;">防空時</label>
-                    <button type="button" class="btn btn-primary btn-sm" id="reset-AB" onclick="openMessageDialog('AB')">リセット</button>
-                </div>
-                <div style="clear:both;"></div>
-                <div class="form-inline" id="method-AB">
-                   <div class="form-group">
-                        <label for="method-AB-1">第一</label>
-                        <select class="select-method-AB form-control form-control-sm" id="method-AB-1"></select>
-                        <label for="method-AB-2">第二</label>
-                        <select class="select-method-AB form-control form-control-sm" id="method-AB-2"></select>
-                        <label for="method-AB-3">第三</label>
-                        <select class="select-method-AB form-control form-control-sm" id="method-AB-3"></select>
+            </section>
+            <section id="ship">
+                <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-ship">△</button>&nbsp;艦娘</h1>
+                <div id="ship-content">
+                    <div class="option-input">
+                        <div class="input-group deckbuilder">
+                            <input type="text" class="form-control form-control-sm" id="deckbuilder" placeholder="デッキビルダー"></input>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="inputDeckbuilder()">入力</button>
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" title="編成をクリップボードにコピーしました" onclick="outputDeckbuilder()">出力</button>
+                            </div>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">編成</label>
+                            <label class='form-check-label'><input type='radio' class='form-check-input' name='fleet' value='0' checked>通常艦隊</label>
+                            <label class="form-check-label"><input type="radio" class="form-check-input" name='fleet' value='1'>連合艦隊</label>
+                            <label class="form-check-label"><input type="radio" class="form-check-input" name='fleet' value='2'>遊撃部隊</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">熟練度</label>
+                            <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-ship-0" checked>戦闘機</label>
+                            <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-ship-1">攻撃機</label>
+                            <button type="button" class="btn btn-primary btn-sm" id="reset-ship">リセット</button>
+                        </div>
                     </div>
-                </div>
-                <div class="option form-check form-check-inline">
-                    <label class="form-check-label">熟練度</label>
-                    <input type="checkbox" class="input-checkbox-AB form-check-input" id="checkbox-AB-1" checked></input>
-                    <label class="form-check-label" for="checkbox-AB-1">戦闘機</label>
-                    <input type="checkbox" class="input-checkbox-AB form-check-input" id="checkbox-AB-2"></input>
-                    <label class="form-check-label" for="checkbox-AB-2">攻撃機</label>
-                </div>
-                <div style="clear:both;"></div>
-                <div id="tab-AB">
-                    <ul>
-                        <li><a href="#content-AB-1" id="tab-AB-1">第一航空隊</a></li>
-                        <li><a href="#content-AB-2" id="tab-AB-2">第二航空隊</a></li>
-                        <li><a href="#content-AB-3" id="tab-AB-3">第三航空隊</a></li>
-                    </ul>
-                    <script type="text/javascript">setTabContentHTML(3, "AB", "航空機")</script>
+                    <script type="text/javascript">displayShip()</script>
                 </div>
             </section>
-            <section>
-                <h1>艦娘</h1>
-                <script type="text/javascript">setShipsHTML(1)</script>
-                <div class="option form-check form-check-inline">
-                    <label class="form-check-label">熟練度</label>
-                    <input type="checkbox" class="input-checkbox-AC form-check-input" id="checkbox-AC-1" checked></input>
-                    <label class="form-check-label" for="checkbox-AC-1">戦闘機</label>
-                    <input type="checkbox" class="input-checkbox-AC form-check-input" id="checkbox-AC-2"></input>
-                    <label class="form-check-label" for="checkbox-AC-2">攻撃機</input>
-                </div>
-                <div style="clear:both;"></div>
-                <div id="tab-AC">
-                    <ul>
-                        <li><a href="#content-AC-1" id="tab-AC-1">1</a></li>
-                        <li><a href="#content-AC-2" id="tab-AC-2">2</a></li>
-                        <li><a href="#content-AC-3" id="tab-AC-3">3</a></li>
-                        <li><a href="#content-AC-4" id="tab-AC-4">4</a></li>
-                        <li><a href="#content-AC-5" id="tab-AC-5">5</a></li>
-                        <li><a href="#content-AC-6" id="tab-AC-6">6</a></li>
-                    </ul>
-                    <script type="text/javascript">setTabContentHTML(6, "AC", "艦載機")</script>
+            <section id="map">
+                <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-map">△</button>&nbsp;海域</h1>
+                <div id="map-content">
+                    <!-- <script type="text/javascript">displayMap()</script> -->
                 </div>
             </section>
-            <section>
-                <button type="button" class="btn btn-primary btn-sm" id="btn-collapse" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse">編成まとめ</button>
-                <div class="collapse" id="collapse">
-                    <div class="card card-body">
-                        <script type="text/javascript">setInfoHTML()</script>
-                    </div>
-                </div>
-            </section>
-            <section id="Result">
+            <section id="result">
                 <h1>計算結果</h1>
-                <div id="combatRadius-result">基地航空隊の最低行動半径：0</div>
-                <script type="text/javascript">setResultHTML()</script>
-                <canvas id="myChart" width="520" height="200"></canvas>
-                <table id="table-result"></table>
-            </section>
-            <section id="Enemy">
-                <h1>深海棲艦</h1>
-                <div id="enemy">
-                    <div class="form-inline" id="option-enemy">
-                        <div class="form-group">
-                            <select class="select-priset-enemy form-control form-control-sm" id="map-enemy">
-                                <option value="-1">海域</option>
-                            </select>
-                            <select class="select-priset-enemy form-control form-control-sm" id="priset-enemy" disabled>
-                                <option value="-1">マス</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="combatRadius-enemy">必要行動半径：X</div>
-                    <script type="text/javascript">setEnemyHTML()</script>
-                    <div id="comment-enemy">()内は基地航空隊時の制空値</div>
-                </div>
-            </section>
-            <div class="dialog" id="dialog-message"></div>
-            <div class="dialog" id="dialog-history">
-                <table id="table-history"></table>
-            </div>
-        </article>
-        <article>
-            <div id="tab-info">
-                <ul>
-                    <li><a href="#content-info-1" id="tab-info-1">アップデート情報</a></li>
-                    <li><a href="#content-info-2" id="tab-info-2">アルゴリズム概要</a></li>
-                </ul>
-                <div class="tab-content" id="content-info-1">
-                    <h1>履歴</h1>
-                    <ul>
-                        <li>2/16 v1.0.0（2018冬版）→ 3/10 v1.3.0（編成まとめ表示ボタン実装）</li>
-                        <li>2/12 v0.9.0公開 → 2/15 v0.9.4（基地航空隊/本隊の制空計算バグ修正）</li>
-                        <li>1/30 開発開始</li>
-                    </ul>
-                    <h1>実装予定</h1>
-                    <ul>
-                        <li>ツイッター投稿機能
-                            <ul>
-                                <li>編成や計算結果を画像化して投稿する機能</li>
-                                <li>ツイッターでの編成紹介、アドバイスに役立つ</li>
-                            </ul>
-                        </li>
-                        <li>編成入力UI改
-                             <ul>
-                                 <li>選択時にダイアログでリスト表示</li>
-                                 <li>画像、性能情報などを表示</li>
-                                 <li>名前選択部分にアイコンを出力</li>
-                             </ul>
-                        </li>
-                        <li>連合艦隊の対応</li>
-                    </ul>
-                </div>
-                <div class="tab-content" id="content-info-2">
-                    <h1></h1>
-                    <h1>各制空状態の航空機の撃墜率</h1>
-                    <table id="table-downRate">
-                        <thead>
-                            <tr>
-                                <th>制空状態</th>
-                                <th>喪失</th>
-                                <th>劣勢</th>
-                                <th>均衡</th>
-                                <th>優勢</th>
-                                <th>確保</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>敵の喪失率 (最大値/平均値/低乱数)</td>
-                                <td>10%/5%/2%</td>
-                                <td>40%/20%/8%</td>
-                                <td>60%/30%/12%</td>
-                                <td>80%/40%/16%</td>
-                                <td>100%/50%/20%</td>
-                            </tr>
-                            <!-- <tr>
-                                <td>味方の喪失率(最低値/平均値/低乱数/最大値)</td>
-                                <td>25.0%/41.5%(※)/51.4%(※)/58.0%</td>
-                                <td>17.5%/29.0%(※)/35.9%(※)/40.5%</td>
-                                <td>12.5%/20.5%/25.3%(※)/28.5%</td>
-                                <td>7.5%/12.5%/15.5%/17.5%</td>
-                                <td>2.5%/4.0%(※)/4.9%(※)/5.5%</td>
-                            </tr> -->
-                        </tbody>
+                <script type="text/javascript">displayResultOption()</script>
+                <div id="result-content">
+                    <div id="myChart"></div>
+                    <table id="result-info">
+                        <tr>
+                            <th class="column-phase">phase</th><th class="column-airpower">艦娘制空</th><th class="column-airpower">深海制空</th><th class="column-state">制空状態</th>
+                        </tr>
+                        <tr>
+                            <td>1-1</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td>1-2</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td>2-1</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td>2-2</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td>3-1</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td>3-2</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td>本隊</td><td>0</td><td>-</td><td>-</td>
+                        </tr>
                     </table>
-                    <h1>熟練度の制空値ボーナス</h1>
-                    <table id="table-skillBonus">
-                        <thead>
-                            <tr>
-                                <th>種別</th>
-                                <th>\</th>
-                                <th>\\</th>
-                                <th>\\\</th>
-                                <th>/</th>
-                                <th>//</th>
-                                <th>///</th>
-                                <th>>></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>局戦・陸戦・艦戦・水戦</td>
-                                <td>1</td>
-                                <td>3.58</td>
-                                <td>7</td>
-                                <td>11.35</td>
-                                <td>16.65</td>
-                                <td>16.92</td>
-                                <td>25.16</td>
-                            </tr>
-                            <tr>
-                                <td>水上爆撃機</td>
-                                <td>1</td>
-                                <td>2.58</td>
-                                <td>3</td>
-                                <td>3.35</td>
-                                <td>5.65</td>
-                                <td>5.92</td>
-                                <td>9.16</td>
-                            </tr>
-                            <tr>
-                                <td>艦攻・艦爆・噴式機</td>
-                                <td>1</td>
-                                <td>1.58</td>
-                                <td>2</td>
-                                <td>2.35</td>
-                                <td>2.65</td>
-                                <td>2.92</td>
-                                <td>3.16</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <!-- <ul>
-                        <li>制空定数=確保:1、劣勢:7、優勢:3、喪失=10、均衡=5</li>
-                        <li>(0~制空定数/3)の0.1の倍数の一様な乱数 + 制空定数/4</li>
-                        <li>0.35*((0~(11-制空定数))の一様な整数乱数1)+ 0.65*((0~(11-制空定数))の一様な整数乱数2)</li>
-                        <li>機数*乱数/10</li>
-                        <li>基地航空隊の制空状態ごとの航空機の撃墜率</li>
-                        <li></li>
-                    </ul> -->
                 </div>
-            </div>
+            </section>
         </article>
+        <div class="dialog" id="dialog-message"></div>
+        <div class="dialog" id="dialog-select-ship">
+            <!-- <script type="text/javascript">displayList('ship')</script> -->
+        </div>
+        <div class="dialog" id="dialog-select-equipment">
+            <!-- <script type="text/javascript">displayList('equipment')</script> -->
+        </div>
         <footer id="footer">
             <div>バグ・改善点・実装してほしい機能などの連絡はこちらまで：<a href="https://peing.net/willlain" target="_blank">質問箱</a></div>
             <div>製作者：ウィル@ハムスター <a href="https://twitter.com/Willlain" target="_blank">twitter</a></div>

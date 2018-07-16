@@ -1,11 +1,12 @@
 var drag_source = null;
 var record = {}
 var record_target = "";
-var record_base = {}
-var aircraft_type_id = [7,8,9,10,11,45,47,48,57];
-var tab_type_ship = [[2],3,4,5,6,[8,9],10,7,11,18,16,[1,13,14,21,17,19,20,22]];
-var tab_type_equipment = [[1,16,2,3],[4,20],[5,32,22],[12,13,51],[14,15,40,25,26],[18,19,37],[24,46,30,50],[10,11,45,41],[6,52,7,8,53,9,56,57],[17,21,27,28],[29,42,33,39],[47,54,48,49],[23,31,34,35,36,43,44]];
 var chart = null;
+var record_base = {}
+var record_ship = {}
+const aircraft_type_id = [7,8,9,10,11,45,47,48,57];
+const tab_type_ship = [[2],3,4,5,6,[8,9],10,7,11,18,16,[1,13,14,21,17,19,20,22]];
+const tab_type_equipment = [[1,16,2,3],[4,20],[5,32,22],[12,13,51],[14,15,40,25,26],[18,19,37],[24,46,30,50],[10,11,45,41],[6,52,7,8,53,9,56,57],[17,21,27,28],[29,42,33,39],[47,54,48,49],[23,31,34,35,36,43,44]];
 
 var p1 = getJson("json/ship_id.json");
 var p2 = getJson("json/ship_type.json");
@@ -57,8 +58,8 @@ function getJson(json_url) {
 }
 
 var p10 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
-    $("#dialog-select-ship").append(displayList("ship"));
-    $("#dialog-select-equipment").append(displayList("equipment"));
+    $("#dialog-select-ship").append(displayListShip());
+    $("#dialog-select-equipment").append(displayListEquipment());
     $('a[class="list-group-item list-group-item-action"]').on("shown.bs.tab", function(e){
         $("#btn-select-" + $(this).attr("href").split("-")[1]).prop("disabled", false);
     });
@@ -380,6 +381,19 @@ $(function () {
             // $(element).val(Number(str.replace(pattern, "")));
         })
     });
+    $('input[class*="downRate"]').each(function(){
+        $(this).keypress(function(e){
+            var str = $(this).val()
+            var pattern = new RegExp("[^0-9]")
+            if (Number(str) > 10 || (Number(str) == 10 && e.key != 0) || pattern.test(e.key) || (str == 0 && e.key == 0)) {
+                e.preventDefault();
+            }
+        })
+        $(this).keyup(function(e){
+            var str = $(this).val()
+            $(this).val(Number(str));
+        })
+    });
     $(".base-name").each(function(){
         addDDEvent(this);
     });
@@ -406,6 +420,7 @@ $(function () {
     });
     $("#map-cell").on('changed.bs.select', function(){
         changeCell($(this).val());
+        // simulatePhase();
     });
     $('input[name="enemy-fleet-step"]:radio').change(function() {
         changeStep($("[name=enemy-fleet-step]:checked").val());
@@ -488,6 +503,45 @@ $(function () {
         }]
     })
 });
+
+// var chart = new Highcharts.Chart("chart", {
+//   chart: {
+//     type: "bar",
+//     backgroundColor: "#f8f8f8",
+//     marginLeft: 20,
+//     spacing: [9, 10, 7, 10]
+//   },
+//   title: { text: null },
+//   credits: { enabled: false },
+//   legend: { enabled: false },
+//   tooltip: { enabled: false },
+//   xAxis: { labels: { enabled: false }, lineWidth: 0, tickLength: 0 },
+//   yAxis: {
+//     title: { text: null },
+//     gridLineWidth: 0,
+//     lineWidth: 1, lineColor: "black",
+//     tickWidth: 2, tickLength: 6, tickColor: "black",
+//     tickPositions: [0, 1/3, 2/3, 1.5, 3, 3.5],
+//     labels: {
+//       y: 20,
+//       style: { color: "black", fontSize: "14px" },
+//       formatter: function() {
+//         switch (this.value) {
+//           case 0:   return "喪失";
+//           case 1/3: return "劣勢";
+//           case 2/3: return "均衡";
+//           case 1.5: return "優勢";
+//           case 3:   return "確保";
+//           default:  return "";
+//         }
+//       }
+//     }
+//   },
+//   series: [
+//     { data: [0], pointWidth: 9 },
+//     { type: "errorbar", data: [[0, 0]], color: "#3050ff", whiskerLength: "60%", visible: false }
+//   ]
+// });
 
 // <script src="https://code.highcharts.com/highcharts-more.js"></script>
 // chart.series[0].setData([129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4], true);

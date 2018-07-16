@@ -105,8 +105,8 @@ footer div {
 div.option-input {
     display: -webkit-flex;
     display: flex;
-    -webkit-justify-content: flex-end;
-    justify-content: flex-end;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
     -webkit-align-items: center;
     align-items: center;
     margin-bottom: 10px;
@@ -118,6 +118,9 @@ div.option-input input.checkbox {
 div.option-input button {
     padding: 3px;
     font-size: 85%;
+}
+div#radius-enemy {
+    margin-right: auto;
 }
 div.deckbuilder {
     margin-right: auto;
@@ -201,6 +204,11 @@ div.input-group {
     width: auto;
 }
 input.airpower {
+    padding: 0 3px;
+    font-size: 12px;
+}
+input.downRate {
+    width: 35px;
     padding: 0 3px;
     font-size: 12px;
 }

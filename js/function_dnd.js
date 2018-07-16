@@ -13,11 +13,11 @@ function handleDragStart(e) {
     e.dataTransfer.setData('html',this.innerHTML);
     switch ($(this).attr('class').split("-")[0]) {
         case "equipment":
-            var element_type = $(this).attr("id").split("-")[2];
-            var element_target_id = $(this).attr("id").split("-")[3];
-            var element_equipment_id = $(this).attr("id").split("-")[4];
-            var element_improvement = $("#improvement-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
-            var element_skill = $("#skill-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+            let element_type = $(this).attr("id").split("-")[2];
+            let element_target_id = $(this).attr("id").split("-")[3];
+            let element_equipment_id = $(this).attr("id").split("-")[4];
+            let element_improvement = $("#improvement-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+            let element_skill = $("#skill-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
             if (element_type == "base") {
                 e.dataTransfer.setData('equipment_id', record_base[element_target_id][element_equipment_id].id)
             } else {
@@ -29,16 +29,16 @@ function handleDragStart(e) {
             e.dataTransfer.setData('skill_able', element_skill.is(":disabled"));
             break;
         case "ship":
-            var element_ship_id = $(this).attr("id").split("-")[2];
-            var element_grade = $("#grade-" + element_ship_id)
+            let element_ship_id = $(this).attr("id").split("-")[2];
+            let element_grade = $("#grade-" + element_ship_id)
             e.dataTransfer.setData('grade_value', element_grade.val());
             e.dataTransfer.setData('grade_option', element_grade.html());
-            for (var i=0; i<6; i++) {
+            for (let i=0; i<6; i++) {
                 // var num = element_id*6 + i;
-                var element_equipment = $("#equipment-name-ship-" + element_ship_id + "-" + i);
-                var element_improvement = $("#improvement-ship-" + element_ship_id + "-" + i);
-                var element_skill = $("#skill-ship-" + element_ship_id + "-" + i);
-                var element_space = $("#space-ship-" + element_ship_id + "-" + i);
+                let element_equipment = $("#equipment-name-ship-" + element_ship_id + "-" + i);
+                let element_improvement = $("#improvement-ship-" + element_ship_id + "-" + i);
+                let element_skill = $("#skill-ship-" + element_ship_id + "-" + i);
+                let element_space = $("#space-ship-" + element_ship_id + "-" + i);
                 e.dataTransfer.setData('equipment_id_' + i, record_ship[element_ship_id][i].id);
                 e.dataTransfer.setData('equipment_html_' + i, element_equipment.html());
                 e.dataTransfer.setData('improvement_value_' + i, element_improvement.val());
@@ -52,12 +52,12 @@ function handleDragStart(e) {
             break;
         case "base":
             var element_base_id = $(this).attr("id").split("-")[2];
-            for (var i=0; i<4; i++) {
+            for (let i=0; i<4; i++) {
                 // var num = element_id*4 + i;
-                var element_equipment = $("#equipment-name-base-" + element_base_id + "-" + i);
-                var element_improvement = $("#improvement-base-" + element_base_id + "-" + i);
-                var element_skill = $("#skill-base-" + element_base_id + "-" + i);
-                var element_space = $("#space-base-" + element_base_id + "-" + i);
+                let element_equipment = $("#equipment-name-base-" + element_base_id + "-" + i);
+                let element_improvement = $("#improvement-base-" + element_base_id + "-" + i);
+                let element_skill = $("#skill-base-" + element_base_id + "-" + i);
+                let element_space = $("#space-base-" + element_base_id + "-" + i);
                 e.dataTransfer.setData('equipment_id_' + i, record_base[element_base_id][i].id);
                 e.dataTransfer.setData('equipment_html_' + i, element_equipment.html());
                 e.dataTransfer.setData('improvement_value_' + i, element_improvement.val());
@@ -81,14 +81,14 @@ function handleDragOver(e) {
 }
 
 function handleDragEnter(e) {
-    var pattern = new RegExp($(drag_source).attr("class"));
+    let pattern = new RegExp($(drag_source).attr("class"));
     if (pattern.test($(this).attr('class'))) {
         this.classList.add("drag-over");
     }
 }
 
 function handleDragLeave(e) {
-    var pattern = new RegExp($(drag_source).attr("class"));
+    let pattern = new RegExp($(drag_source).attr("class"));
     if (pattern.test($(this).attr('class'))) {
         this.classList.remove('drag-over');
     }
@@ -99,32 +99,32 @@ function handleDrop(e) {
         e.stopPropagation();
     }
 
-    var pattern = new RegExp($(drag_source).attr("class"));
+    let pattern = new RegExp($(drag_source).attr("class"));
     if (pattern.test($(this).attr('class'))) {
         this.classList.remove('drag-over');
-        var type = $(this).attr('class').split("-")[0]
+        let type = $(this).attr('class').split("-")[0]
         if (type == "equipment") {
-            var element_type = $(this).attr("id").split("-")[2];
-            var element_target_id_target = $(this).attr("id").split("-")[3];
-            var element_equipment_id_target = $(this).attr("id").split("-")[4];
-            var element_improvement_target = $("#improvement-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
-            var element_skill_target = $("#skill-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
-            var element_target_id_source = $(drag_source).attr("id").split("-")[3];
-            var element_equipment_id_source = $(drag_source).attr("id").split("-")[4];
-            var element_improvement_source = $("#improvement-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source)
-            var element_skill_source = $("#skill-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source);
+            let element_type = $(this).attr("id").split("-")[2];
+            let element_target_id_target = $(this).attr("id").split("-")[3];
+            let element_equipment_id_target = $(this).attr("id").split("-")[4];
+            let element_improvement_target = $("#improvement-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
+            let element_skill_target = $("#skill-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
+            let element_target_id_source = $(drag_source).attr("id").split("-")[3];
+            let element_equipment_id_source = $(drag_source).attr("id").split("-")[4];
+            let element_improvement_source = $("#improvement-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source)
+            let element_skill_source = $("#skill-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source);
 
             if (element_type == "ship") {
-                var ship_id_target = Number($("#grade-" + element_target_id_target).val())
-                var ship_type_target = data_ship_id[ship_id_target].type;
-                var ship_id_source = Number($("#grade-" + element_target_id_source).val())
-                var ship_type_source = data_ship_id[ship_id_source].type
+                let ship_id_target = Number($("#grade-" + element_target_id_target).val())
+                let ship_type_target = data_ship_id[ship_id_target].type;
+                let ship_id_source = Number($("#grade-" + element_target_id_source).val())
+                let ship_type_source = data_ship_id[ship_id_source].type
                 if (this.innerHTML.indexOf("装備選択") == -1 && this.innerHTML.indexOf("補強増設") == -1) {
-                    var equipment_type_target = data_equipment_id_ship[record_ship[element_target_id_target][element_equipment_id_target].id].type;
+                    let equipment_type_target = data_equipment_id_ship[record_ship[element_target_id_target][element_equipment_id_target].id].type;
                 } else {
-                    var equipment_type_target = 0;
+                    let equipment_type_target = 0;
                 }
-                var equipment_type_source = data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type;
+                let equipment_type_source = data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type;
 
                 if (checkEquipmentTypeAvailable(element_equipment_id_target, ship_id_target, ship_type_target, equipment_type_source)
                 && checkEquipmentTypeAvailable(element_equipment_id_source, ship_id_source, ship_type_source, equipment_type_target)) {
@@ -132,7 +132,7 @@ function handleDrop(e) {
                         record_ship[element_target_id_source][element_equipment_id_source].id = record_ship[element_target_id_target][element_equipment_id_target].id
                         $(drag_source).attr("draggable", true).empty().html(this.innerHTML).css('visibility','visible');
                     } else {
-                        var num = element_equipment_id_source % 6;
+                        let num = element_equipment_id_source % 6;
                         record_ship[element_target_id_source][element_equipment_id_source].id = 0;
                         if (data_ship_id[ship_id_source].slot != num) {
                             $(drag_source).attr("draggable", false).empty().html(" 装備選択").css('visibility','visible');
@@ -180,21 +180,21 @@ function handleDrop(e) {
                 updateAirPowerFrends(element_type, element_target_id_target, element_equipment_id_target);
             }
         } else {
-            var element_target_id_target = Number($(this).attr("id").split("-")[2]);
-            var element_target_id_source = Number($(drag_source).attr("id").split("-")[2]);
+            let element_target_id_target = Number($(this).attr("id").split("-")[2]);
+            let element_target_id_source = Number($(drag_source).attr("id").split("-")[2]);
 
             if (type == "base") {
-                var item = 4;
-                var record_source = record_base[element_target_id_source];
-                var record_target = record_base[element_target_id_target];
+                let item = 4;
+                let record_source = record_base[element_target_id_source];
+                let record_target = record_base[element_target_id_target];
                 record_base[element_target_id_source] = record_target;
                 record_base[element_target_id_target] = record_source;
             } else {
-                var item = 6;
-                var element_grade_target = $("#grade-" + element_target_id_target);
-                var element_grade_source = $("#grade-" + element_target_id_source);
-                var record_source = record_ship[element_target_id_source];
-                var record_target = record_ship[element_target_id_target];
+                let item = 6;
+                let element_grade_target = $("#grade-" + element_target_id_target);
+                let element_grade_source = $("#grade-" + element_target_id_source);
+                let record_source = record_ship[element_target_id_source];
+                let record_target = record_ship[element_target_id_target];
                 record_ship[element_target_id_source] = record_target;
                 record_ship[element_target_id_target] = record_source;
 
@@ -214,17 +214,17 @@ function handleDrop(e) {
                 }
             }
 
-            for (var i=0; i<item; i++) {
+            for (let i=0; i<item; i++) {
                 // var element_equipment_id_target = element_ship_id_target*6 + i;
-                var element_equipment_target = $("#equipment-name-" + type + "-" + element_target_id_target + "-" + i);
-                var element_improvement_target = $("#improvement-" + type + "-" + element_target_id_target + "-" + i);
-                var element_skill_target = $("#skill-" + type + "-" + element_target_id_target + "-" + i);
-                var element_space_target = $("#space-" + type + "-" + element_target_id_target + "-" + i);
+                let element_equipment_target = $("#equipment-name-" + type + "-" + element_target_id_target + "-" + i);
+                let element_improvement_target = $("#improvement-" + type + "-" + element_target_id_target + "-" + i);
+                let element_skill_target = $("#skill-" + type + "-" + element_target_id_target + "-" + i);
+                let element_space_target = $("#space-" + type + "-" + element_target_id_target + "-" + i);
                 // var element_equipment_id_source = element_ship_id_source*6 + i;
-                var element_equipment_source = $("#equipment-name-" + type + "-" + element_target_id_source + "-" + i);
-                var element_improvement_source = $("#improvement-" + type + "-" + element_target_id_source + "-" + i)
-                var element_skill_source = $("#skill-" + type + "-" + element_target_id_source + "-" + i);
-                var element_space_source = $("#space-" + type + "-" + element_target_id_source + "-" + i);
+                let element_equipment_source = $("#equipment-name-" + type + "-" + element_target_id_source + "-" + i);
+                let element_improvement_source = $("#improvement-" + type + "-" + element_target_id_source + "-" + i)
+                let element_skill_source = $("#skill-" + type + "-" + element_target_id_source + "-" + i);
+                let element_space_source = $("#space-" + type + "-" + element_target_id_source + "-" + i);
 
                 if (type == "base") {
                     if (element_equipment_target.html().indexOf("装備選択") == -1) {

@@ -10,8 +10,10 @@
  * JSON形式が異なっている場合はエラーを出力する
  */
 function inputDeckbuilder() {
+    let input, num, element_ship_id, ship_id, element_grade, equipmet_id, equipment_type;
+
     try {
-        var input = JSON.parse($("#deckbuilder").val());
+        input = JSON.parse($("#deckbuilder").val());
     } catch (e) {
         openMessageDialog("deckbuilder", "入力が不正です。<br>" + e.message);
         return;
@@ -21,16 +23,16 @@ function inputDeckbuilder() {
             case "f1":
             case "f2":
             case "f3":
-                var num = (Number(key.substr(-1))-1)*6;
+                num = (Number(key.substr(-1))-1)*6;
                 Object.keys(input[key]).forEach(function(key2,index2){
-                    var element_ship_id = index2 + num;
+                    element_ship_id = index2 + num;
                     // var element_ship = $("#ship-name-" + element_ship_id);
-                    var ship_id = this[key2].id
-                    var element_grade = $("#grade-" + element_ship_id);
+                    ship_id = this[key2].id
+                    element_grade = $("#grade-" + element_ship_id);
                     setShipItem(ship_id, element_ship_id, 1);
                     Object.keys(input[key][key2].items).forEach(function(key3,index3){
-                        var equipment_id = this[key3].id;
-                        var equipment_type = data_equipment_id_ship[equipment_id].type
+                        equipment_id = this[key3].id;
+                        equipment_type = data_equipment_id_ship[equipment_id].type
 
                         setEquipmentItem("ship", element_ship_id, index3, equipment_type, equipment_id, this[key3].rf, this[key3].mas)
 
@@ -51,16 +53,18 @@ function inputDeckbuilder() {
  * デッキビルダーで反映されない場合あり（デッキビルダー側のバグ？）
  */
 function outputDeckbuilder() {
-    var output = {
+    let output = {
         "version": 4,
         "f1": {},
         "f2": {},
         "f3": {}
     }
+
+    let fleet, ship_num, item_num;
     Object.keys(record_ship).forEach(function(key) {
         if (record_ship[key].id != 0) {
-            var fleet = (key == 18) ? "f3" : "f" + (Math.floor(key/6)+1);
-            var ship_num = (key == 18) ? "s7" : "s" + (key%6 + 1)
+            fleet = (key == 18) ? "f3" : "f" + (Math.floor(key/6)+1);
+            ship_num = (key == 18) ? "s7" : "s" + (key%6 + 1)
 
             output[fleet][ship_num] = {
                 "id": record_ship[key].id,
@@ -70,7 +74,7 @@ function outputDeckbuilder() {
             }
             Object.keys(record_ship[key]).forEach(function(key2) {
                 if (key2 != "id" && Number(key2) <= data_ship_id[this.id].slot && this[key2].id != 0) {
-                    var item_num = (Number(key2) == data_ship_id[this.id].slot) ? "ix" : "i" + (Number(key2)+1)
+                    item_num = (Number(key2) == data_ship_id[this.id].slot) ? "ix" : "i" + (Number(key2)+1)
                     output[fleet][ship_num]["items"][item_num] = {
                         "id": this[key2].id,
                         "rf": this[key2].improvement,
@@ -230,10 +234,11 @@ function selectItem(type) {
  * @param  {int}    element_equipment_id [装備番号、ただし、艦娘または基地航空隊全体の選択時は指定されない]
  */
 function removeItem(type, element_target_id, element_equipment_id) {
+    let element_equipment, element_skill, element_improvement, ship_id, slot;
     if (element_equipment_id !== undefined) {
-        var element_equipment = $("#equipment-name-" + type + "-" + element_target_id + "-" + element_equipment_id);
-        var element_skill = $("#skill-" + type + "-" + element_target_id + "-" + element_equipment_id);
-        var element_improvement = $("#improvement-" + type + "-" + element_target_id + "-" + element_equipment_id);
+        element_equipment = $("#equipment-name-" + type + "-" + element_target_id + "-" + element_equipment_id);
+        element_skill = $("#skill-" + type + "-" + element_target_id + "-" + element_equipment_id);
+        element_improvement = $("#improvement-" + type + "-" + element_target_id + "-" + element_equipment_id);
         if (type == "ship") {
             var ship_id = Number($("#grade-" + element_target_id).val())
             var slot = data_ship_id[ship_id].slot
@@ -782,6 +787,7 @@ function changeCell(cell) {
 
     if (cell != 0) {
         var step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
+        $("#radius-enemy-value").text(step["radius"]);
         if (Object.keys(step).indexOf("1") != -1) {
             var fleet = step[$("[name=enemy-fleet-step]:checked").val()].fleet;
             record_map["step"] = Number($("[name=enemy-fleet-step]:checked").val());
@@ -838,6 +844,7 @@ function clearEnemyFleet() {
         $("#airpower-enemy-" + i).empty();
     }
     record_map["step"] = 0;
+    $("#radius-enemy-value").text(0)
     $("[name=enemy-fleet-step]").val(["0"])
     $("#enemy-fleet-step").css('display','none');
     updateAirPowerEnemy();
