@@ -206,9 +206,11 @@ div.input-group {
 input.airpower {
     padding: 0 3px;
     font-size: 12px;
+    height: 20px;
 }
 input.downRate {
     width: 35px;
+    height: 20px;
     padding: 0 3px;
     font-size: 12px;
 }

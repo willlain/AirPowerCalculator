@@ -443,29 +443,46 @@ $(function () {
             tickPosition: 'inside'
         },
         yAxis: {
-            min: 0,
-            max: 20/6,
+            // min: 0,
+            // max: 20/6,
             title: {
-                text: null,
-                align: 'high'
+                text: null
             },
-            tickInterval: 1/6,
+            //     gridLineWidth: 0,
+            //     lineWidth: 1, lineColor: "black",
+            //     tickWidth: 2, tickLength: 6, tickColor: "black",
+            tickPositions: [0, 1/3, 2/3, 1.5, 3, 3.5],
             labels: {
+                y: 20,
+                style: { color: "black", fontSize: "14px" },
                 formatter: function() {
-                    switch (Math.floor(this.value*1000)/1000) {
-                        case Math.floor(2*1000/6)/1000:
-                            return "劣勢";
-                        case Math.floor(4*1000/6)/1000:
-                            return "均衡";
-                        case Math.floor(9*1000/6)/1000:
-                            return "優勢";
-                        case Math.floor(18*1000/6)/1000:
-                            return "確保";
+                    switch (this.value) {
+                        case 0:   return "喪失";
+                        case 1/3: return "劣勢";
+                        case 2/3: return "均衡";
+                        case 1.5: return "優勢";
+                        case 3:   return "確保";
+                        default:  return "";
                     }
-                },
-                autoRotation: [0],
-                overflow: 'justify'
+                }
             },
+            // tickInterval: 1/6,
+            // labels: {
+            //     formatter: function() {
+            //         switch (Math.floor(this.value*1000)/1000) {
+            //             case Math.floor(2*1000/6)/1000:
+            //                 return "劣勢";
+            //             case Math.floor(4*1000/6)/1000:
+            //                 return "均衡";
+            //             case Math.floor(9*1000/6)/1000:
+            //                 return "優勢";
+            //             case Math.floor(18*1000/6)/1000:
+            //                 return "確保";
+            //         }
+            //     },
+            //     autoRotation: [0],
+            //     overflow: 'justify'
+            // },
             plotLines: [
                 {
                     value: 2/6,

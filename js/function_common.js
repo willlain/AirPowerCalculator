@@ -86,6 +86,7 @@ function checkEquipmentAvailable(equipment_type, ship_id, ship_type, expansion_f
         }
     }
 }
+
 function checkEquipmentAvailableException(equipment_type, ship_id) {
     let result = [];
     let data = data_equipment_type_ship[equipment_type];
@@ -104,9 +105,18 @@ function checkEquipmentAvailableException(equipment_type, ship_id) {
 }
 
 function checkEquipmentTypeAvailable(element_equipment_id, ship_id, ship_type, equipment_type, tab_flag) {
-    if (equipment_type == 0) {
-        return true;
+    if (equipment_type == 0) return true;
+
+    // 伊勢改二の大型主砲(第1,2スロット)
+    if (ship_id == 553 && equipment_type == 3) {
+        if (element_equipment_id == 0 || element_equipment_id == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
+
+    // 通常スロットか補強増設か、補強増設時の副砲
     if (element_equipment_id != data_ship_id[ship_id].slot) {
         if (checkEquipmentAvailable(equipment_type, ship_id, ship_type, false)) {
             return true;
