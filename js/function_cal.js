@@ -170,66 +170,6 @@ function updateAirPowerEnemy() {
     }
 }
 
-
-// function rate() {
-    // 制空状態の撃墜率の乱数（4～121パターン）
-    // →各スロットごとの残機数の確率（0～最大機数パターン）
-    // →各スロットごとの制空値（対空*√機数）の確率（0～対空*√機数の最大値のパターン）
-    // ⇒1空母分の制空値の確率（0～対空*√機数の最大値のパターンのスロットごとで乗算）
-    // ⇒1艦隊の制空値の確率（）
-
-    // let rand_fleet_info = {
-    //     // phase
-    //     0: {
-    //         "rand_fleet": {
-    //             "x": 1
-    //         },
-    //     },
-    //     1: {
-    //
-    //     }
-    // }
-    // let rand_enemy_info = {
-    //     // 艦隊番号
-    //     0: {
-    //         "rand_enemy": {
-    //             "x": 1
-    //         },
-    //
-    //     }
-    // }
-    //
-    // let rand_slot_info = {
-    //     // 装備番号
-    //     0: {
-    //         "rand_space": {
-    //             "x": 1
-    //         }
-    //         "rand_equipment": {
-    //             "x": 1
-    //         },
-    //     }
-    // }
-    //
-    // let  down_rate_table = []
-    // for (let i=0; i<rand_max; i++) {
-    //     for (let j=0; j<rand_max; j++){
-    //         down_rate_table.push(0.35*i + 0.65*j);
-    //     }
-    // }
-    // down_rate_table.sort(function (a, b) { return a - b; });
-    //
-    // for (let i=0; i < down_rate_table.length; i++) {
-    //     Object.keys(rand_info[0][0][0].rand_space).forEach(function(key) {
-    //         let space = key;
-    //         space -= parseInt(space*down_rate_table[i]);
-    //         let probe = 1 / down_rate_table.length
-    //         rand_info[1][0][0].rand_space[space] += probe
-    //     }, rand_info[0][0][0].rand_space)
-    // }
-
-// }
-
 /**
  * [simulatePhase description]
  * @return {[type]} [description]
@@ -259,6 +199,7 @@ function simulatePhase() {
         let enemy_id = record_map.fleet[i];
 
         enemy_info[i] = {}
+        let flag = false;
         for (let j=0; j<data_enemy_id[enemy_id].slot; j++) {
             let equipment_id = data_enemy_id[enemy_id].equipment[j]
             let equipment_type = data_equipment_id_enemy[equipment_id].type
@@ -273,6 +214,7 @@ function simulatePhase() {
                 case 56:
                     enemy_info[i][j].antiAir_base = data_equipment_id_enemy[equipment_id].antiAir
                     enemy_info[i][j].antiAir_ship = 0
+                    flag = true;
                     break;
                 case 6:
                 case 7:
@@ -288,12 +230,14 @@ function simulatePhase() {
                 case 57:
                     enemy_info[i][j].antiAir_base = data_equipment_id_enemy[equipment_id].antiAir
                     enemy_info[i][j].antiAir_ship = data_equipment_id_enemy[equipment_id].antiAir
+                    flag = true;
                     break;
                 default:
                     enemy_info[i][j].antiAir_base = 0;
                     enemy_info[i][j].antiAir_ship = 0;
             }
         }
+        if (!flag) delete enemy_info[i];
     }
 
     for (let i=0; i<3; i++) {
