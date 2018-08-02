@@ -176,9 +176,11 @@ function updateAirPowerEnemy() {
  */
 function simulatePhase() {
     let result = {
-        "state": [],
+        "status": [],
         "airPower_enemy": [],
-        "airPower_ship": []
+        "airPower_ship": [],
+        "probe": [],
+        "color": []
     };
 
     let enemy_info = {
@@ -291,35 +293,45 @@ function simulatePhase() {
                 break;
             default:
                 result["status"].push("-");
-                // result["probe"][i+1][0] = "-";
+                result["color"].push('rgba(0,0,0,0)');
+                result["probe"].push(0);
                 continue;
         }
 
         quotient = Math.round(result["airPower_ship"][i]*10000/power)/10000;
+
         if (power != 0) {
+            result["probe"].push(quotient);
             if (quotient <= 1/3) {
                 result["status"].push("喪失");
+                result["color"].push('rgba(255,99,132,1)');
                 rand_max = 1;
                 down_rate *= 0.1;
             } else if (quotient <= 2/3) {
                 result["status"].push("劣勢");
+                result["color"].push('rgba(255, 159, 64, 1)');
                 rand_max = 4;
                 down_rate *= 0.4;
             } else if (quotient < 3/2) {
                 result["status"].push("均衡");
+                result["color"].push('rgba(255, 206, 86, 1)');
                 rand_max = 6;
                 down_rate *= 0.6;
             } else if (quotient < 3) {
                 result["status"].push("優勢");
+                result["color"].push('rgba(54, 162, 235, 1)');
                 rand_max = 8;
                 down_rate *= 0.8;
             } else {
                 result["status"].push("確保");
+                result["color"].push('rgba(75, 192, 192, 1)');
                 rand_max = 10;
                 down_rate *= 1.0;
             }
         } else {
             result["status"].push("確保");
+            result["color"].push('rgba(75, 192, 192, 1)');
+            result["probe"].push(3.5);
             down_rate *= 1.0;
         }
 
@@ -343,19 +355,33 @@ function simulatePhase() {
 
     if (power != 0) {
         quotient = (Number($("[name=fleet]:checked").val()) === 1) ? Math.round((result["airPower_ship"][6]+result["airPower_ship"][7])*10000/power)/10000 : Math.round(result["airPower_ship"][6]*10000/power)/10000;
+        result["probe"].push(quotient);
         if (quotient <= 1/3) {
             result["status"].push("喪失");
+            result["color"].push('rgba(255,99,132,1)');
         } else if (quotient <= 2/3) {
             result["status"].push("劣勢");
+            result["color"].push('rgba(255, 159, 64, 1)');
         } else if (quotient < 3/2) {
             result["status"].push("均衡");
+            result["color"].push('rgba(255, 206, 86, 1)');
         } else if (quotient < 3) {
             result["status"].push("優勢");
+            result["color"].push('rgba(54, 162, 235, 1)');
         } else {
             result["status"].push("確保");
+            result["color"].push('rgba(75, 192, 192, 1)');
         }
     } else {
         result["status"].push("確保");
+        result["probe"].push(3.5);
+        result["color"].push('rgba(75, 192, 192, 1)');
+    }
+
+    console.info(result);
+    for (let i=0; i<7; i++) {
+        chart.series[0].update({data: result["probe"], color: "#f8f8f8"}, true, { duration: 300 });
+        // chart.series[0].color.update(result["color"][i], true, { duration: 300 });
     }
 
     // for (var i=1; i<result_ships_arr.length; i++) {

@@ -175,6 +175,13 @@ div.grade button.btn {
     font-size: 14px;
     padding: 0;
 }
+/* section#result div.form-check label.form-check-label div.downRate {
+    width: 40px;
+} */
+div.downRate button.btn {
+    font-size: 14px;
+    padding: 0;
+}
 div.ship div.ship-name, div.base div.base-name {
     width: 160px;
     height: 40px;
@@ -208,12 +215,12 @@ input.airpower {
     font-size: 12px;
     height: 20px;
 }
-input.downRate {
+/* input.downRate {
     width: 35px;
     height: 20px;
     padding: 0 3px;
     font-size: 12px;
-}
+} */
 button.remove {
     height: 20px;
     padding: 0 2px;

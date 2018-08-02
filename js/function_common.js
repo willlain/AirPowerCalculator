@@ -107,8 +107,8 @@ function checkEquipmentAvailableException(equipment_type, ship_id) {
 function checkEquipmentTypeAvailable(element_equipment_id, ship_id, ship_type, equipment_type, tab_flag) {
     if (equipment_type == 0) return true;
 
-    // 伊勢改二の大型主砲(第1,2スロット)
-    if (ship_id == 553 && equipment_type == 3) {
+    // 伊勢改二の大型・中型主砲(第1,2スロット)
+    if (ship_id == 553 && (equipment_type == 2 || equipment_type == 3)) {
         if (element_equipment_id == 0 || element_equipment_id == 1) {
             return true;
         } else {

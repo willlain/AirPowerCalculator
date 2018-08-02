@@ -124,7 +124,12 @@ $(function () {
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $(".grade").siblings('button').prop('disabled', true);
-
+    $(".downRate").selectpicker({
+        width: 40,
+        size: 5,
+        container: 'body',
+        style: 'page-link text-dark d-inline-block'
+    })
 
     /**
      * ==========================================================
@@ -420,7 +425,7 @@ $(function () {
     });
     $("#map-cell").on('changed.bs.select', function(){
         changeCell($(this).val());
-        // simulatePhase();
+        simulatePhase();
     });
     $('input[name="enemy-fleet-step"]:radio').change(function() {
         changeStep($("[name=enemy-fleet-step]:checked").val());
@@ -512,7 +517,7 @@ $(function () {
         series:[{
             name: 'test',
             type: 'column',
-            data: [0,0,0,0,0,0,0]
+            data: [2,3.5,0,0,0,0,0]
         }, {
             name: 'test2',
             type: 'errorbar',
