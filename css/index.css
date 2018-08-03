@@ -481,7 +481,7 @@ table#result-info tr th {
 table#result-info tr th.column-phase {
     width: 50px;
 }
-table#result-info tr th.column-airpower, table#result-info tr th.column-state {
+table#result-info tr th.column-airpower, table#result-info tr th.column-status {
     width: 60px;
 }
 table#result-info tr td {

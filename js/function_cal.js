@@ -174,7 +174,36 @@ function updateAirPowerEnemy() {
  * [simulatePhase description]
  * @return {[type]} [description]
  */
-function simulatePhase() {
+function updateResult() {
+    if (record_map.cell === 0) return;
+    if (!checkCombatRadius()) {
+        $("#error-message").text("基地航空隊の航続距離が足りません。").show()
+        $("#result-content").hide();
+        return;
+    } else {
+        $("#error-message").text("").hide()
+        $("#result-content").show();
+    }
+    let result = getResult();
+    console.info(result);
+    for (let i=0; i<7; i++) {
+        chart.series[0].data[i].update(result["probe"][i], true, { duration: 300 });
+        $(".highchart-color-0")[i].css("fill", result["color"][i]);
+        $("#result-ship-" + i).text(result["airPower_ship"][i]);
+        $("#result-enemy-" + i).text(result["airPower_enemy"][i]);
+        $("#result-status-" + i).text(result["status"][i]);
+    }
+}
+
+function checkCombatRadius(){
+    for (let i=0; i<3; i++) {
+        if (Number($("#downRate-" + Number(2*i)).val()) === 0 && Number($("#downRate-" + Number(2*i+1)).val()) === 0) continue;
+        if (Number($("#radius-enemy-value").text) > Number($("#radius-" + i).text)) return false;
+    }
+    return true;
+}
+
+function getResult() {
     let result = {
         "status": [],
         "airPower_enemy": [],
@@ -284,23 +313,20 @@ function simulatePhase() {
         }, enemy_info)
         result["airPower_enemy"].push(power);
 
-        // resultオプションチェック
+        // 撃墜率チェック
         // 無効の場合は、continue
         down_rate = 0;
-        switch (Number($("[name=activate-base-" + i + "]:checked").val())) {
-            case 1:
-                down_rate = Number($("#downRate-" + i).val()) / 100;
-                break;
-            default:
-                result["status"].push("-");
-                result["color"].push('rgba(0,0,0,0)');
-                result["probe"].push(0);
-                continue;
+        if (Number($("#downRate-" + i).val()) === 0) {
+            result["status"].push("-");
+            result["color"].push('rgba(0,0,0,0)');
+            result["probe"].push(0);
+            continue;
+        } else {
+            down_rate = Number($("#downRate-" + i).val()) / 100;
         }
 
-        quotient = Math.round(result["airPower_ship"][i]*10000/power)/10000;
-
         if (power != 0) {
+            quotient = (Math.round(result["airPower_ship"][i]*10000/power)/10000 < 3.5) ? Math.round(result["airPower_ship"][i]*10000/power)/10000 : 3.5;
             result["probe"].push(quotient);
             if (quotient <= 1/3) {
                 result["status"].push("喪失");
@@ -354,7 +380,8 @@ function simulatePhase() {
     result["airPower_enemy"].push(power);
 
     if (power != 0) {
-        quotient = (Number($("[name=fleet]:checked").val()) === 1) ? Math.round((result["airPower_ship"][6]+result["airPower_ship"][7])*10000/power)/10000 : Math.round(result["airPower_ship"][6]*10000/power)/10000;
+        let airPower_ship = (Number($("[name=fleet]:checked").val()) === 1) ? (result["airPower_ship"][6] + result["airPower_ship"][7]) : result["airPower_ship"][6]
+        quotient = (Math.round(airPower_ship*10000/power)/10000 < 3.5) ? Math.round(airPower_ship*10000/power)/10000 : 3.5;
         result["probe"].push(quotient);
         if (quotient <= 1/3) {
             result["status"].push("喪失");
@@ -377,150 +404,5 @@ function simulatePhase() {
         result["probe"].push(3.5);
         result["color"].push('rgba(75, 192, 192, 1)');
     }
-
-    console.info(result);
-    for (let i=0; i<7; i++) {
-        chart.series[0].update({data: result["probe"], color: "#f8f8f8"}, true, { duration: 300 });
-        // chart.series[0].color.update(result["color"][i], true, { duration: 300 });
-    }
-
-    // for (var i=1; i<result_ships_arr.length; i++) {
-    //     if (result_ships_arr[i] != "-") {
-    //         power = 0;
-    //         for (var j=0; j<info_enemy_arr.length; j++) {
-    //             var power_AB = 0;
-    //             var power_AC = 0;
-    //             for (var k=0; k<info_enemy_arr[j].slot.length; k++) {
-    //                 antiAir_AB = info_enemy_arr[j].antiAirAB[k];
-    //                 antiAir_AC = info_enemy_arr[j].antiAirAC[k];
-    //                 slot = slot_arr[j][k];
-    //                 power_AB += parseInt(antiAir_AB*Math.sqrt(slot));
-    //                 power_AC += parseInt(antiAir_AC*Math.sqrt(slot));
-    //             }
-    //             power += power_AC;
-    //             if (power_AB != power_AC) {
-    //                 if (i != 7) {
-    //                     power += power_AB;
-    //                 }
-    //             }
-    //         }
-    //         result_enemy_arr.push(power);
-    //
-    //         if (power != 0) {
-    //             if (i != 7) {
-    //                 if ($("#method-AB-" + parseInt((i+1)/2)).val() == 1 || $("#method-AB-" + parseInt((i+1)/2)).val() == 4) {
-    //                     down = 0.5;
-    //                 } else if ($("#method-AB-" + (parseInt((i+1)/2))).val() == 2) {
-    //                     if (i%2 == 0) {
-    //                         down = 0.5;
-    //                     } else {
-    //                         down = 0.2;
-    //                     }
-    //                 } else {
-    //                     down = 0.2;
-    //                 }
-    //             } else {
-    //                 down = 0;
-    //             }
-    //
-    //             var quotient = Math.round(result_ships_arr[i]*10000/power)/10000;
-    //             graph_data.push(quotient*100);
-    //             if (quotient <= 1/3) {
-    //                 down *= 0.1;
-    //                 status = "喪失";
-    //                 background_color.push('rgba(255, 99, 132, 0.2)');
-    //                 border_color.push('rgba(255,99,132,1)');
-    //                 under = parseInt(result_ships_arr[i]-1-power/3);
-    //                 $("#label-result-" + (4*i-3)).text(under);
-    //                 $("#label-result-" + (4*i-2)).text("　");
-    //                 $("#label-result-" + (4*i-1)).text("　");
-    //                 $("#label-result-" + (4*i)).text("　");
-    //             } else if (quotient <= 2/3) {
-    //                 down *= 0.4;
-    //                 status = "劣勢";
-    //                 background_color.push('rgba(255, 159, 64, 0.2)');
-    //                 border_color.push('rgba(255, 159, 64, 1)');
-    //                 over = "+" + parseInt(result_ships_arr[i]-power/3);
-    //                 under = parseInt(result_ships_arr[i]-1-2*power/3);
-    //                 $("#label-result-" + (4*i-3)).text(over);
-    //                 $("#label-result-" + (4*i-2)).text(under);
-    //                 $("#label-result-" + (4*i-1)).text("　");
-    //                 $("#label-result-" + (4*i)).text("　");
-    //             } else if (quotient < 3/2) {
-    //                 down *= 0.6;
-    //                 status = "均衡";
-    //                 background_color.push('rgba(255, 206, 86, 0.2)');
-    //                 border_color.push('rgba(255, 206, 86, 1)');
-    //                 over = "+" + parseInt(result_ships_arr[i]-2*power/3);
-    //                 under = parseInt(result_ships_arr[i]-3*power/2);
-    //                 $("#label-result-" + (4*i-3)).text("　");
-    //                 $("#label-result-" + (4*i-2)).text(over);
-    //                 $("#label-result-" + (4*i-1)).text(under);
-    //                 $("#label-result-" + (4*i)).text("　");
-    //             } else if (quotient < 3) {
-    //                 down *= 0.8;
-    //                 status = "優勢";
-    //                 background_color.push('rgba(54, 162, 235, 0.2)');
-    //                 border_color.push('rgba(54, 162, 235, 1)');
-    //                 over = "+" + parseInt(result_ships_arr[i]-3*power/2);
-    //                 under = parseInt(result_ships_arr[i]-3*power);
-    //                 $("#label-result-" + (4*i-3)).text("　");
-    //                 $("#label-result-" + (4*i-2)).text("　");
-    //                 $("#label-result-" + (4*i-1)).text(over);
-    //                 $("#label-result-" + (4*i)).text(under);
-    //             } else {
-    //                 down *= 1;
-    //                 status = "確保";
-    //                 background_color.push('rgba(75, 192, 192, 0.2)');
-    //                 border_color.push('rgba(75, 192, 192, 1)');
-    //                 over = "+" + parseInt(result_ships_arr[i]-3*power);
-    //                 $("#label-result-" + (4*i-3)).text("　");
-    //                 $("#label-result-" + (4*i-2)).text("　");
-    //                 $("#label-result-" + (4*i-1)).text("　");
-    //                 $("#label-result-" + (4*i)).text(over);
-    //             }
-    //
-    //             slot_arr_dummy = [];
-    //             for (var j=0; j<slot_arr.length; j++) {
-    //                 var arr = [];
-    //                 for (var k=0; k<slot_arr[j].length; k++) {
-    //                     arr.push(slot_arr[j][k]-parseInt(slot_arr[j][k]*down))
-    //                 }
-    //                 slot_arr_dummy.push(arr);
-    //             }
-    //             slot_arr = [];
-    //             slot_arr = slot_arr_dummy.concat();
-    //         } else {
-    //             status = "確保";
-    //             graph_data.push(16.67*20);
-    //             background_color.push('rgba(75, 192, 192, 0.2)');
-    //             border_color.push('rgba(75, 192, 192, 1)');
-    //             $("#label-result-" + (4*i-3)).text("　");
-    //             $("#label-result-" + (4*i-2)).text("　");
-    //             $("#label-result-" + (4*i-1)).text("　");
-    //             $("#label-result-" + (4*i)).text("　");
-    //         }
-    //     } else {
-    //         result_enemy_arr.push("-");
-    //         status = "-";
-    //         graph_data.push(0);
-    //         background_color.push('rgba(255, 99, 132, 0.2)');
-    //         border_color.push('rgba(255, 99, 132, 1)');
-    //         $("#label-result-" + (4*i-3)).text("　");
-    //         $("#label-result-" + (4*i-2)).text("　");
-    //         $("#label-result-" + (4*i-1)).text("　");
-    //         $("#label-result-" + (4*i)).text("　");
-    //     }
-    //     result_status_arr.push(status);
-    // }
-    // myBarChart.config.data.datasets = [{data: graph_data, backgroundColor: background_color, borderColor: border_color, borderWidth: 1}];
-    // myBarChart.update();
-    // $("#table-result").DataTable().row(0).data(result_ships_arr);
-    // $("#table-result").DataTable().row(1).data(result_enemy_arr);
-    // $("#table-result").DataTable().row(2).data(result_status_arr);
-    // $("#table-result").DataTable().draw();
-}
-
-function checkCombatRadius(){
-
+    return result;
 }

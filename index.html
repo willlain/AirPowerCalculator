@@ -97,32 +97,33 @@
             <section id="result">
                 <h1>計算結果</h1>
                 <script type="text/javascript">displayResultOption()</script>
+                <span id="error-message"></span>
                 <div id="result-content">
                     <div id="myChart"></div>
                     <table id="result-info">
                         <tr>
-                            <th class="column-phase">phase</th><th class="column-airpower">艦娘制空</th><th class="column-airpower">深海制空</th><th class="column-state">制空状態</th>
+                            <th class="column-phase">phase</th><th class="column-airpower">艦娘制空</th><th class="column-airpower">深海制空</th><th class="column-status">制空状態</th><th>確率（実装予定）</th>
                         </tr>
                         <tr>
-                            <td>1-1</td><td>-</td><td>-</td><td>-</td>
+                            <td>1-1</td><td id="result-ship-0">-</td><td id="result-enemy-0">-</td><td id="result-status-0">-</td><th>-</th>
                         </tr>
                         <tr>
-                            <td>1-2</td><td>-</td><td>-</td><td>-</td>
+                            <td>1-2</td><td id="result-ship-1">-</td><td id="result-enemy-1">-</td><td id="result-status-1">-</td><th>-</th>
                         </tr>
                         <tr>
-                            <td>2-1</td><td>-</td><td>-</td><td>-</td>
+                            <td>2-1</td><td id="result-ship-2">-</td><td id="result-enemy-2">-</td><td id="result-status-2">-</td><th>-</th>
                         </tr>
                         <tr>
-                            <td>2-2</td><td>-</td><td>-</td><td>-</td>
+                            <td>2-2</td><td id="result-ship-3">-</td><td id="result-enemy-3">-</td><td id="result-status-3">-</td><th>-</th>
                         </tr>
                         <tr>
-                            <td>3-1</td><td>-</td><td>-</td><td>-</td>
+                            <td>3-1</td><td id="result-ship-4">-</td><td id="result-enemy-4">-</td><td id="result-status-4">-</td><th>-</th>
                         </tr>
                         <tr>
-                            <td>3-2</td><td>-</td><td>-</td><td>-</td>
+                            <td>3-2</td><td id="result-ship-5">-</td><td id="result-enemy-5">-</td><td id="result-status-5">-</td><th>-</th>
                         </tr>
                         <tr>
-                            <td>本隊</td><td>0</td><td>-</td><td>-</td>
+                            <td>本体</td><td id="result-ship-6">-</td><td id="result-enemy-6">-</td><td id="result-status-6">-</td><th>-</th>
                         </tr>
                     </table>
                 </div>

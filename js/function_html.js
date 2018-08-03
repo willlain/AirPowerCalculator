@@ -213,9 +213,9 @@ function displayResultOption() {
         //         html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='" + j + "'>" + text_list[j] + "</label>"
         //     }
         // }
-        html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='0' checked>無効</label>"
+        // html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='0' checked>無効</label>"
         // html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='1'><input type='number' class='downRate form-control' id='downRate-" + i + "' value='0' onpaste='return false' oncontextmenu='return false'>%</label>"
-        html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='1'><select class='downRate selectpicker' id='downRate-" + i + "'>"
+        html += "<label class='form-check-label'><select class='downRate selectpicker' id='downRate-" + i + "'>"
         for (let j=0; j<=10; j++) {
             html += "<option value='" + j*10 + "'>" + j*10 + "</option>"
         }
