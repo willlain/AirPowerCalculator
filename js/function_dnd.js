@@ -99,187 +99,190 @@ function handleDrop(e) {
         e.stopPropagation();
     }
 
+    // 同種の位置にドロップされていない場合は処理を行わない
     let pattern = new RegExp($(drag_source).attr("class"));
-    if (pattern.test($(this).attr('class'))) {
-        this.classList.remove('drag-over');
-        let type = $(this).attr('class').split("-")[0]
-        if (type == "equipment") {
-            let element_type = $(this).attr("id").split("-")[2];
-            let element_target_id_target = $(this).attr("id").split("-")[3];
-            let element_equipment_id_target = $(this).attr("id").split("-")[4];
-            let element_improvement_target = $("#improvement-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
-            let element_skill_target = $("#skill-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
-            let element_target_id_source = $(drag_source).attr("id").split("-")[3];
-            let element_equipment_id_source = $(drag_source).attr("id").split("-")[4];
-            let element_improvement_source = $("#improvement-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source)
-            let element_skill_source = $("#skill-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source);
+    if (!pattern.test($(this).attr('class'))) return false;
 
-            if (element_type == "ship") {
-                let ship_id_target = Number($("#grade-" + element_target_id_target).val())
-                let ship_type_target = data_ship_id[ship_id_target].type;
-                let ship_id_source = Number($("#grade-" + element_target_id_source).val())
-                let ship_type_source = data_ship_id[ship_id_source].type
-                if (this.innerHTML.indexOf("装備選択") == -1 && this.innerHTML.indexOf("補強増設") == -1) {
-                    let equipment_type_target = data_equipment_id_ship[record_ship[element_target_id_target][element_equipment_id_target].id].type;
-                } else {
-                    let equipment_type_target = 0;
-                }
-                let equipment_type_source = data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type;
+    this.classList.remove('drag-over');
+    let type = $(this).attr('class').split("-")[0]
 
-                if (checkEquipmentTypeAvailable(element_equipment_id_target, ship_id_target, ship_type_target, equipment_type_source)
-                && checkEquipmentTypeAvailable(element_equipment_id_source, ship_id_source, ship_type_source, equipment_type_target)) {
-                    if (this.innerHTML.indexOf("装備選択") == -1 && this.innerHTML.indexOf("補強増設") == -1) {
-                        record_ship[element_target_id_source][element_equipment_id_source].id = record_ship[element_target_id_target][element_equipment_id_target].id
-                        $(drag_source).attr("draggable", true).empty().html(this.innerHTML).css('visibility','visible');
-                    } else {
-                        let num = element_equipment_id_source % 6;
-                        record_ship[element_target_id_source][element_equipment_id_source].id = 0;
-                        if (data_ship_id[ship_id_source].slot != num) {
-                            $(drag_source).attr("draggable", false).empty().html(" 装備選択").css('visibility','visible');
-                        } else {
-                            $(drag_source).attr("draggable", false).empty().html(" 補強増設").css('visibility','visible');
-                        }
-                    }
-                    record_ship[element_target_id_target][element_equipment_id_target].id = Number(e.dataTransfer.getData("equipment_id"));
-                    $(this).attr("draggable", true).empty().html(e.dataTransfer.getData('html')).css('visibility','visible');
-
-                    record_ship[element_target_id_source][element_equipment_id_source].improvement = Number(element_improvement_target.val());
-                    record_ship[element_target_id_target][element_equipment_id_target].improvement = Number(e.dataTransfer.getData('improvement_value'));
-                    record_ship[element_target_id_source][element_equipment_id_source].skill = Number(element_skill_target.val())
-                    record_ship[element_target_id_source][element_equipment_id_target].skill = Number(e.dataTransfer.getData('skill_value'))
-
-                    toggleEnabledSelection(element_improvement_source, element_improvement_target.is(":disabled"), element_improvement_target.val())
-                    toggleEnabledSelection(element_improvement_target, parseStrToBoolean(e.dataTransfer.getData('improvement_able')), e.dataTransfer.getData('improvement_value'));
-                    toggleEnabledSelection(element_skill_source, element_skill_target.is(":disabled"), element_skill_target.val())
-                    toggleEnabledSelection(element_skill_target, parseStrToBoolean(e.dataTransfer.getData('skill_able')), e.dataTransfer.getData('skill_value'));
-                    updateAirPowerFrends(element_type, element_target_id_source, element_equipment_id_source);
-                    updateAirPowerFrends(element_type, element_target_id_target, element_equipment_id_target);
-                }
-            } else {
-                drag_source.innerHTML = this.innerHTML;
-                this.innerHTML = e.dataTransfer.getData('html');
-                if (this.innerHTML.indexOf("装備選択") != -1) {
-                    $(drag_source).attr("draggable", true);
-                } else {
-                    $(drag_source).attr("draggable", false);
-                }
-                $(this).attr("draggable", true);
-                record_base[element_target_id_source][element_equipment_id_source].id = record_base[element_target_id_target][element_equipment_id_target].id
-                record_base[element_target_id_target][element_equipment_id_target].id = Number(e.dataTransfer.getData("equipment_id"));
-                record_base[element_target_id_source][element_equipment_id_source].improvement = Number(element_improvement_target.val());
-                record_base[element_target_id_target][element_equipment_id_target].improvement = Number(e.dataTransfer.getData('improvement_value'));
-                record_base[element_target_id_source][element_equipment_id_source].skill = Number(element_skill_target.val())
-                record_base[element_target_id_target][element_equipment_id_target].skill = Number(e.dataTransfer.getData('skill_value'))
-                toggleEnabledSelection(element_improvement_source, element_improvement_target.is(":disabled"), element_improvement_target.val())
-                toggleEnabledSelection(element_improvement_target, parseStrToBoolean(e.dataTransfer.getData('improvement_able')), e.dataTransfer.getData('improvement_value'));
-                toggleEnabledSelection(element_skill_source, element_skill_target.is(":disabled"), element_skill_target.val())
-                toggleEnabledSelection(element_skill_target, parseStrToBoolean(e.dataTransfer.getData('skill_able')), e.dataTransfer.getData('skill_value'));
-                updateCombatRadius(element_target_id_source, element_equipment_id_source, record_base[element_target_id_source][element_equipment_id_source].id);
-                updateCombatRadius(element_target_id_target, element_equipment_id_target, record_base[element_target_id_target][element_equipment_id_target].id);
-                updateAirPowerFrends(element_type, element_target_id_source, element_equipment_id_source);
-                updateAirPowerFrends(element_type, element_target_id_target, element_equipment_id_target);
-            }
-        } else {
-            let element_target_id_target = Number($(this).attr("id").split("-")[2]);
-            let element_target_id_source = Number($(drag_source).attr("id").split("-")[2]);
-
-            if (type == "base") {
-                let item = 4;
-                let record_source = record_base[element_target_id_source];
-                let record_target = record_base[element_target_id_target];
-                record_base[element_target_id_source] = record_target;
-                record_base[element_target_id_target] = record_source;
-            } else {
-                let item = 6;
-                let element_grade_target = $("#grade-" + element_target_id_target);
-                let element_grade_source = $("#grade-" + element_target_id_source);
-                let record_source = record_ship[element_target_id_source];
-                let record_target = record_ship[element_target_id_target];
-                record_ship[element_target_id_source] = record_target;
-                record_ship[element_target_id_target] = record_source;
-
-                if (this.innerHTML.indexOf('艦娘') == -1) {
-                    drag_source.innerHTML = this.innerHTML;
-                    toggleEnabledSelection(element_grade_source, false, element_grade_target.val(), element_grade_target.html())
-                } else {
-                    drag_source.innerHTML = "艦娘" + (element_target_id_source + 1)
-                    toggleEnabledSelection(element_grade_source, true, 0, $("<option value='0'>-</option>"))
-                }
-                if (e.dataTransfer.getData('html').indexOf('艦娘') == -1) {
-                    this.innerHTML = e.dataTransfer.getData('html');
-                    toggleEnabledSelection(element_grade_target, false, e.dataTransfer.getData('grade_value'), e.dataTransfer.getData('grade_option'));
-                } else {
-                    this.innerHTML = "艦娘" + (element_target_id_target + 1)
-                    toggleEnabledSelection(element_grade_target, true, 0, $("<option value='0'>-</option>"))
-                }
-            }
-
-            for (let i=0; i<item; i++) {
-                // var element_equipment_id_target = element_ship_id_target*6 + i;
-                let element_equipment_target = $("#equipment-name-" + type + "-" + element_target_id_target + "-" + i);
-                let element_improvement_target = $("#improvement-" + type + "-" + element_target_id_target + "-" + i);
-                let element_skill_target = $("#skill-" + type + "-" + element_target_id_target + "-" + i);
-                let element_space_target = $("#space-" + type + "-" + element_target_id_target + "-" + i);
-                // var element_equipment_id_source = element_ship_id_source*6 + i;
-                let element_equipment_source = $("#equipment-name-" + type + "-" + element_target_id_source + "-" + i);
-                let element_improvement_source = $("#improvement-" + type + "-" + element_target_id_source + "-" + i)
-                let element_skill_source = $("#skill-" + type + "-" + element_target_id_source + "-" + i);
-                let element_space_source = $("#space-" + type + "-" + element_target_id_source + "-" + i);
-
-                if (type == "base") {
-                    if (element_equipment_target.html().indexOf("装備選択") == -1) {
-                        element_equipment_source.attr("draggable", true).empty().html(element_equipment_target.html());
-                    } else {
-                        element_equipment_source.attr("draggable", false).empty().html(element_equipment_target.html());
-                    }
-                    if (e.dataTransfer.getData('equipment_html_' + i).indexOf("装備選択") == -1) {
-                        element_equipment_target.attr("draggable", true).empty().html(e.dataTransfer.getData('equipment_html_' + i));
-                    } else {
-                        element_equipment_target.attr("draggable", false).empty().html(e.dataTransfer.getData('equipment_html_' + i));
-                    }
-                    toggleEnabledSelection(element_space_source, element_space_target.is(":disabled"), element_space_target.val())
-                    toggleEnabledSelection(element_space_target, parseStrToBoolean(e.dataTransfer.getData('space_able_' + i)), e.dataTransfer.getData('space_value_' + i))
-                    updateCombatRadius(element_target_id_source, i, record_base[element_target_id_source][element_equipment_id_source].id);
-                    updateCombatRadius(element_target_id_target, i, record_base[element_target_id_target][element_equipment_id_target].id);
-                } else {
-                    if (element_equipment_target.html().indexOf("装備選択") == -1 && element_equipment_target.html().indexOf("補強増設") == -1) {
-                        element_equipment_source.attr("draggable", true).empty().html(element_equipment_target.html()).css('visibility','visible');
-                    } else if (element_equipment_target.html() == "") {
-                        element_equipment_source.attr("draggable", false).empty().css('visibility','hidden');
-                    } else {
-                        if (data_ship_id[element_grade_source.val()].slot != i) {
-                            element_equipment_source.attr("draggable", false).empty().html("装備選択").css('visibility','visible');
-                        } else {
-                            element_equipment_source.attr("draggable", false).empty().html("補強増設").css('visibility','visible');
-                        }
-                    }
-                    if (e.dataTransfer.getData('equipment_html_' + i).indexOf("装備選択") == -1 && e.dataTransfer.getData('equipment_html_' + i).indexOf("補強増設") == -1) {
-                        element_equipment_target.attr("draggable", true).empty().html(e.dataTransfer.getData('equipment_html_' + i)).css('visibility','visible');
-                    } else if (e.dataTransfer.getData('equipment_html_' + i) == "") {
-                        element_equipment_target.attr("draggable", false).empty().css('visibility','hidden');
-                    } else {
-                        if (data_ship_id[element_grade_target.val()].slot != i) {
-                            element_equipment_target.attr("draggable", false).empty().html("装備選択").css('visibility','visible');
-                        } else {
-                            element_equipment_target.attr("draggable", false).empty().html("補強増設").css('visibility','visible');
-                        }
-                    }
-                    toggleEnabledSelection(element_space_source, element_space_target.is(":disabled"), element_space_target.val(), element_space_target.html())
-                    toggleEnabledSelection(element_space_target, parseStrToBoolean(e.dataTransfer.getData('space_able_' + i)), e.dataTransfer.getData('space_value_' + i), e.dataTransfer.getData('space_option_' + i))
-                }
-
-                toggleEnabledSelection(element_improvement_source, element_improvement_target.is(":disabled"), element_improvement_target.val())
-                toggleEnabledSelection(element_improvement_target, parseStrToBoolean(e.dataTransfer.getData('improvement_able_' + i)), e.dataTransfer.getData('improvement_value_' + i));
-                toggleEnabledSelection(element_skill_source, element_skill_target.is(":disabled"), element_skill_target.val())
-                toggleEnabledSelection(element_skill_target, parseStrToBoolean(e.dataTransfer.getData('skill_able_' + i)), e.dataTransfer.getData('skill_value_' + i));
-                updateAirPowerFrends(element_type, element_target_id_source, element_equipment_id_source);
-                updateAirPowerFrends(element_type, element_target_id_target, element_equipment_id_target);
-            }
-        }
-    };
+    if (type == "equipment") {
+        exchangeEquipment(e, this);
+    } else {
+        exchangeTarget(e, this, type);
+    }
+    updateResult();
+    updateRecord(0, false)
     return false;
 }
 
 function handleDragEnd(e) {
     this.classList.remove('drag-over');
+}
+
+function exchangeEquipment(e, t) {
+    let element_type = $(t).attr("id").split("-")[2];
+    let element_target_id_target = $(t).attr("id").split("-")[3];
+    let element_equipment_id_target = $(t).attr("id").split("-")[4];
+    let element_improvement_target = $("#improvement-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
+    let element_skill_target = $("#skill-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
+    let element_target_id_source = $(drag_source).attr("id").split("-")[3];
+    let element_equipment_id_source = $(drag_source).attr("id").split("-")[4];
+    let element_improvement_source = $("#improvement-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source)
+    let element_skill_source = $("#skill-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source);
+    let ship_id_target = (element_type === "ship") ? Number($("#grade-" + element_target_id_target).val()) : null;
+    let ship_type_target = (element_type === "ship") ? data_ship_id[ship_id_target].type : null;
+    let ship_id_source = (element_type === "ship") ? Number($("#grade-" + element_target_id_source).val()) : null;
+    let ship_type_source = (element_type === "ship") ? data_ship_id[ship_id_source].type : null;
+    let equipment_type_target = (element_type === "ship" && t.innerHTML.indexOf("装備選択") == -1 && t.innerHTML.indexOf("補強増設") == -1) ? data_equipment_id_ship[record_ship[element_target_id_target][element_equipment_id_target].id].type : 0;
+    let equipment_type_source = (element_type === "ship") ? data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type : null;
+
+    if (element_type == "ship") {
+        if (!checkEquipmentTypeAvailable(element_equipment_id_target, ship_id_target, ship_type_target, equipment_type_source)) return false;
+        if (!checkEquipmentTypeAvailable(element_equipment_id_source, ship_id_source, ship_type_source, equipment_type_target)) return false;
+
+        if (t.innerHTML.indexOf("装備選択") == -1 && t.innerHTML.indexOf("補強増設") == -1) {
+            record_ship[element_target_id_source][element_equipment_id_source].id = record_ship[element_target_id_target][element_equipment_id_target].id
+            $(drag_source).attr("draggable", true).empty().html(t.innerHTML).css('visibility','visible');
+        } else {
+            let num = element_equipment_id_source % 6;
+            record_ship[element_target_id_source][element_equipment_id_source].id = 0;
+            if (data_ship_id[ship_id_source].slot != num) {
+                $(drag_source).attr("draggable", false).empty().html("&nbsp;装備選択").css('visibility','visible');
+            } else {
+                $(drag_source).attr("draggable", false).empty().html("&nbsp;補強増設").css('visibility','visible');
+            }
+        }
+        record_ship[element_target_id_target][element_equipment_id_target].id = Number(e.dataTransfer.getData("equipment_id"));
+        $(t).attr("draggable", true).empty().html(e.dataTransfer.getData('html')).css('visibility','visible');
+
+        record_ship[element_target_id_source][element_equipment_id_source].improvement = Number(element_improvement_target.val());
+        record_ship[element_target_id_target][element_equipment_id_target].improvement = Number(e.dataTransfer.getData('improvement_value'));
+        record_ship[element_target_id_source][element_equipment_id_source].skill = Number(element_skill_target.val())
+        record_ship[element_target_id_source][element_equipment_id_target].skill = Number(e.dataTransfer.getData('skill_value'))
+
+        toggleEnabledSelection(element_improvement_source, element_improvement_target.is(":disabled"), element_improvement_target.val())
+        toggleEnabledSelection(element_improvement_target, parseStrToBoolean(e.dataTransfer.getData('improvement_able')), e.dataTransfer.getData('improvement_value'));
+        toggleEnabledSelection(element_skill_source, element_skill_target.is(":disabled"), element_skill_target.val())
+        toggleEnabledSelection(element_skill_target, parseStrToBoolean(e.dataTransfer.getData('skill_able')), e.dataTransfer.getData('skill_value'));
+        updateAirPowerFrends(element_type, element_target_id_source, element_equipment_id_source);
+        updateAirPowerFrends(element_type, element_target_id_target, element_equipment_id_target);
+
+    } else {
+        drag_source.innerHTML = t.innerHTML;
+        t.innerHTML = e.dataTransfer.getData('html');
+        if (t.innerHTML.indexOf("装備選択") != -1) {
+            $(drag_source).attr("draggable", true);
+        } else {
+            $(drag_source).attr("draggable", false);
+        }
+        $(t).attr("draggable", true);
+        record_base[element_target_id_source][element_equipment_id_source].id = record_base[element_target_id_target][element_equipment_id_target].id
+        record_base[element_target_id_target][element_equipment_id_target].id = Number(e.dataTransfer.getData("equipment_id"));
+        record_base[element_target_id_source][element_equipment_id_source].improvement = Number(element_improvement_target.val());
+        record_base[element_target_id_target][element_equipment_id_target].improvement = Number(e.dataTransfer.getData('improvement_value'));
+        record_base[element_target_id_source][element_equipment_id_source].skill = Number(element_skill_target.val())
+        record_base[element_target_id_target][element_equipment_id_target].skill = Number(e.dataTransfer.getData('skill_value'))
+        toggleEnabledSelection(element_improvement_source, element_improvement_target.is(":disabled"), element_improvement_target.val())
+        toggleEnabledSelection(element_improvement_target, parseStrToBoolean(e.dataTransfer.getData('improvement_able')), e.dataTransfer.getData('improvement_value'));
+        toggleEnabledSelection(element_skill_source, element_skill_target.is(":disabled"), element_skill_target.val())
+        toggleEnabledSelection(element_skill_target, parseStrToBoolean(e.dataTransfer.getData('skill_able')), e.dataTransfer.getData('skill_value'));
+        updateCombatRadius(element_target_id_source, element_equipment_id_source, record_base[element_target_id_source][element_equipment_id_source].id);
+        updateCombatRadius(element_target_id_target, element_equipment_id_target, record_base[element_target_id_target][element_equipment_id_target].id);
+        updateAirPowerFrends(element_type, element_target_id_source, element_equipment_id_source);
+        updateAirPowerFrends(element_type, element_target_id_target, element_equipment_id_target);
+    }
+}
+
+function exchangeTarget(e, t, type) {
+    let element_target_id_target = Number($(t).attr("id").split("-")[2]);
+    let element_target_id_source = Number($(drag_source).attr("id").split("-")[2]);
+    let item = (type === "ship") ? 6 : 4;
+    let element_grade_target = (type === "ship") ? $("#grade-" + element_target_id_target) : null;
+    let element_grade_source = (type === "ship") ? $("#grade-" + element_target_id_source) : null;
+    let record_source = (type === "ship") ? record_ship[element_target_id_source] : record_base[element_target_id_source];
+    let record_target = (type === "ship") ? record_ship[element_target_id_target] : record_base[element_target_id_target];
+
+    if (type == "base") {
+        record_base[element_target_id_source] = record_target;
+        record_base[element_target_id_target] = record_source;
+    } else {
+        record_ship[element_target_id_source] = record_target;
+        record_ship[element_target_id_target] = record_source;
+        drag_source.innerHTML = (t.innerHTML.indexOf('艦娘') == -1) ? t.innerHTML : "艦娘" + (element_target_id_source + 1);
+        t.innerHTML = (e.dataTransfer.getData('html').indexOf('艦娘') == -1) ? e.dataTransfer.getData('html') : "艦娘" + (element_target_id_target + 1);
+
+        if (t.innerHTML.indexOf('艦娘') == -1) {
+            toggleEnabledSelection(element_grade_source, false, element_grade_target.val(), element_grade_target.html())
+        } else {
+            toggleEnabledSelection(element_grade_source, true, 0, $("<option value='0'>-</option>"))
+        }
+        if (e.dataTransfer.getData('html').indexOf('艦娘') == -1) {
+            toggleEnabledSelection(element_grade_target, false, e.dataTransfer.getData('grade_value'), e.dataTransfer.getData('grade_option'));
+        } else {
+            toggleEnabledSelection(element_grade_target, true, 0, $("<option value='0'>-</option>"))
+        }
+    }
+
+    for (let i=0; i<item; i++) {
+        let element_equipment_id_target = element_target_id_target*item + i;
+        let element_equipment_target = $("#equipment-name-" + type + "-" + element_target_id_target + "-" + i);
+        let element_improvement_target = $("#improvement-" + type + "-" + element_target_id_target + "-" + i);
+        let element_skill_target = $("#skill-" + type + "-" + element_target_id_target + "-" + i);
+        let element_space_target = $("#space-" + type + "-" + element_target_id_target + "-" + i);
+        let element_equipment_id_source = element_target_id_source*item + i;
+        let element_equipment_source = $("#equipment-name-" + type + "-" + element_target_id_source + "-" + i);
+        let element_improvement_source = $("#improvement-" + type + "-" + element_target_id_source + "-" + i)
+        let element_skill_source = $("#skill-" + type + "-" + element_target_id_source + "-" + i);
+        let element_space_source = $("#space-" + type + "-" + element_target_id_source + "-" + i);
+
+        if (type == "base") {
+            if (element_equipment_target.html().indexOf("装備選択") == -1) {
+                element_equipment_source.attr("draggable", true).empty().html(element_equipment_target.html());
+            } else {
+                element_equipment_source.attr("draggable", false).empty().html(element_equipment_target.html());
+            }
+            if (e.dataTransfer.getData('equipment_html_' + i).indexOf("装備選択") == -1) {
+                element_equipment_target.attr("draggable", true).empty().html(e.dataTransfer.getData('equipment_html_' + i));
+            } else {
+                element_equipment_target.attr("draggable", false).empty().html(e.dataTransfer.getData('equipment_html_' + i));
+            }
+            toggleEnabledSelection(element_space_source, element_space_target.is(":disabled"), element_space_target.val())
+            toggleEnabledSelection(element_space_target, parseStrToBoolean(e.dataTransfer.getData('space_able_' + i)), e.dataTransfer.getData('space_value_' + i))
+            updateCombatRadius(element_target_id_source, i, record_base[element_target_id_source][i].id);
+            updateCombatRadius(element_target_id_target, i, record_base[element_target_id_target][i].id);
+        } else {
+            if (element_equipment_target.html().length == 0) {
+                element_equipment_source.attr("draggable", false).empty().css('visibility','hidden');
+            } else if (element_equipment_target.html().indexOf("装備選択") == -1 && element_equipment_target.html().indexOf("補強増設") == -1) {
+                element_equipment_source.attr("draggable", true).empty().html(element_equipment_target.html()).css('visibility','visible');
+            } else {
+                if (data_ship_id[element_grade_source.val()].slot != i) {
+                    element_equipment_source.attr("draggable", false).empty().html("&nbsp;装備選択").css('visibility','visible');
+                } else {
+                    element_equipment_source.attr("draggable", false).empty().html("&nbsp;補強増設").css('visibility','visible');
+                }
+            }
+            if (e.dataTransfer.getData('equipment_html_' + i).length == 0) {
+                element_equipment_target.attr("draggable", false).empty().css('visibility','hidden');
+            } else if (e.dataTransfer.getData('equipment_html_' + i).indexOf("装備選択") == -1 && e.dataTransfer.getData('equipment_html_' + i).indexOf("補強増設") == -1) {
+                element_equipment_target.attr("draggable", true).empty().html(e.dataTransfer.getData('equipment_html_' + i)).css('visibility','visible');
+            } else {
+                if (data_ship_id[element_grade_target.val()].slot != i) {
+                    element_equipment_target.attr("draggable", false).empty().html("&nbsp;装備選択").css('visibility','visible');
+                } else {
+                    element_equipment_target.attr("draggable", false).empty().html("&nbsp;補強増設").css('visibility','visible');
+                }
+            }
+            toggleEnabledSelection(element_space_source, element_space_target.is(":disabled"), element_space_target.val(), element_space_target.html())
+            toggleEnabledSelection(element_space_target, parseStrToBoolean(e.dataTransfer.getData('space_able_' + i)), e.dataTransfer.getData('space_value_' + i), e.dataTransfer.getData('space_option_' + i))
+        }
+
+        toggleEnabledSelection(element_improvement_source, element_improvement_target.is(":disabled"), element_improvement_target.val())
+        toggleEnabledSelection(element_improvement_target, parseStrToBoolean(e.dataTransfer.getData('improvement_able_' + i)), e.dataTransfer.getData('improvement_value_' + i));
+        toggleEnabledSelection(element_skill_source, element_skill_target.is(":disabled"), element_skill_target.val())
+        toggleEnabledSelection(element_skill_target, parseStrToBoolean(e.dataTransfer.getData('skill_able_' + i)), e.dataTransfer.getData('skill_value_' + i));
+        updateAirPowerFrends(type, element_target_id_source, i);
+        updateAirPowerFrends(type, element_target_id_target, i);
+    }
 }

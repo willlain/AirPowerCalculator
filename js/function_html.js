@@ -94,7 +94,7 @@ function setFleet(type, fleet, line, item) {
             html += "</div>"        // equipmentの上部
             html += "<div class='bottom'>"  // equipmentの下部
             if (type == "base") {
-                html += "<div class='equipment-name-" + type + "' id='equipment-name-" + type + "-" + i + "-" + j + "'> 装備選択" + "</div>" // equipmentの下部左部
+                html += "<div class='equipment-name-" + type + "' id='equipment-name-" + type + "-" + i + "-" + j + "'>&nbsp;装備選択" + "</div>" // equipmentの下部左部
                 html += "<select class='space-" + type + " selectpicker' id='space-" + type + "-" + i + "-" + j + "'>"
                 for (k=18; k>=0; k--) {
                     html += "<option value='" + k + "'>" + k + "</option>"
@@ -110,10 +110,10 @@ function setFleet(type, fleet, line, item) {
 
             if (type == "ship") {
                 if (j==3) {
-                    html += "<div class='equipment-toggle' id='next-" + i + "'><div class='next-icon'> 》</div><div class='next-text'>next</div></div>"  // nextアイコン
+                html += "<div class='equipment-toggle' id='next-" + i + "'><img src='img/next.png' width='25' heigth='25'></div>"  // nextアイコン
                     html += "</div>"
                 } else if (j==5) {
-                    html += "<div class='equipment-toggle' id='prev-" + i + "'><div class='prev-icon'>《 </div><div class='prev-text'>&nbsp;prev</div></div>"  // prevアイコン
+                    html += "<div class='equipment-toggle' id='prev-" + i + "'><img src='img/prev.png' width='25' heigth='25'></div>"  // nextアイコン
                     html += "</div>"
                 }
             }
@@ -198,29 +198,20 @@ function displayMap() {
 function displayResultOption() {
     let html = "";
     let label_list = ["有効無効（＋撃墜率） 第一航空隊 1波 "," 2波","第二航空隊 1波 "," 2波","第三航空隊 1波 "," 2波"]
-    // let text_list = ["無効","20%","50%"];
     for (let i=0; i<6; i++) {
-        html += "<div class='form-check form-check-inline'>"
         if (i%2 == 0) {
+            html += "<div class='form-check form-check-inline' style='width:100%'>"
             html += "<label class='activate-base-label'>" + label_list[i] + "</label>";
         } else {
             html += "<label class='form-check-label'>" + label_list[i] + "</label>";
         }
-        // for (let j=0; j<3; j++) {
-        //     if (j==0) {
-        //         html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='" + j + "' checked>" + text_list[j] + "</label>"
-        //     } else {
-        //         html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='" + j + "'>" + text_list[j] + "</label>"
-        //     }
-        // }
-        // html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='0' checked>無効</label>"
-        // html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='activate-base-" + i + "' value='1'><input type='number' class='downRate form-control' id='downRate-" + i + "' value='0' onpaste='return false' oncontextmenu='return false'>%</label>"
+
         html += "<label class='form-check-label'><select class='downRate selectpicker' id='downRate-" + i + "'>"
         for (let j=0; j<=10; j++) {
             html += "<option value='" + j*10 + "'>" + j*10 + "</option>"
         }
         html += "</select>%</label>"
-        html += "</div>"
+        if (i%2 === 1) html += "</div>";
     }
     document.write(html);
 }
@@ -477,7 +468,7 @@ function displayListShip() {
                 html_info += "</td>";
                 html_info += "</tr>";
                 html_info += "</table>"
-                html_info += "<p class='info-img'><img src='img/ship/body/" + id_list[j] + ".png' /></p>"
+                html_info += "<p class='info-img'><img src='img/ship/body/" + id_list[j] + ".png' height='430'/></p>"
                 html_info += "</div>";
             }
             html_content += "</div>";   // 一覧リスト
@@ -591,7 +582,7 @@ function displayListShip() {
                     html_info += "</td>";
                     html_info += "</tr>";
                     html_info += "</table>"
-                    html_info += "<p class='info-img'><img src='img/ship/body/" + id_list[j][k] + ".png' /></p>"
+                    html_info += "<p class='info-img'><img src='img/ship/body/" + id_list[j][k] + ".png' height='430'/></p>"
                     html_info += "</div>";
 
                 }
@@ -611,4 +602,28 @@ function displayListShip() {
 
     html += html_info;
     return html;
+}
+
+function displayResultAirPowerInfo() {
+    let html = "";
+    let top = ["10px", "32px", "54px", "76px", "98px", "120px", "140px"];
+    let left = ["55px", "100px", "145px", "220px", "260px", "430px", "470px"];
+    for (let i=0; i<7; i++) {
+        for (let j=0; j<7; j++) {
+            switch (j) {
+                case 0:
+                case 1:
+                case 3:
+                case 5:
+                    html += "<div class='result-airPower-right' id='result-airPower-" + i + "-" + j + "' style='top:" + top[i] + "; left:" + left[j] + "'></div>"
+                    break;
+                case 2:
+                case 4:
+                case 6:
+                    html += "<div class='result-airPower-left' id='result-airPower-" + i + "-" + j + "' style='top:" + top[i] + "; left:" + left[j] + "'></div>"
+                    break;
+            }
+        }
+    }
+    document.write(html);
 }

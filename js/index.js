@@ -4,6 +4,7 @@ var record_target = "";
 var chart = null;
 var record_base = {}
 var record_ship = {}
+var record_option = {}
 const aircraft_type_id = [7,8,9,10,11,45,47,48,57];
 const tab_type_ship = [[2],3,4,5,6,[8,9],10,7,11,18,16,[1,13,14,21,17,19,20,22]];
 const tab_type_equipment = [[1,16,2,3],[4,20],[5,32,22],[12,13,51],[14,15,40,25,26],[18,19,37],[24,46,30,50],[10,11,45,41],[6,52,7,8,53,9,56,57],[17,21,27,28],[29,42,33,39],[47,54,48,49],[23,31,34,35,36,43,44]];
@@ -79,6 +80,33 @@ var p11 = Promise.all([p9]).then(function () {
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $("#map-cell").siblings('button').prop('disabled', true);
+
+    /**
+     * ==========================================================
+     * MAP画面関係
+     * ==========================================================
+     */
+    $("#map-area").on('changed.bs.select', function(){
+        changeArea($(this).val(), true);
+        updateResult();
+        updateRecord(0, false)
+    });
+    $('input[name="difficulty"]:radio').change(function() {
+        changeDiffculty($("[name=difficulty]:checked").val(), true);
+        updateResult();
+        updateRecord(0, false)
+    });
+    $("#map-cell").on('changed.bs.select', function(){
+        changeCell($(this).val(), true);
+        updateResult();
+        updateRecord(0, false)
+    });
+    $('input[name="enemy-fleet-step"]:radio').change(function() {
+        changeStep($("[name=enemy-fleet-step]:checked").val(), true);
+        updateResult();
+        updateRecord(0, false)
+    });
+
 })
 Promise.all([p10,p11]).then(function() {
     expandRecord(0);
@@ -266,24 +294,47 @@ $(function () {
     });
     $(".grade select").on('changed.bs.select', function(){
         setShipItem($(this).val(), $(this).attr("id").split('-')[1]);
+        updateResult();
+        updateRecord(0, false)
     });
     $(".space select").on('changed.bs.select', function(){
-        var element_target_type = $(this).attr("id").split("-")[1];
-        var element_target_id = $(this).attr("id").split("-")[2];
-        var element_equipment_id = $(this).attr("id").split("-")[3];
+        let element_target_type = $(this).attr("id").split("-")[1];
+        let element_target_id = $(this).attr("id").split("-")[2];
+        let element_equipment_id = $(this).attr("id").split("-")[3];
         updateAirPowerFrends(element_target_type, element_target_id, element_equipment_id)
+        if (element_target_type === "base") {
+            record_base[element_target_id][element_equipment_id].space = Number($("#space-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
+        } else {
+            record_ship[element_target_id][element_equipment_id].space = Number($("#space-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
+        }
+        updateResult();
+        updateRecord(0, false)
     });
     $(".improvement select").on('changed.bs.select', function(){
-        var element_target_type = $(this).attr("id").split("-")[1];
-        var element_target_id = $(this).attr("id").split("-")[2];
-        var element_equipment_id = $(this).attr("id").split("-")[3];
+        let element_target_type = $(this).attr("id").split("-")[1];
+        let element_target_id = $(this).attr("id").split("-")[2];
+        let element_equipment_id = $(this).attr("id").split("-")[3];
         updateAirPowerFrends(element_target_type, element_target_id, element_equipment_id)
+        if (element_target_type === "base") {
+            record_base[element_target_id][element_equipment_id].improvement = Number($("#improvement-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
+        } else {
+            record_ship[element_target_id][element_equipment_id].improvement = Number($("#improvement-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
+        }
+        updateResult();
+        updateRecord(0, false)
     });
     $(".skill select").on('changed.bs.select', function(){
-        var element_target_type = $(this).attr("id").split("-")[1];
-        var element_target_id = $(this).attr("id").split("-")[2];
-        var element_equipment_id = $(this).attr("id").split("-")[3];
+        let element_target_type = $(this).attr("id").split("-")[1];
+        let element_target_id = $(this).attr("id").split("-")[2];
+        let element_equipment_id = $(this).attr("id").split("-")[3];
         updateAirPowerFrends(element_target_type, element_target_id, element_equipment_id)
+        if (element_target_type === "base") {
+            record_base[element_target_id][element_equipment_id].skill = Number($("#skill-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
+        } else {
+            record_ship[element_target_id][element_equipment_id].skill = Number($("#skill-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
+        }
+        updateResult();
+        updateRecord(0, false)
     });
     $("#reset-base").on("click", function() {
         openMessageDialog("reset-base", "基地航空隊をリセットしますか？")
@@ -295,18 +346,16 @@ $(function () {
         toggleDisplayEquipment($(this).attr('id').split("-")[0], Number($(this).attr('id').split("-")[1]))
     });
     $(".checkbox").change(function() {
-        var type = $(this).attr("id").split("-")[2]
-        var id = $(this).attr("id").split("-")[3]
-        var line = (type == "base") ? 3 : 19;
-        var item = (type == "base") ? 4 : 6;
-        for (var i=0; i<line; i++) {
-            for (var j=0; j<item; j++) {
-                if ($("#equipment-name-" + type + "-" + i + "-" + j).children().length == 0) {
-                    continue;
-                }
-                var element_skill = $("#skill-" + type + "-" + i + "-" + j);
-                var equipment_type = data_equipment_id_ship[record_ship[i][j].id].type;
-                // var equipment_type = Number($("#equipment-name-" + type + "-" + i + "-" + j).children("img").attr("src").split("/")[3].split(".")[0]);
+        let type = $(this).attr("id").split("-")[2]
+        let id = $(this).attr("id").split("-")[3]
+        let line = (type == "base") ? 3 : 19;
+        let item = (type == "base") ? 4 : 6;
+        for (let i=0; i<line; i++) {
+            for (let j=0; j<item; j++) {
+                if ($("#equipment-name-" + type + "-" + i + "-" + j).children().length == 0) continue;
+
+                let element_skill = $("#skill-" + type + "-" + i + "-" + j);
+                let equipment_type = data_equipment_id_ship[record_ship[i][j].id].type;
 
                 if (id == 0) {
                     switch (equipment_type) {
@@ -320,6 +369,13 @@ $(function () {
                             } else {
                                 element_skill.val(0).selectpicker('refresh');
                             }
+                            updateAirPowerFrends(type, i, j)
+                            if (type === "base") {
+                                record_base[i][j].skill = Number($("#skill-" + type + "-" + i + "-" + j).val());
+                            } else {
+                                record_ship[i][j].skill = Number($("#skill-" + type + "-" + i + "-" + j).val());
+                            }
+                            break;
                         default:
                     }
                 } else {
@@ -336,14 +392,23 @@ $(function () {
                             } else {
                                 element_skill.val(0).selectpicker('refresh');
                             }
+                            updateAirPowerFrends(type, i, j)
+                            if (type === "base") {
+                                record_base[i][j].skill = Number($("#skill-" + type + "-" + i + "-" + j).val());
+                            } else {
+                                record_ship[i][j].skill = Number($("#skill-" + type + "-" + i + "-" + j).val());
+                            }
+                            break;
                         default:
                     }
                 }
             }
         }
+        updateResult();
+        updateRecord(0, false)
     });
     $("h1 > button").on("click", function() {
-        var content = $("#" + $(this).attr("id").split("-")[3] + "-content");
+        let content = $("#" + $(this).attr("id").split("-")[3] + "-content");
         content.toggle();
         if (content.css("display") == "none") {
             $(this).empty().text("▽")
@@ -353,50 +418,25 @@ $(function () {
         footerFixed();
     })
     $("[name=fleet]").change(function() {
-        var tab = $("#tab-fleet")
-        switch (Number($(this).val())) {
-            case 0:
-                tab.tabs("option","disabled",[1,2]);
-                tab.tabs("option","active",0);
-                break;
-            case 1:
-                tab.tabs("option","disabled",[2]);
-                tab.tabs("option","active",0);
-                break;
-            case 2:
-                tab.tabs("option","disabled",[0,1]);
-                tab.tabs("option","active",2);
-                break;
-            default:
-        }
-        footerFixed();
+        changeFleet(Number($(this).val()));
+        record_option.fleet = Number($(this).val())
+        updateResult();
+        updateRecord(0, false)
     })
     $('input[class*="airpower"]').each(function(){
         $(this).keypress(function(e){
-            var str = $(this).val()
-            var pattern = new RegExp("[^0-9]")
+            let str = $(this).val()
+            let pattern = new RegExp("[^0-9]")
             if (str.length >= 3 || pattern.test(e.key) || (str == 0 && e.key == 0)) {
                 e.preventDefault();
             }
         })
         $(this).keyup(function(e){
-            var str = $(this).val()
+            let str = $(this).val()
             $(this).val(Number(str));
             // var pattern = new RegExp("[^0-9]")
             // $(element).val(Number(str.replace(pattern, "")));
-        })
-    });
-    $('input[class*="downRate"]').each(function(){
-        $(this).keypress(function(e){
-            var str = $(this).val()
-            var pattern = new RegExp("[^0-9]")
-            if (Number(str) > 10 || (Number(str) == 10 && e.key != 0) || pattern.test(e.key) || (str == 0 && e.key == 0)) {
-                e.preventDefault();
-            }
-        })
-        $(this).keyup(function(e){
-            var str = $(this).val()
-            $(this).val(Number(str));
+            updateResult();
         })
     });
     $(".base-name").each(function(){
@@ -414,28 +454,16 @@ $(function () {
 
     /**
      * ==========================================================
-     * MAP画面関係
-     * ==========================================================
-     */
-    $("#map-area").on('changed.bs.select', function(){
-        changeArea($(this).val());
-    });
-    $('input[name="difficulty"]:radio').change(function() {
-        changeDiffculty($("[name=difficulty]:checked").val());
-    });
-    $("#map-cell").on('changed.bs.select', function(){
-        changeCell($(this).val());
-        simulatePhase();
-    });
-    $('input[name="enemy-fleet-step"]:radio').change(function() {
-        changeStep($("[name=enemy-fleet-step]:checked").val());
-    });
-
-    /**
-     * ==========================================================
      * 結果画面関係
      * ==========================================================
      */
+     $(".downRate select").on('changed.bs.select', function(){
+         let id = Number($(this).attr("id").split("-")[1])
+         record_option.downRate[id] = Number($(this).val())
+         updateResult();
+         updateRecord(0, false)
+     });
+
     chart = Highcharts.chart('myChart', {
         chart: {
             type: 'bar'
@@ -517,7 +545,7 @@ $(function () {
         series:[{
             name: 'test',
             type: 'column',
-            data: [2,3.5,0,0,0,0,0]
+            data: [0,0,0,0,0,0,0]
         }, {
             name: 'test2',
             type: 'errorbar',

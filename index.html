@@ -35,22 +35,23 @@
             <div style="margin-bottom:5px;">本サイトはブラウザ版艦これの計算機です。基地航空隊による敵制空値減少を推定し、制空状態を表示します。</div>
         </header>
         <article>
-            <!-- <div id="comment-history" style="float:left; margin-bottom:10px;"></div> -->
-            <!-- <div id="history" style="float:right;">
-                <div class="form-inline">
-                    <div class="form-group">
+            <!-- <div class="form-check form-check-inline">
                         <select class="form-control form-control-sm"></select>
                         <button type="button" class="btn btn-primary btn-sm">保存</button>
                         <button type="button" class="btn btn-primary btn-sm" onclick="$('#dialog-history').dialog('open')">履歴一覧</button>
                     </div>
                 </div>
             </div> -->
-            <!-- <div style="clear:both;"></div> -->
+            <!-- <section id="history">
+                <div class="form-check form-check-inline">
+
+                </div>
+            </section> -->
             <section id="base">
                 <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-base">△</button>&nbsp;基地航空隊</h1>
                 <div id="base-content">
                     <div class="option-input">
-                        <div id="radius-enemy">必要航続距離：<span id='radius-enemy-value'>0</div>
+                        <div id="radius-enemy">必要航続距離：<span id='radius-enemy-value'>0</span></div>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label">熟練度</label>
                             <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-base-0" checked>戦闘機</label>
@@ -90,16 +91,18 @@
             </section>
             <section id="map">
                 <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-map">△</button>&nbsp;海域</h1>
-                <div id="map-content">
-                    <!-- <script type="text/javascript">displayMap()</script> -->
-                </div>
+                <div id="map-content"></div>
             </section>
-            <section id="result">
+            <section id="result" style="padding-bottom:10px">
                 <h1>計算結果</h1>
                 <script type="text/javascript">displayResultOption()</script>
-                <span id="error-message"></span>
+                <div id="error-message" style="margin-top:10px"></div>
                 <div id="result-content">
-                    <div id="myChart"></div>
+                    <div id="chart-content">
+                        <div id="myChart"></div>
+                        <script type="text/javascript">displayResultAirPowerInfo()</script>
+                        <!-- <div class="result-airPower">+100</div> -->
+                    </div>
                     <table id="result-info">
                         <tr>
                             <th class="column-phase">phase</th><th class="column-airpower">艦娘制空</th><th class="column-airpower">深海制空</th><th class="column-status">制空状態</th><th>確率（実装予定）</th>

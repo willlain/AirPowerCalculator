@@ -196,7 +196,13 @@ div.ship div.ship-name, div.base div.base-name {
     -webkit-align-items: center;
     align-items: center;
     cursor: pointer;
+    -webkit-transition: all .3s;
+    transition: all .3s;
 }
+div.ship div.ship-name:hover, div.base div.base-name:hover {
+    background-color: #E0FFFF;
+}
+
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
@@ -287,7 +293,13 @@ div.equipment div.equipment-name-base, div.equipment div.equipment-name-ship {
     -webkit-align-items: center;
     align-items: center;
     cursor: pointer;
+    -webkit-transition: all .3s;
+    transition: all .3s;
 }
+div.equipment div.equipment-name-base:hover, div.equipment div.equipment-name-ship:hover {
+    background-color: #E0FFFF;
+}
+
 div.equipment div.equipment-name-ship {
     visibility: hidden;
 }
@@ -334,30 +346,18 @@ div.equipment-toggle {
     width: 40px;
     height: 60px;
     cursor: pointer;
-}
-div.next-icon, div.prev-icon {
-    width: 40px;
-    height: 35px;
-    font-size: 20px;
-    font-weight: 700;
     display: -webkit-flex;
     display: flex;
     -webkit-justify-content: center;
     justify-content: center;
-    -webkit-align-items: flex-end;
-    align-items: flex-end;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-transition: all .3s;
+    transition: all .3s;
 }
-div.next-text, div.prev-text {
-    width: 40px;
-    height: 25px;
-    font-size: 15px;
-    font-weight: 700;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-justify-content: center;
-    justify-content: center;
-    -webkit-align-items: flex-start;
-    align-items: flex-start;
+
+div.equipment-toggle:hover {
+    background-color: #E0FFFF;
 }
 
 /* ###############################
@@ -460,6 +460,11 @@ div#result-content {
     -webkit-justify-content: flex-start;
     justify-content: flex-start;
 }
+div#chart-content {
+    width: 550px;
+    height: 300px;
+    position: relative;
+}
 div#myChart {
      width: 550px;
      height: 200px;
@@ -492,6 +497,16 @@ table#result-info tr td {
     height: 20px;
     margin-left: auto;
     margin-right: auto;
+}
+div.result-airPower-right {
+    position: absolute;
+    text-align: right;
+    width: 35px
+}
+div.result-airPower-left {
+    position: absolute;
+    text-align: left;
+    width: 35px
 }
 
 /* ###############################

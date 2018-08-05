@@ -106,15 +106,16 @@ function expandRecord(num) {
         record_base = JSON.parse(localStorage.getItem("record"))[num].base;
         record_ship = JSON.parse(localStorage.getItem("record"))[num].ship;
         record_map = JSON.parse(localStorage.getItem("record"))[num].map;
-        Object.keys(record[num].base).forEach(function(key){
+        record_option = (JSON.parse(localStorage.getItem("record"))[num].option) ? JSON.parse(localStorage.getItem("record"))[num].option : {"skill_ship": [0,0], "skill_base": [0,0], "fleet": 0, "downRate": [0,0,0,0,0,0]};
+        Object.keys(record_base).forEach(function(key){
             Object.keys(this[key]).forEach(function(key2){
                 if (this[key2].id != 0) {
                     setEquipmentItem("base", key, key2, data_equipment_id_ship[this[key2].id].type, this[key2].id, this[key2].improvement, this[key2].skill)
                     $("#space-base-" + key + "-" + key2).val(this[key2].space).selectpicker('refresh');
                 }
-            }, record[num].base[key])
-        }, record[num].base);
-        Object.keys(record[num].ship).forEach(function(key){
+            }, record_base[key])
+        }, record_base);
+        Object.keys(record_ship).forEach(function(key){
             if (this[key].id != 0) {
                 setShipItem(this[key].id, key, 1);
             }
@@ -123,15 +124,49 @@ function expandRecord(num) {
                     setEquipmentItem("ship", key, key2, data_equipment_id_ship[this[key2].id].type, this[key2].id, this[key2].improvement, this[key2].skill)
                     $("#space-ship-" + key + "-" + key2).val(this[key2].space).selectpicker('refresh');
                 }
-            }, record[num].ship[key])
-        }, record[num].ship);
-        Object.keys(record[num].map).forEach(function(key){
-
-        }, record[num].map);
+            }, record_ship[key])
+        }, record_ship);
+        if (record_map.area != 0) {
+            $("#map-area").val(record_map.area).selectpicker('refresh');
+            changeArea(record_map.area, false);
+        }
+        if (record_map.cell != 0) {
+            $("#map-cell").val(record_map.cell).selectpicker('refresh');
+            changeCell(record_map.cell, false);
+        }
+        if (record_map.difficulty != 0) {
+            $('input[name="difficulty"]:eq(1)').prop('checked', true);
+            changeDiffculty(record_map.difficulty, false);
+        }
+        if (record_map.step != 0) {
+            $('input[name="enemy-fleet-step"]:eq(1)').prop('checked', true);
+            changeStep(record_map.step, false);
+        }
+        if (record_option["skill_base"][0] != 0) {
+            $("#skill-max-base-0").prop('checked', true);
+        }
+        if (record_option["skill_base"][1] != 0) {
+            $("#skill-max-base-0").prop('checked', true);
+        }
+        if (record_option["skill_ship"][0] != 0) {
+            $("#skill-max-base-0").prop('checked', true);
+        }
+        if (record_option["skill_ship"][1] != 0) {
+            $("#skill-max-base-0").prop('checked', true);
+        }
+        if (record_option.fleet != 0) {
+            $('input[name="fleet"]:eq(' + record[num].option["fleet"] + ')').prop('checked', true);
+            changeFleet(record_option.fleet)
+        }
+        for (let i=0; i<6; i++) {
+            if (record_option.downRate[i] == 0) continue;
+            $("#downRate-" + i).val(record_option.downRate[i]).selectpicker('refresh');
+        }
+        updateResult();
     } else {
-        for (var i=0; i<3; i++) {
+        for (let i=0; i<3; i++) {
             record_base[i] = {}
-            for (var j=0; j<4; j++) {
+            for (let j=0; j<4; j++) {
                 record_base[i][j] = {
                     "id": 0,
                     "improvement": 0,
@@ -140,9 +175,9 @@ function expandRecord(num) {
                 }
             }
         }
-        for (var i=0; i<19; i++) {
+        for (let i=0; i<19; i++) {
             record_ship[i] = {"id":0}
-            for (var j=0; j<6; j++) {
+            for (let j=0; j<6; j++) {
                 record_ship[i][j] = {
                     "id": 0,
                     "improvement": 0,
@@ -152,11 +187,17 @@ function expandRecord(num) {
             }
         }
         record_map = {
-            "map": 0,
+            "area": 0,
             "difficulty": 0,
             "cell": 0,
             "step": 0,
             "fleet": [0,0,0,0,0,0,0,0,0,0,0,0]
+        }
+        record_option = {
+            "skill_ship": [0,0],
+            "skill_base": [0,0],
+            "fleet": 0,
+            "downRate": [0,0,0,0,0,0]
         }
     }
 }
@@ -177,10 +218,10 @@ function updateRecord(num, del_flag) {
                 "name": name,
                 "base": record_base,
                 "ship": record_ship,
-                "map": record_map
+                "map": record_map,
+                "option": record_option
             }
         }
-
         localStorage.removeItem("record");
         localStorage.setItem("record", JSON.stringify(record));
     }
@@ -223,6 +264,7 @@ function selectItem(type) {
         });
         $("#dialog-select-ship").dialog('close');
     }
+    updateResult();
     updateRecord(0, false)
 }
 
@@ -234,55 +276,53 @@ function selectItem(type) {
  * @param  {int}    element_equipment_id [装備番号、ただし、艦娘または基地航空隊全体の選択時は指定されない]
  */
 function removeItem(type, element_target_id, element_equipment_id) {
-    let element_equipment, element_skill, element_improvement, ship_id, slot;
+    let element_equipment, element_skill, element_improvement, element_space, ship_id, slot;
     if (element_equipment_id !== undefined) {
         element_equipment = $("#equipment-name-" + type + "-" + element_target_id + "-" + element_equipment_id);
         element_skill = $("#skill-" + type + "-" + element_target_id + "-" + element_equipment_id);
         element_improvement = $("#improvement-" + type + "-" + element_target_id + "-" + element_equipment_id);
         if (type == "ship") {
-            var ship_id = Number($("#grade-" + element_target_id).val())
-            var slot = data_ship_id[ship_id].slot
+            ship_id = Number($("#grade-" + element_target_id).val())
+            slot = data_ship_id[ship_id].slot
             record_ship[element_target_id][element_equipment_id].id = 0;
             record_ship[element_target_id][element_equipment_id].improvement = 0;
             record_ship[element_target_id][element_equipment_id].skill = 0;
             if (element_equipment_id == slot) {
-                element_equipment.attr("draggable", false).empty().html(" 補強増設");
+                element_equipment.attr("draggable", false).empty().html("&nbsp;補強増設");
             } else {
-                element_equipment.attr("draggable", false).empty().html(" 装備選択");
+                element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択");
             }
         } else {
             record_base[element_target_id][element_equipment_id].id = 0;
             record_base[element_target_id][element_equipment_id].improvement = 0;
             record_base[element_target_id][element_equipment_id].skill = 0;
-            element_equipment.attr("draggable", false).empty().html(" 装備選択");
+            element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択");
             updateCombatRadius(element_target_id, element_equipment_id, 0)
         }
         toggleEnabledSelection(element_improvement, true, 0);
         toggleEnabledSelection(element_skill, true, 0);
         updateAirPowerFrends(type, element_target_id, element_equipment_id)
     } else {
-        if (type == "base") {
-            var num = 4;
-        } else {
-            var num = 6;
-            var element_ship = $("#ship-name-" + element_target_id);
-            var element_grade = $("#grade-" + element_target_id);
+        let num = (type === "ship") ? 6 : 4;
+        let element_ship = (type === "ship") ? $("#ship-name-" + element_target_id) : null;
+        let element_grade = (type === "ship") ? $("#grade-" + element_target_id) : null;
+        if (type === "ship") {
             toggleEnabledSelection(element_grade, true, 0, $('<option>').val(0).text("-"))
             record_ship[element_target_id].id = 0;
             element_ship.empty().text("艦娘" + (Number(element_target_id)+1))
         }
-        for (var i=0; i<num; i++) {
-            var element_equipment = $("#equipment-name-" + type + "-" + element_target_id + "-" + i);
-            var element_skill = $("#skill-" + type + "-" + element_target_id + "-" + i);
-            var element_improvement = $("#improvement-" + type + "-" + element_target_id + "-" + i);
-            var element_space = $("#space-" + type + "-" + element_target_id + "-" + i);
+        for (let i=0; i<num; i++) {
+            element_equipment = $("#equipment-name-" + type + "-" + element_target_id + "-" + i);
+            element_skill = $("#skill-" + type + "-" + element_target_id + "-" + i);
+            element_improvement = $("#improvement-" + type + "-" + element_target_id + "-" + i);
+            element_space = $("#space-" + type + "-" + element_target_id + "-" + i);
             if (type == "base") {
                 record_base[element_target_id][i].id = 0;
                 record_base[element_target_id][i].improvement = 0;
                 record_base[element_target_id][i].skill = 0;
                 record_base[element_target_id][i].space = 18;
                 element_space.val(18).selectpicker('refresh');
-                element_equipment.attr("draggable", false).empty().html(" 装備選択");
+                element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択");
                 updateCombatRadius(element_target_id, element_equipment_id, 0)
             } else {
                 record_ship[element_target_id][i].id = 0;
@@ -297,6 +337,7 @@ function removeItem(type, element_target_id, element_equipment_id) {
             updateAirPowerFrends(type, element_target_id, i)
         }
     }
+    updateResult();
     updateRecord(0, false)
 }
 
@@ -321,7 +362,7 @@ function initEquipmentCell(ship_id, element_target_id) {
 
         if (i < data_ship_id[ship_id].slot) {
             var html = "";
-            element_equipment.attr("draggable", false).empty().html(" 装備選択").css('visibility','visible');
+            element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択").css('visibility','visible');
             for (var j=data_ship_id[ship_id].space[i]; j>=0; j--) {
                 html += "<option value='" + j + "'>" + j + "</option>"
             }
@@ -329,7 +370,7 @@ function initEquipmentCell(ship_id, element_target_id) {
             toggleEnabledSelection(element_space, false, data_ship_id[ship_id].space[i], $(html))
         } else if (i == data_ship_id[ship_id].slot) {
             var html = "";
-            element_equipment.attr("draggable", false).empty().html(" 補強増設").css('visibility','visible');
+            element_equipment.attr("draggable", false).empty().html("&nbsp;補強増設").css('visibility','visible');
             toggleEnabledSelection(element_space, true, 0, $('<option>').val(0).text(0))
         } else {
             element_equipment.attr("draggable", false).empty().css('visibility','hidden');
@@ -698,6 +739,26 @@ function setGradeItem(id, element_id) {
     toggleEnabledSelection(element_grade, false, id, $(html))
 }
 
+function changeFleet(fleet) {
+    let tab = $("#tab-fleet")
+    switch (fleet) {
+        case 0:
+            tab.tabs("option","disabled",[1,2]);
+            tab.tabs("option","active",0);
+            break;
+        case 1:
+            tab.tabs("option","disabled",[2]);
+            tab.tabs("option","active",0);
+            break;
+        case 2:
+            tab.tabs("option","disabled",[0,1]);
+            tab.tabs("option","active",2);
+            break;
+        default:
+    }
+    footerFixed();
+}
+
 /**
  * ==========================================================
  * MAP関係
@@ -709,18 +770,20 @@ function setGradeItem(id, element_id) {
  * マップセレクトを変更すると発火
  * @param  {string} area [海域番号(x-y)]
  */
-function changeArea(area) {
-    var html = "";
-    var map_cell = $("#map-cell");
+function changeArea(area, flag) {
+    let html = "";
+    let map_cell = $("#map-cell");
     html += "<option value='0' selected>マス</option>"
-    record_map["area"] = area;
-    record_map["cell"] = 0;
-    record_map["difficulty"] = 0;
+    if (flag) {
+        record_map["area"] = area;
+        record_map["cell"] = 0;
+        record_map["difficulty"] = 0;
+    }
 
-    clearEnemyFleet();
+    clearEnemyFleet(flag);
     if (area != 0) {
-        var difficulty = data_map[area.split("-")[0]][area.split("-")[1]]
-        var cell = difficulty[0]
+        let difficulty = data_map[area.split("-")[0]][area.split("-")[1]]
+        let cell = difficulty[0]
         $("#map-img").empty().append($("<img src='img/map/" + area + ".png' width=\"500\" height=\"320\">"));
 
         if (Object.keys(difficulty).length != 1) {
@@ -746,30 +809,26 @@ function changeArea(area) {
  * @param  {int} difficulty [難易度に対応した番号]
  * トリガー：難易度をラジオボタンで変更した際
  */
-function changeDiffculty(difficulty) {
-    var area = $("#map-area").val()
-    var cell = $("#map-cell").val()
-    record_map["difficulty"] = difficulty;
+function changeDiffculty(difficulty, flag) {
+    let area = $("#map-area").val()
+    let cell = $("#map-cell").val()
+    if (flag) record_map["difficulty"] = difficulty;
 
     if (cell != 0) {
-        var step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
+        let step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
+        let fleet = (Object.keys(step).indexOf("1") != -1) ? step[$("[name=enemy-fleet-step]:checked").val()].fleet : step[0].fleet;
+        if (flag) record_map["step"] = (Object.keys(step).indexOf("1") != -1) ? Number($("[name=enemy-fleet-step]:checked").val()) : 0;
         if (Object.keys(step).indexOf("1") != -1) {
-            var fleet = step[$("[name=enemy-fleet-step]:checked").val()].fleet;
-            record_map["step"] = Number($("[name=enemy-fleet-step]:checked").val());
             $("#enemy-fleet-step").css('display','flex');
         } else {
-            var fleet = step[0].fleet;
-            record_map["step"] = 0;
             $("[name=enemy-fleet-step]").val(["0"])
             $("#enemy-fleet-step").css('display','none');
         }
-        for (var i=0; i<12; i++) {
+        for (let i=0; i<12; i++) {
             $("#enemy-name-" + i).empty();
             $("#airpower-enemy-" + i).empty();
-            record_map["fleet"][i] = fleet[i]
-            if (fleet[i] != 0) {
-                $("#enemy-name-" + i).append($("<img src='img/enemy/banner/" + fleet[i] + ".png'>"))
-            }
+            if (flag) record_map["fleet"][i] = fleet[i]
+            if (fleet[i] != 0) $("#enemy-name-" + i).append($("<img src='img/enemy/banner/" + fleet[i] + ".png'>"))
         }
         updateAirPowerEnemy();
     }
@@ -780,35 +839,33 @@ function changeDiffculty(difficulty) {
  * マスセレクトを変更した際に発火
  * @param  {string} cell [マスのアルファベット]
  */
-function changeCell(cell) {
-    var area = $("#map-area").val()
-    var difficulty = $("[name=difficulty]:checked").val()
-    record_map["cell"] = cell;
+function changeCell(cell, flag) {
+    let area = $("#map-area").val()
+    let difficulty = $("[name=difficulty]:checked").val()
+    if (flag) record_map["cell"] = cell;
 
     if (cell != 0) {
-        var step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
+        let step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
         $("#radius-enemy-value").text(step["radius"]);
+        let fleet = (Object.keys(step).indexOf("1") != -1) ? step[$("[name=enemy-fleet-step]:checked").val()].fleet : step[0].fleet;
+        if (flag) record_map["step"] = (Object.keys(step).indexOf("1") != -1) ? Number($("[name=enemy-fleet-step]:checked").val()) : 0;
         if (Object.keys(step).indexOf("1") != -1) {
-            var fleet = step[$("[name=enemy-fleet-step]:checked").val()].fleet;
-            record_map["step"] = Number($("[name=enemy-fleet-step]:checked").val());
             $("#enemy-fleet-step").css('display','flex');
         } else {
-            var fleet = step[0].fleet;
-            record_map["step"] = 0;
             $("[name=enemy-fleet-step]").val(["0"])
             $("#enemy-fleet-step").css('display','none');
         }
         for (var i=0; i<12; i++) {
             $("#enemy-name-" + i).empty();
             $("#airpower-enemy-" + i).empty();
-            record_map["fleet"][i] = fleet[i]
+            if (flag) record_map["fleet"][i] = fleet[i]
             if (fleet[i] != 0) {
                 $("#enemy-name-" + i).append($("<img src='img/enemy/banner/" + fleet[i] + ".png'>"))
             }
         }
         updateAirPowerEnemy();
     } else {
-        clearEnemyFleet();
+        clearEnemyFleet(flag);
     }
 }
 
@@ -817,19 +874,17 @@ function changeCell(cell) {
  * ゲージ段階セレクトが変更された際に発火
  * @param  {int} step [0(前哨戦) or 1(ラスダン)]
  */
-function changeStep(step) {
-    var area = $("#map-area").val()
-    var difficulty = $("[name=difficulty]:checked").val()
-    var cell = $("#map-cell").val()
-    var fleet = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell][step].fleet;
-    record_map["step"] = step;
+function changeStep(step, flag) {
+    let area = $("#map-area").val()
+    let difficulty = $("[name=difficulty]:checked").val()
+    let cell = $("#map-cell").val()
+    let fleet = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell][step].fleet;
+    if (flag) record_map["step"] = step;
 
-    for (var i=0; i<12; i++) {
+    for (let i=0; i<12; i++) {
         $("#enemy-name-" + i).empty();
-        record_map["fleet"][i] = fleet[i];
-        if (fleet[i] != 0) {
-            $("#enemy-name-" + i).append($("<img src='img/enemy/banner/" + fleet[i] + ".png'>"))
-        }
+        if (flag) record_map["fleet"][i] = fleet[i];
+        if (fleet[i] != 0) $("#enemy-name-" + i).append($("<img src='img/enemy/banner/" + fleet[i] + ".png'>"))
     }
     updateAirPowerEnemy();
 }
@@ -837,13 +892,13 @@ function changeStep(step) {
 /**
  * [clearEnemyFleet 編成初期化、クリア]
  */
-function clearEnemyFleet() {
-    for (var i=0; i<12; i++) {
-        record_map["fleet"][i] = 0;
+function clearEnemyFleet(flag) {
+    for (let i=0; i<12; i++) {
+        if (flag) record_map["fleet"][i] = 0;
         $("#enemy-name-" + i).empty();
         $("#airpower-enemy-" + i).empty();
     }
-    record_map["step"] = 0;
+    if (flag) record_map["step"] = 0;
     $("#radius-enemy-value").text(0)
     $("[name=enemy-fleet-step]").val(["0"])
     $("#enemy-fleet-step").css('display','none');
