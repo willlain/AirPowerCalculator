@@ -31,9 +31,7 @@ function updateAirPowerFrends(element_type, element_target_id, element_equipment
             case 10:
             case 41:
             case 56:
-                if (element_type == "base") {
-                    power = getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0, 0, 0);
-                }
+                if (element_type == "base") power = getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0, 0, 0);
                 break;
             case 47:
             case 48:
@@ -51,15 +49,8 @@ function updateAirPowerFrends(element_type, element_target_id, element_equipment
     let item = (element_type == "base") ? 4 : 6;
     element_airPower_target.prop("disabled", false);
     for (let i=0; i<item; i++) {
-        if (element_type == "base") {
-            if (record_base[element_target_id][i].id != 0) {
-                element_airPower_target.prop("disabled", true);
-            }
-        } else {
-            if (record_ship[element_target_id][i].id != 0) {
-                element_airPower_target.prop("disabled", true);
-            }
-        }
+        if (element_type == "base" && record_base[element_target_id][i].id != 0) element_airPower_target.prop("disabled", true);
+        if (element_type == "ship" && record_ship[element_target_id][i].id != 0) element_airPower_target.prop("disabled", true);
         power += Number($("#airpower-" + element_type + "-" + element_target_id + "-" + i).text())
     }
     element_airPower_target.val(power);
@@ -71,9 +62,8 @@ function getAirPower(element_type, element_target_id, element_equipment_id, equi
     let element_space = $("#space-" + element_type + "-" + element_target_id + "-" + element_equipment_id)
     let anti_air = data_equipment_id_ship[equipment_id].antiAir + coefficient_improvement * Number(element_improvement.val())
 
-    if (coefficient_interception != 0) {
-        anti_air += coefficient_interception * data_equipment_id_ship[equipment_id].interception + coefficient_antiBobing * data_equipment_id_ship[equipment_id].antiBobing
-    }
+    if (coefficient_interception != 0) anti_air += coefficient_interception * data_equipment_id_ship[equipment_id].interception + coefficient_antiBobing * data_equipment_id_ship[equipment_id].antiBobing
+
     let power = anti_air * Math.sqrt(Number(element_space.val()))
     power += data_equipment_type_ship[equipment_type].skill_bonus[element_skill.val()]
     return parseInt(power);

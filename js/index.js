@@ -432,11 +432,11 @@ $(function () {
             }
         })
         $(this).keyup(function(e){
+            updateResult();
+        })
+        $(this).blue(function(e){
             let str = $(this).val()
             $(this).val(Number(str));
-            // var pattern = new RegExp("[^0-9]")
-            // $(element).val(Number(str.replace(pattern, "")));
-            updateResult();
         })
     });
     $(".base-name").each(function(){
