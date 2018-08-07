@@ -124,7 +124,7 @@ function checkEquipmentTypeAvailable(element_equipment_id, ship_id, ship_type, e
             return false;
         }
     } else if (equipment_type == 20) {
-        var result = checkEquipmentAvailableException(equipment_type, ship_id);
+        let result = checkEquipmentAvailableException(equipment_type, ship_id);
         if (result.length != 0) {
             return true;
         } else {
@@ -182,4 +182,19 @@ function strWidth(str, size, family) {
     let width = element.text(str).get(0).offsetWidth;
     element.empty();
     return width;
+}
+
+function preload() {
+    Object.keys(data_map).forEach(function(key) {
+        Object.keys(this[key]).forEach(function(key2) {
+            $("<img>").attr("src", "img/map/" + key + "-" + key2 + ".png");
+        })
+    }, data_map)
+    Object.keys(data_enemy_id).forEach(function(key) {
+        $("<img>").attr("src", "img/enemy/banner/" + key + .png);
+    })
+    Object.keys(data_ship_id).forEach(function(key) {
+        $("<img>").attr("src", "img/ship/banner/" + key + .png);
+    })
+    console.info("preload end");
 }

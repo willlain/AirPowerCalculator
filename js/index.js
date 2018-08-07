@@ -18,6 +18,7 @@ var p6 = getJson("json/enemy_id.json");
 var p7 = getJson("json/equipment_id_enemy.json");
 var p8 = getJson("json/equipment_type_enemy.json");
 var p9 = getJson("json/map.json")
+var p10 = preload();
 
 function getJson(json_url) {
     return $.ajax({
@@ -56,16 +57,18 @@ function getJson(json_url) {
             default:
         }
     })
+    console.info("getJson: " + (json_url.split("/")[1] + " end")
 }
 
-var p10 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
+var p11 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
     $("#dialog-select-ship").append(displayListShip());
     $("#dialog-select-equipment").append(displayListEquipment());
     $('a[class="list-group-item list-group-item-action"]').on("shown.bs.tab", function(e){
         $("#btn-select-" + $(this).attr("href").split("-")[1]).prop("disabled", false);
     });
+    console.info("dialog display");
 })
-var p11 = Promise.all([p9]).then(function () {
+var p12 = Promise.all([p9]).then(function () {
     $("#map-content").append(displayMap());
     $("#map-area").selectpicker({
         width: 70,
@@ -106,13 +109,15 @@ var p11 = Promise.all([p9]).then(function () {
         updateResult();
         updateRecord(0, false)
     });
-
+    console.info("map display");
 })
-Promise.all([p10,p11]).then(function() {
+Promise.all([p10,p11,p12]).then(function() {
     expandRecord(0);
+    console.info("expand record");
 })
 
 $(function () {
+    console.info("function() start");
     /**
      * ==========================================================
      * select関係
@@ -552,6 +557,7 @@ $(function () {
             data: [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
         }]
     })
+    console.info("function() end");
 });
 
 // var chart = new Highcharts.Chart("chart", {

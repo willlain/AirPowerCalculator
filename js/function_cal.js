@@ -77,6 +77,7 @@ function updateCombatRadius(element_target_id, element_equipment_id, equipment_i
 
     let radius_add = 0;
     let radius_min = 0;
+    let radius_rec_min = 0;
     for (let i=0; i<4; i++) {
         if (record_base[element_target_id][i].id == 0) continue;
 
@@ -88,6 +89,7 @@ function updateCombatRadius(element_target_id, element_equipment_id, equipment_i
             case 10:
             case 41:
             case 56:
+                if (radius_rec_min == 0 || radius_rec_min > equipment_sub_radius) radius_rec_min = equipment_sub_radius;
                 if (radius_add < equipment_sub_radius) radius_add = equipment_sub_radius;
                 break;
             default:
@@ -96,6 +98,7 @@ function updateCombatRadius(element_target_id, element_equipment_id, equipment_i
         }
     }
     if (radius_add != 0) {
+        if (radius_min === 0 && radius_rec_min != radius_add) radius_min = radius_rec_min;
         if (Math.sqrt(radius_add - radius_min) >= 3) {
             radius_min += 3
         } else {
