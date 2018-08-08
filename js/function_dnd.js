@@ -1,3 +1,7 @@
+/**
+ * [addDDEvent DnD eventを追加]
+ * @param {[type]} element [追加対象]
+ */
 function addDDEvent(element) {
     element.addEventListener('dragstart', handleDragStart, false);
     element.addEventListener('dragenter', handleDragEnter, false);
@@ -7,6 +11,11 @@ function addDDEvent(element) {
     element.addEventListener('dragend', handleDragEnd, false);
 }
 
+/**
+ * [handleDragStart ドラッグスタート時に発生するイベント]
+ * @param  {[type]} e [description]
+ * @return {[type]}   [description]
+ */
 function handleDragStart(e) {
     drag_source = this;
     e.dataTransfer.effectAllowed = 'move';
@@ -72,6 +81,11 @@ function handleDragStart(e) {
     }
 }
 
+/**
+ * [handleDragOver ドラッグオーバー時のイベント]
+ * @param  {[type]} e [description]
+ * @return {[type]}   [description]
+ */
 function handleDragOver(e) {
     if (e.preventDefault) {
         e.preventDefault();
@@ -80,6 +94,11 @@ function handleDragOver(e) {
     return false;
 }
 
+/**
+ * [handleDragEnter description]
+ * @param  {[type]} e [description]
+ * @return {[type]}   [description]
+ */
 function handleDragEnter(e) {
     let pattern = new RegExp($(drag_source).attr("class"));
     if (pattern.test($(this).attr('class'))) {
@@ -87,6 +106,11 @@ function handleDragEnter(e) {
     }
 }
 
+/**
+ * [handleDragLeave description]
+ * @param  {[type]} e [description]
+ * @return {[type]}   [description]
+ */
 function handleDragLeave(e) {
     let pattern = new RegExp($(drag_source).attr("class"));
     if (pattern.test($(this).attr('class'))) {
@@ -94,6 +118,11 @@ function handleDragLeave(e) {
     }
 }
 
+/**
+ * [handleDrop description]
+ * @param  {[type]} e [description]
+ * @return {[type]}   [description]
+ */
 function handleDrop(e) {
     if (e.stopPropagation) {
         e.stopPropagation();
@@ -116,10 +145,21 @@ function handleDrop(e) {
     return false;
 }
 
+/**
+ * [handleDragEnd description]
+ * @param  {[type]} e [description]
+ * @return {[type]}   [description]
+ */
 function handleDragEnd(e) {
     this.classList.remove('drag-over');
 }
 
+/**
+ * [exchangeEquipment description]
+ * @param  {[type]} e [description]
+ * @param  {[type]} t [description]
+ * @return {[type]}   [description]
+ */
 function exchangeEquipment(e, t) {
     let element_type = $(t).attr("id").split("-")[2];
     let element_target_id_target = $(t).attr("id").split("-")[3];
@@ -194,6 +234,13 @@ function exchangeEquipment(e, t) {
     }
 }
 
+/**
+ * [exchangeTarget description]
+ * @param  {[type]} e    [description]
+ * @param  {[type]} t    [description]
+ * @param  {[type]} type [description]
+ * @return {[type]}      [description]
+ */
 function exchangeTarget(e, t, type) {
     let element_target_id_target = Number($(t).attr("id").split("-")[2]);
     let element_target_id_source = Number($(drag_source).attr("id").split("-")[2]);

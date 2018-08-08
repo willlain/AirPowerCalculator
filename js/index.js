@@ -61,14 +61,91 @@ function getJson(json_url) {
 }
 
 var p11 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
+
+    /**
+     * ==========================================================
+     * dialog関係
+     * ==========================================================
+     */
     $("#dialog-select-ship").append(displayListShip());
     $("#dialog-select-equipment").append(displayListEquipment());
+    $("#dialog-select-ship").dialog({
+        autoOpen: false,
+        modal: true,
+        width: 900,
+        title: "選択",
+        resizable: false,
+        close: function() {
+            $("div[class*=active]").each(function(){
+                $(this).removeClass("show").removeClass("active");
+            });
+            $('a[class="nav-link active show"]').each(function(){
+                $(this).removeClass("show").removeClass("active");
+            });
+            $('a[class="nav-link dropdown-toggle active"]').each(function(){
+                $(this).removeClass("active");
+            });
+            $('a[class="dropdown-item active show"]').each(function(){
+                $(this).removeClass("show").removeClass("active");
+            });
+            $('a[class="list-group-item list-group-item-action active show"]').each(function(){
+                $(this).removeClass("show").removeClass("active");
+            });
+            $("#btn-select-ship").prop("disabled", true);
+        }
+    });
+    $("#dialog-select-equipment").dialog({
+        autoOpen: false,
+        modal: true,
+        width: 900,
+        title: "選択",
+        resizable: false,
+        close: function() {
+            $("div[class*=active]").each(function(){
+                $(this).removeClass("show").removeClass("active");
+            });
+            $('a[class="nav-link active show"]').each(function(){
+                $(this).removeClass("show").removeClass("active");
+            });
+            $('a[class="nav-link dropdown-toggle active"]').each(function(){
+                $(this).removeClass("active");
+            });
+            $('a[class="dropdown-item active show"]').each(function(){
+                $(this).removeClass("show").removeClass("active");
+            });
+            $('a[class="list-group-item list-group-item-action active show"]').each(function(){
+                $(this).removeClass("show").removeClass("active");
+            });
+            $("#btn-select-equipment").prop("disabled", true);
+        }
+    });
+    $("#dialog-message").dialog({
+        autoOpen: false,
+        modal: true,
+        // width: 900,
+        title: "メッセージ",
+        resizable: false,
+    });
     $('a[class="list-group-item list-group-item-action"]').on("shown.bs.tab", function(e){
         $("#btn-select-" + $(this).attr("href").split("-")[1]).prop("disabled", false);
+    });
+    $(".dialog-remove").on('click', function() {
+        if (record_target.attr("id").split("-")[0] == "equipment") {
+            removeItem(record_target.attr("id").split("-")[2], record_target.attr("id").split("-")[3], record_target.attr("id").split("-")[4])
+            $("#dialog-select-equipment").dialog('close');
+        } else {
+            removeItem("ship", record_target.attr("id").split("-")[3])
+            $("#dialog-select-ship").dialog('close');
+        }
     });
     console.info("dialog display");
 })
 var p12 = Promise.all([p9]).then(function () {
+    /**
+     * ==========================================================
+     * MAP画面関係
+     * ==========================================================
+     */
     $("#map-content").append(displayMap());
     $("#map-area").selectpicker({
         width: 70,
@@ -83,12 +160,6 @@ var p12 = Promise.all([p9]).then(function () {
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $("#map-cell").siblings('button').prop('disabled', true);
-
-    /**
-     * ==========================================================
-     * MAP画面関係
-     * ==========================================================
-     */
     $("#map-area").on('changed.bs.select', function(){
         changeArea($(this).val(), true);
         updateResult();
@@ -166,112 +237,43 @@ $(function () {
 
     /**
      * ==========================================================
-     * dialog関係
-     * ==========================================================
-     */
-    $("#dialog-select-ship").dialog({
-        autoOpen: false,
-        modal: true,
-        width: 900,
-        title: "選択",
-        resizable: false,
-        close: function() {
-            $("div[class*=active]").each(function(){
-                $(this).removeClass("show").removeClass("active");
-            });
-            $('a[class="nav-link active show"]').each(function(){
-                $(this).removeClass("show").removeClass("active");
-            });
-            $('a[class="nav-link dropdown-toggle active"]').each(function(){
-                $(this).removeClass("active");
-            });
-            $('a[class="dropdown-item active show"]').each(function(){
-                $(this).removeClass("show").removeClass("active");
-            });
-            $('a[class="list-group-item list-group-item-action active show"]').each(function(){
-                $(this).removeClass("show").removeClass("active");
-            });
-            $("#btn-select-ship").prop("disabled", true);
-        }
-    });
-    $("#dialog-select-equipment").dialog({
-        autoOpen: false,
-        modal: true,
-        width: 900,
-        title: "選択",
-        resizable: false,
-        close: function() {
-            $("div[class*=active]").each(function(){
-                $(this).removeClass("show").removeClass("active");
-            });
-            $('a[class="nav-link active show"]').each(function(){
-                $(this).removeClass("show").removeClass("active");
-            });
-            $('a[class="nav-link dropdown-toggle active"]').each(function(){
-                $(this).removeClass("active");
-            });
-            $('a[class="dropdown-item active show"]').each(function(){
-                $(this).removeClass("show").removeClass("active");
-            });
-            $('a[class="list-group-item list-group-item-action active show"]').each(function(){
-                $(this).removeClass("show").removeClass("active");
-            });
-            $("#btn-select-equipment").prop("disabled", true);
-        }
-    });
-    $("#dialog-message").dialog({
-        autoOpen: false,
-        modal: true,
-        // width: 900,
-        title: "メッセージ",
-        resizable: false,
-    });
-    $(".dialog-remove").on('click', function() {
-        if (record_target.attr("id").split("-")[0] == "equipment") {
-            removeItem(record_target.attr("id").split("-")[2], record_target.attr("id").split("-")[3], record_target.attr("id").split("-")[4])
-            $("#dialog-select-equipment").dialog('close');
-        } else {
-            removeItem("ship", record_target.attr("id").split("-")[3])
-            $("#dialog-select-ship").dialog('close');
-        }
-    });
-
-    /**
-     * ==========================================================
      * 編成画面関係
      * ==========================================================
      */
-
     $("#tab-fleet").tabs();
     $("#tab-fleet").tabs("option", "disabled", [1,2]);
     $("#tab-fleet").children("ul").show();
     $(".equipment-name-base").on("click", function() {
         record_target = $(this);
-        for (var i=0; i<tab_type_equipment.length; i++) {
-            if (i==7 || i==8 || i==11) {
-                for (var j=0; j<tab_type_equipment[i].length; j++) {
-                    var equipment_type = tab_type_equipment[i][j];
-                    $("#tab-equipment-" + i + "-" + equipment_type).show();
-                }
-                $("#tab-equipment-" + i).show();
-            } else {
-                $("#tab-equipment-" + i).hide();
+        for (let i=0; i<tab_type_equipment.length; i++) {
+            switch (i) {
+                case 7:
+                case 8:
+                case 11:
+                    for (var j=0; j<tab_type_equipment[i].length; j++) {
+                        var equipment_type = tab_type_equipment[i][j];
+                        $("#tab-equipment-" + i + "-" + equipment_type).show();
+                    }
+                    $("#tab-equipment-" + i).show();
+                    break;
+                default:
+                    $("#tab-equipment-" + i).hide();
             }
         }
         openSelectDialog('equipment');
     });
     $(".equipment-name-ship").on("click", function() {
         record_target = $(this);
-        var element_ship_id = $(this).attr("id").split("-")[3];
-        var element_equipment_id = $(this).attr("id").split("-")[4]
-        var ship_id = Number($("#grade-" + element_ship_id).val())
-        var ship_type = data_ship_id[ship_id].type;
+        let element_ship_id = $(this).attr("id").split("-")[3];
+        let element_equipment_id = $(this).attr("id").split("-")[4]
+        let ship_id = Number($("#grade-" + element_ship_id).val())
+        let ship_type = data_ship_id[ship_id].type;
 
-        for (var i=0; i<tab_type_equipment.length; i++) {
-            var flag = 0;
-            for (var j=0; j<tab_type_equipment[i].length; j++) {
-                var equipment_type = tab_type_equipment[i][j];
-                var data = data_equipment_type_ship[equipment_type];
+        for (let i=0; i<tab_type_equipment.length; i++) {
+            let flag = 0;
+            for (let j=0; j<tab_type_equipment[i].length; j++) {
+                let equipment_type = tab_type_equipment[i][j];
+                let data = data_equipment_type_ship[equipment_type];
                 if (equipment_type == 20) {
                     for (var k=0; k<data.id.length; k++) {
                         $("#list-equipment-" + equipment_type + "-" + data.id[k]).show();
@@ -347,6 +349,7 @@ $(function () {
     $("#reset-ship").on("click", function() {
         openMessageDialog("reset-ship", "艦隊をリセットしますか？")
     })
+    // next or prev
     $(".equipment-toggle").on('click', function() {
         toggleDisplayEquipment($(this).attr('id').split("-")[0], Number($(this).attr('id').split("-")[1]))
     });
@@ -437,6 +440,11 @@ $(function () {
             }
         })
         $(this).keyup(function(e){
+            let str = $(this).val()
+            str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
+                return String.fromCharCode(s.charCodeAt(0) - 65248);
+            });
+            $(this).val(str)
             updateResult();
         })
         $(this).blue(function(e){
@@ -481,14 +489,9 @@ $(function () {
             tickPosition: 'inside'
         },
         yAxis: {
-            // min: 0,
-            // max: 20/6,
             title: {
                 text: null
             },
-            //     gridLineWidth: 0,
-            //     lineWidth: 1, lineColor: "black",
-            //     tickWidth: 2, tickLength: 6, tickColor: "black",
             tickPositions: [0, 1/3, 2/3, 1.5, 3, 3.5],
             labels: {
                 y: 20,
@@ -504,23 +507,6 @@ $(function () {
                     }
                 }
             },
-            // tickInterval: 1/6,
-            // labels: {
-            //     formatter: function() {
-            //         switch (Math.floor(this.value*1000)/1000) {
-            //             case Math.floor(2*1000/6)/1000:
-            //                 return "劣勢";
-            //             case Math.floor(4*1000/6)/1000:
-            //                 return "均衡";
-            //             case Math.floor(9*1000/6)/1000:
-            //                 return "優勢";
-            //             case Math.floor(18*1000/6)/1000:
-            //                 return "確保";
-            //         }
-            //     },
-            //     autoRotation: [0],
-            //     overflow: 'justify'
-            // },
             plotLines: [
                 {
                     value: 2/6,
@@ -560,44 +546,6 @@ $(function () {
     console.info("function() end");
 });
 
-// var chart = new Highcharts.Chart("chart", {
-//   chart: {
-//     type: "bar",
-//     backgroundColor: "#f8f8f8",
-//     marginLeft: 20,
-//     spacing: [9, 10, 7, 10]
-//   },
-//   title: { text: null },
-//   credits: { enabled: false },
-//   legend: { enabled: false },
-//   tooltip: { enabled: false },
-//   xAxis: { labels: { enabled: false }, lineWidth: 0, tickLength: 0 },
-//   yAxis: {
-//     title: { text: null },
-//     gridLineWidth: 0,
-//     lineWidth: 1, lineColor: "black",
-//     tickWidth: 2, tickLength: 6, tickColor: "black",
-//     tickPositions: [0, 1/3, 2/3, 1.5, 3, 3.5],
-//     labels: {
-//       y: 20,
-//       style: { color: "black", fontSize: "14px" },
-//       formatter: function() {
-//         switch (this.value) {
-//           case 0:   return "喪失";
-//           case 1/3: return "劣勢";
-//           case 2/3: return "均衡";
-//           case 1.5: return "優勢";
-//           case 3:   return "確保";
-//           default:  return "";
-//         }
-//       }
-//     }
-//   },
-//   series: [
-//     { data: [0], pointWidth: 9 },
-//     { type: "errorbar", data: [[0, 0]], color: "#3050ff", whiskerLength: "60%", visible: false }
-//   ]
-// });
+$(window).load(function(){
 
-// <script src="https://code.highcharts.com/highcharts-more.js"></script>
-// chart.series[0].setData([129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4], true);
+});
