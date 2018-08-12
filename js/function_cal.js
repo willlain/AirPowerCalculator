@@ -420,8 +420,8 @@ function getResult() {
     }, enemy_info)
     result["airPower_enemy"].push(power);
 
+    let airPower_ship = (Number($("[name=fleet]:checked").val()) === 1 && enemy_info[6]) ? (result["airPower_ship"][6] + result["airPower_ship"][7]) : result["airPower_ship"][6]
     if (power != 0) {
-        let airPower_ship = (Number($("[name=fleet]:checked").val()) === 1 && enemy_info[6]) ? (result["airPower_ship"][6] + result["airPower_ship"][7]) : result["airPower_ship"][6]
         quotient = (Math.round(airPower_ship*10000/power)/10000 < 3.5) ? Math.round(airPower_ship*10000/power)/10000 : 3.5;
         result["probe"].push(quotient);
         if (quotient <= 1/3) {

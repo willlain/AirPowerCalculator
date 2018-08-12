@@ -124,8 +124,8 @@ function handleDragLeave(e) {
  * @return {[type]}   [description]
  */
 function handleDrop(e) {
-    if (e.stopPropagation) {
-        e.stopPropagation();
+    if (e.preventDefault) {
+        e.preventDefault();
     }
 
     // 同種の位置にドロップされていない場合は処理を行わない

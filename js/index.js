@@ -1,11 +1,11 @@
 var drag_source = null;
-var record;
+var record = {};
 var record_target = "";
 var slider = null;
 var chart = null;
-var record_base;
-var record_ship;
-var record_option;
+var record_base = {};
+var record_ship = {};
+var record_option = {};
 const aircraft_type_id = [7, 8, 9, 10, 11, 45, 47, 48, 57];
 const tab_type_ship = [
     [2], 3, 4, 5, 6, [8, 9], 10, 7, 11, 18, 16, [1, 13, 14, 21, 17, 19, 20, 22]
@@ -72,8 +72,8 @@ function getJson(json_url) {
                 break;
             default:
         }
+        console.info("getJson: " + (json_url.split("/")[1] + " end"));
     })
-    console.info("getJson: " + (json_url.split("/")[1] + " end"))
 }
 
 function preload() {
@@ -419,7 +419,7 @@ $(function() {
                 if ($("#equipment-name-" + type + "-" + i + "-" + j).children().length == 0) continue;
 
                 let element_skill = $("#skill-" + type + "-" + i + "-" + j);
-                let equipment_type = data_equipment_id_ship[record_ship[i][j].id].type;
+                let equipment_type = (type === "base")? data_equipment_id_ship[record_base[i][j].id].type : data_equipment_id_ship[record_ship[i][j].id].type;
 
                 if (id == 0) {
                     switch (equipment_type) {

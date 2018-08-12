@@ -322,8 +322,15 @@ function removeItem(type, element_target_id, element_equipment_id) {
                 record_base[element_target_id][i].id = 0;
                 record_base[element_target_id][i].improvement = 0;
                 record_base[element_target_id][i].skill = 0;
-                record_base[element_target_id][i].space = 18;
-                element_space.val(18).selectpicker('refresh');
+
+                let html = "";
+                for (let j=18; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                record_ship[element_target_id][i].space = 18;
+                toggleEnabledSelection(element_space, false, 18, $(html))
+                // record_base[element_target_id][i].space = 18;
+                // element_space.val(18).selectpicker('refresh');
                 element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択").css('font-size',"13px");
                 updateCombatRadius(element_target_id, element_equipment_id, 0)
             } else {
