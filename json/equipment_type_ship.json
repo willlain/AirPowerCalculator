@@ -242,7 +242,7 @@
     },
     "22": {
         "name": "特殊潜航艇",
-        "available_ship_type": [5,13,14,16],
+        "available_ship_type": [4,13,14,16],
         "available_ship_id": [200,488],
         "exclusion_ship_id": [372,445,450,491,539,605],
         "expansion_ship_type": [],
@@ -413,7 +413,7 @@
         "name": "対地装備",
         "available_ship_type": [1,2,3,6,10,13,14,16,17,20],
         "available_ship_id": [500],
-        "exclusion_ship_id": [445],
+        "exclusion_ship_id": [445,553],
         "expansion_ship_type": [],
         "expansion_ship_id": [],
         "expansion_equipment_id": [],

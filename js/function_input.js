@@ -29,7 +29,7 @@ function inputDeckbuilder() {
                     // var element_ship = $("#ship-name-" + element_ship_id);
                     ship_id = this[key2].id
                     element_grade = $("#grade-" + element_ship_id);
-                    setShipItem(ship_id, element_ship_id, 1);
+                    setShipItem(ship_id, element_ship_id, true, false);
                     Object.keys(input[key][key2].items).forEach(function(key3,index3){
                         equipment_id = this[key3].id;
                         equipment_type = data_equipment_id_ship[equipment_id].type
@@ -88,10 +88,12 @@ function outputDeckbuilder() {
     $("#deckbuilder").val(JSON.stringify(output));
     document.getElementById("deckbuilder").select();
     document.execCommand("Copy");
+    $("[data-toggle='tooltip']").attr("title", "編成をクリップボードにコピーしました" );
     $("[data-toggle='tooltip']").on('hidden.bs.tooltip', function(){
         $(this).tooltip('dispose');
     });
     $("[data-toggle='tooltip']").tooltip({delay:{show:0, hide:1000}}).tooltip('show').tooltip('toggle');
+    $("[data-toggle='tooltip']").removeAttr("title");
 }
 
 /**
@@ -117,7 +119,7 @@ function expandRecord(num) {
         }, record_base);
         Object.keys(record_ship).forEach(function(key){
             if (this[key].id != 0) {
-                setShipItem(this[key].id, key, 1);
+                setShipItem(this[key].id, key, true, false);
             }
             Object.keys(this[key]).forEach(function(key2){
                 if (key2 != "id" && this[key2].id != 0) {
@@ -160,7 +162,7 @@ function expandRecord(num) {
         }
         for (let i=0; i<6; i++) {
             if (record_option.downRate[i] == 0) continue;
-            $("#downRate-" + i).val(record_option.downRate[i]).selectpicker('refresh');
+            $("#downRate-" + i).slider('setValue', record_option.downRate[i]);
         }
         updateResult();
     } else {
@@ -239,27 +241,27 @@ function updateRecord(num, del_flag) {
  * @param  {string} type [equipment(装備) or ship(艦娘)]
  */
 function selectItem(type) {
+    let pattern;
     if (type == "equipment") {
         $("div[class*=active]").each(function(){
-            var pattern = /^info-equipment/;
+            pattern = /^info-equipment/;
             if (pattern.test($(this).attr('id'))) {
-                var equipment_type = Number($(this).attr('id').split('-')[2]);
-                var equipment_id = $(this).attr('id').split('-')[3];
-                var element_type = record_target.attr('id').split('-')[2];
-                var element_target_id = record_target.attr('id').split('-')[3];
-                var element_equipment_id = record_target.attr('id').split('-')[4];
-
+                let equipment_type = Number($(this).attr('id').split('-')[2]);
+                let equipment_id = $(this).attr('id').split('-')[3];
+                let element_type = record_target.attr('id').split('-')[2];
+                let element_target_id = record_target.attr('id').split('-')[3];
+                let element_equipment_id = record_target.attr('id').split('-')[4];
                 setEquipmentItem(element_type, element_target_id, element_equipment_id, equipment_type, equipment_id);
             }
         });
         $("#dialog-select-equipment").dialog('close');
     } else {
         $("div[class*=active]").each(function(){
-            var pattern = /^info-ship/;
+            pattern = /^info-ship/;
             if (pattern.test($(this).attr('id'))) {
-                var ship_id = Number($(this).attr('id').split('-')[3]);
-                var element_id = record_target.attr('id').split('-')[2];
-                setShipItem(ship_id, element_id, 1);
+                let ship_id = Number($(this).attr('id').split('-')[3]);
+                let element_id = record_target.attr('id').split('-')[2];
+                setShipItem(ship_id, element_id, true, true);
             }
         });
         $("#dialog-select-ship").dialog('close');
@@ -288,15 +290,15 @@ function removeItem(type, element_target_id, element_equipment_id) {
             record_ship[element_target_id][element_equipment_id].improvement = 0;
             record_ship[element_target_id][element_equipment_id].skill = 0;
             if (element_equipment_id == slot) {
-                element_equipment.attr("draggable", false).empty().html("&nbsp;補強増設");
+                element_equipment.attr("draggable", false).empty().html("&nbsp;補強増設").css('font-size',"13px");;
             } else {
-                element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択");
+                element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択").css('font-size',"13px");;
             }
         } else {
             record_base[element_target_id][element_equipment_id].id = 0;
             record_base[element_target_id][element_equipment_id].improvement = 0;
             record_base[element_target_id][element_equipment_id].skill = 0;
-            element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択");
+            element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択").css('font-size',"13px");;
             updateCombatRadius(element_target_id, element_equipment_id, 0)
         }
         toggleEnabledSelection(element_improvement, true, 0);
@@ -322,7 +324,7 @@ function removeItem(type, element_target_id, element_equipment_id) {
                 record_base[element_target_id][i].skill = 0;
                 record_base[element_target_id][i].space = 18;
                 element_space.val(18).selectpicker('refresh');
-                element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択");
+                element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択").css('font-size',"13px");
                 updateCombatRadius(element_target_id, element_equipment_id, 0)
             } else {
                 record_ship[element_target_id][i].id = 0;
@@ -330,7 +332,7 @@ function removeItem(type, element_target_id, element_equipment_id) {
                 record_ship[element_target_id][i].skill = 0;
                 record_ship[element_target_id][i].space = 0;
                 toggleEnabledSelection(element_space, true, 0, $('<option>').val(0).text(0));
-                element_equipment.attr("draggable", false).empty().css('visibility','hidden');
+                element_equipment.attr("draggable", false).empty().css({'visibility':'hidden','font-size':"13px"});
             }
             toggleEnabledSelection(element_improvement, true, 0);
             toggleEnabledSelection(element_skill, true, 0);
@@ -346,34 +348,35 @@ function removeItem(type, element_target_id, element_equipment_id) {
  * @param {int} ship_id    [セットされた艦娘の識別番号]
  * @param {int} element_id [対応する列番号]
  */
-function initEquipmentCell(ship_id, element_target_id) {
+function initEquipmentCell(ship_id, element_target_id, record_flag) {
     for (var i=0; i<6; i++) {
-        var element_equipment = $("#equipment-name-ship-" + element_target_id + "-" + i);
-        var element_space = $("#space-ship-" + element_target_id + "-" + i);
-        var element_skill = $("#skill-ship-" + element_target_id + "-" + i);
-        var element_improvement = $("#improvement-ship-" + element_target_id + "-" + i);
+        let element_equipment = $("#equipment-name-ship-" + element_target_id + "-" + i);
+        let element_space = $("#space-ship-" + element_target_id + "-" + i);
+        let element_skill = $("#skill-ship-" + element_target_id + "-" + i);
+        let element_improvement = $("#improvement-ship-" + element_target_id + "-" + i);
 
-        record_ship[element_target_id][i].id = 0
-        record_ship[element_target_id][i].improvement = 0
-        record_ship[element_target_id][i].skill = 0;
-        record_ship[element_target_id][i].space = 0;
+        if (record_flag) {
+            record_ship[element_target_id][i].id = 0
+            record_ship[element_target_id][i].improvement = 0
+            record_ship[element_target_id][i].skill = 0;
+            record_ship[element_target_id][i].space = 0;
+        }
 
         element_space.empty()
 
+        let html = "";
         if (i < data_ship_id[ship_id].slot) {
-            var html = "";
-            element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択").css('visibility','visible');
-            for (var j=data_ship_id[ship_id].space[i]; j>=0; j--) {
+            element_equipment.attr("draggable", false).empty().html("&nbsp;装備選択").css({'visibility':'visible', 'font-size':"13px"});
+            for (let j=data_ship_id[ship_id].space[i]; j>=0; j--) {
                 html += "<option value='" + j + "'>" + j + "</option>"
             }
             record_ship[element_target_id][i].space = data_ship_id[ship_id].space[i];
             toggleEnabledSelection(element_space, false, data_ship_id[ship_id].space[i], $(html))
         } else if (i == data_ship_id[ship_id].slot) {
-            var html = "";
-            element_equipment.attr("draggable", false).empty().html("&nbsp;補強増設").css('visibility','visible');
+            element_equipment.attr("draggable", false).empty().html("&nbsp;補強増設").css({'visibility':'visible','font-size':"13px"});
             toggleEnabledSelection(element_space, true, 0, $('<option>').val(0).text(0))
         } else {
-            element_equipment.attr("draggable", false).empty().css('visibility','hidden');
+            element_equipment.attr("draggable", false).empty().css({'visibility':'hidden','font-size':"13px"});
             toggleEnabledSelection(element_space, true, 0, $('<option>').val(0).text(0))
         }
         toggleEnabledSelection(element_improvement, true, 0)
@@ -422,10 +425,11 @@ function toggleDisplayEquipment(type, target_id) {
  * @param {int}     skill                [熟練度]
  */
 function setEquipmentItem(element_type, element_target_id, element_equipment_id, equipment_type, equipment_id, improvement, skill) {
-    var element_improvement = $("#improvement-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
-    var element_skill = $("#skill-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
-    var element_equipment = $("#equipment-name-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
-    var element_airPower_target = $("#airpower-" + element_type + "-" + element_target_id);
+    let element_improvement = $("#improvement-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+    let element_skill = $("#skill-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+    let element_equipment = $("#equipment-name-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+    let element_airPower_target = $("#airpower-" + element_type + "-" + element_target_id);
+    let element_space = $("#space-base-" + element_target_id + "-" + element_equipment_id);
 
     if (element_type == "base") {
         record_base[element_target_id][element_equipment_id].id = equipment_id
@@ -439,6 +443,7 @@ function setEquipmentItem(element_type, element_target_id, element_equipment_id,
     }
 
     element_equipment.attr("draggable", true).empty().append($("<img src='img/equipment/icon/" + equipment_type + ".png'>")).append(data_equipment_id_ship[equipment_id].name);
+    element_equipment.css("font-size", getFontSize(data_equipment_id_ship[equipment_id].name, 13, "メイリオ, sans-serif", 240));
 
     if (data_equipment_id_ship[equipment_id].improvement) {
         if (improvement === undefined) {
@@ -480,6 +485,14 @@ function setEquipmentItem(element_type, element_target_id, element_equipment_id,
                     record_ship[element_target_id][element_equipment_id].skill = skill
                 }
             }
+            if (element_type == "base") {
+                let html = "";
+                for (let j=18; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                record_ship[element_target_id][i].space = 18;
+                toggleEnabledSelection(element_space, false, 18, $(html))
+            }
             break;
         case 7:
         case 8:
@@ -507,6 +520,14 @@ function setEquipmentItem(element_type, element_target_id, element_equipment_id,
                     record_ship[element_target_id][element_equipment_id].skill = skill
                 }
             }
+            if (element_type == "base") {
+                let html = "";
+                for (let j=18; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                record_ship[element_target_id][i].space = 18;
+                toggleEnabledSelection(element_space, false, 18, $(html))
+            }
             break;
         case 9:
         case 10:
@@ -527,9 +548,25 @@ function setEquipmentItem(element_type, element_target_id, element_equipment_id,
                     record_ship[element_target_id][element_equipment_id].skill = skill
                 }
             }
+            if (element_type == "base") {
+                let html = "";
+                for (let j=4; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                record_ship[element_target_id][i].space = 4;
+                toggleEnabledSelection(element_space, false, 4, $(html))
+            }
             break;
         default:
             toggleEnabledSelection(element_skill, true, 0)
+            if (element_type == "base") {
+                let html = "";
+                for (let j=18; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                record_ship[element_target_id][i].space = 18;
+                toggleEnabledSelection(element_space, false, 18, $(html))
+            }
     }
     updateAirPowerFrends(element_type, element_target_id, element_equipment_id)
 }
@@ -540,15 +577,13 @@ function setEquipmentItem(element_type, element_target_id, element_equipment_id,
  * @param {int}     element_id [対応する列番号]
  * @param {boolen}  flag       [改装段階を変更するかのフラグ]
  */
-function setShipItem(ship_id, element_id, flag) {
-    var element_ship = $("#ship-name-" + element_id);
+function setShipItem(ship_id, element_id, grade_flag, record_flag) {
+    let element_ship = $("#ship-name-" + element_id);
     record_ship[element_id].id = ship_id
 
     element_ship.empty().append($("<img src='img/ship/banner/" + ship_id + ".png'>"));
-    initEquipmentCell(ship_id, element_id);
-    if (flag !== undefined) {
-        setGradeItem(ship_id, element_id);
-    }
+    initEquipmentCell(ship_id, element_id, record_flag);
+    if (grade_flag) setGradeItem(ship_id, element_id);
 }
 
 /**
@@ -557,73 +592,57 @@ function setShipItem(ship_id, element_id, flag) {
  * @param {selection} element   [対象の改装段階のセレクト]
  */
 function setGradeItem(id, element_id) {
-    var html = "";
-    var element_grade = $("#grade-" + element_id);
-
+    let html = "";
+    let element_grade = $("#grade-" + element_id);
+    let grade_name = ["未改","改","改二","改三","改四"];
     switch (id) {
         case 49:
         case 253:
         case 464:
         case 470:
-            var grade_name = ["未改","改","改二","改二乙"];
-            // var grade_last = 3;
-            // var ship_id_grade = [49,253,464,470];
+            grade_name = ["未改","改","改二","改二乙"];
             break;
         case 116:
         case 117:
         case 555:
         case 560:
-            var grade_name = ["未改","改","改二","改二乙"];
-            // var grade_last = 3;
-            // var ship_id_grade = [116,117,555,560];
+            grade_name = ["未改","改","改二","改二乙"];
             break;
         case 95:
         case 248:
         case 463:
         case 468:
-            var grade_name = ["未改","改","改二","改二丁"];
-            // var grade_last = 3;
-            // var ship_id_grade = [95,248,463,468];
+            grade_name = ["未改","改","改二","改二丁"];
             break;
         case 110:
         case 288:
         case 461:
         case 466:
-            var grade_name = ["未改","改","改二","改二甲"];
-            // var grade_last = 3;
-            // var ship_id_grade = [110,288,461,466];
+            grade_name = ["未改","改","改二","改二甲"];
             break;
         case 111:
         case 112:
         case 462:
         case 467:
-            var grade_name = ["未改","改","改二","改二甲"];
-            // var grade_last = 3;
-            // var ship_id_grade = [111,112,462,467];
+            grade_name = ["未改","改","改二","改二甲"];
             break;
         case 433:
         case 438:
         case 545:
         case 550:
-            var grade_name = ["未改","改","Mk.Ⅱ","Mod.2"];
-            // var grade_last = 3;
-            // var ship_id_grade = [433,438,545,550]
+            grade_name = ["未改","改","Mk.Ⅱ","Mod.2"];
             break;
         case 124:
         case 129:
         case 503:
         case 508:
-            var grade_name = ["未改","改","改二","航改二"];
-            // var grade_last = 3;
-            // var ship_id_grade = [124,129,503,508]
+            grade_name = ["未改","改","改二","航改二"];
             break;
         case 125:
         case 130:
         case 504:
         case 509:
-            var grade_name = ["未改","改","改二","航改二"];
-            // var grade_last = 3;
-            // var ship_id_grade = [125,130,504,509]
+            grade_name = ["未改","改","改二","航改二"];
             break;
         case 102:
         case 104:
@@ -631,9 +650,7 @@ function setGradeItem(id, element_id) {
         case 108:
         case 291:
         case 296:
-            var grade_name = ["未改","改","甲","航","航改","航改二"];
-            // var grade_last = 5;
-            // var ship_id_grade = [102,104,106,108,291,296]
+            grade_name = ["未改","改","甲","航","航改","航改二"];
             break;
         case 103:
         case 105:
@@ -641,90 +658,66 @@ function setGradeItem(id, element_id) {
         case 109:
         case 292:
         case 297:
-            var grade_name = ["未改","改","甲","航","航改","航改二"];
-            // var grade_last = 5;
-            // var ship_id_grade = [103,105,107,109,292,297]
+            grade_name = ["未改","改","甲","航","航改","航改二"];
             break;
         case 184:
         case 185:
         case 318:
-            var grade_name = ["大鯨","龍鳳","龍鳳改"];
-            // var grade_last = 2;
-            // var ship_id_grade = [184,185,318]
+            grade_name = ["大鯨","龍鳳","龍鳳改"];
             break;
         case 162:
         case 499:
         case 500:
-            var grade_name = ["未改","改","改母"]
-            // var grade_last = 2;
-            // var ship_id_grade = [162,499,500]
+            grade_name = ["未改","改","改母"]
             break;
         case 171:
         case 172:
         case 173:
         case 178:
-            var grade_name = ["未改","改","zwei","drei"];
-            // var grade_last = 3;
-            // var ship_id_grade = [171,172,173,178];
+            grade_name = ["未改","改","zwei","drei"];
             break;
         case 174:
         case 310:
         case 179:
-            var grade_name = ["未改","改","zwei","drei"];
-            // var grade_last = 2;
-            // var ship_id_grade = [174,310,179];
+            grade_name = ["未改","改","zwei","drei"];
             break;
         case 175:
         case 311:
         case 180:
-            var grade_name = ["未改","改","zwei","drei"];
-            // var grade_last = 2;
-            // var ship_id_grade = [175,311,180];
+            grade_name = ["未改","改","zwei","drei"];
             break;
         case 521:
         case 526:
         case 380:
         case 529:
-            var grade_name = ["春日丸","大鷹","改","改二"];
-            // var grade_last = 3;
-            // var ship_id_grade = [521,526,380,529]
+            grade_name = ["春日丸","大鷹","改","改二"];
             break;
         case 167:
         case 320:
         case 557:
-            var grade_name = ["未改","改","改乙"];
-            // var grade_last = 2;
-            // var ship_id_grade = [167,320,557]
+            grade_name = ["未改","改","改乙"];
             break;
         case 170:
         case 312:
         case 558:
-            var grade_name = ["未改","改","改乙"];
-            // var grade_last = 2;
-            // var ship_id_grade = [170,312,558]
+            grade_name = ["未改","改","改乙"];
             break;
         case 448:
         case 358:
         case 496:
-            var grade_name = ["未改","改","due"];
-            // var grade_last = 2;
-            // var ship_id_grade = [448,358,496]
+            grade_name = ["未改","改","due"];
             break;
-        default:
-            var grade_name = ["未改","改","改二","改三","改四"];
     }
-    var ship_id = id;
-    var grade_last = 0;
-    var ship_id_grade = [ship_id];
-    for (var i=data_ship_id[id].grade;;i--) {
+    let ship_id = id;
+    let grade_last = 0;
+    let ship_id_grade = [ship_id];
+    for (let i=data_ship_id[id].grade;;i--) {
         ship_id = data_ship_id[ship_id].before;
-        if (ship_id == 0) {
-            break;
-        }
+        if (ship_id == 0) break;
         ship_id_grade.unshift(ship_id);
     }
     ship_id = id;
-    for (var i=data_ship_id[id].grade;;i++) {
+    for (let i=data_ship_id[id].grade;;i++) {
         if (data_ship_id[ship_id].after == 0 || ship_id_grade.indexOf(data_ship_id[ship_id].after) != -1) {
             grade_last = data_ship_id[ship_id].grade;
             break;
@@ -733,7 +726,7 @@ function setGradeItem(id, element_id) {
             ship_id_grade.push(ship_id);
         }
     }
-    for (var i=grade_last; i>=0; i--) {
+    for (let i=grade_last; i>=0; i--) {
         html += "<option value='" + ship_id_grade[i] + "'>" + grade_name[i] + "</option>"
     }
     toggleEnabledSelection(element_grade, false, id, $(html))

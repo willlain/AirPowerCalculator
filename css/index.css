@@ -121,6 +121,12 @@ div.option-input button {
 }
 div#radius-enemy {
     margin-right: auto;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    -webkit-align-items: center;
+    align-items: center;
 }
 div.deckbuilder {
     margin-right: auto;
@@ -360,6 +366,17 @@ div.equipment-toggle:hover {
     background-color: #E0FFFF;
 }
 
+div#radius-enemy-value {
+    background-color: #ddf;
+    padding: 0 5px;
+    width: 27px;
+    height: 20px;
+    margin: 0 0 0 2px;
+    line-height: 20px;
+    vertical-align: middle;
+    text-align: center;
+}
+
 /* ###############################
     input map
 ############################### */
@@ -449,10 +466,36 @@ div.option-output {
     width: 100%;
 }
 label.activate-base-label {
-    width: 265px;
+    width: 110px;
     text-align: right;
     margin-bottom: 0px;
+    margin-right: 10px;
 }
+div.downRate-lable {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content:center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+.in{
+    opacity: .9;
+}
+
+.slider.slider-horizontal {
+    width: 150px;
+    margin-left: 10px;
+}
+
+.slider .tooltip-inner {
+    padding: .1rem .3rem;
+}
+
+.slider .tooltip.top {
+    margin-top: -25px;
+}
+
 div#result-content {
     margin-top: 10px;
     display: -webkit-flex;

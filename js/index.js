@@ -1,13 +1,30 @@
 var drag_source = null;
-var record = {}
+var record;
 var record_target = "";
+var slider = null;
 var chart = null;
-var record_base = {}
-var record_ship = {}
-var record_option = {}
-const aircraft_type_id = [7,8,9,10,11,45,47,48,57];
-const tab_type_ship = [[2],3,4,5,6,[8,9],10,7,11,18,16,[1,13,14,21,17,19,20,22]];
-const tab_type_equipment = [[1,16,2,3],[4,20],[5,32,22],[12,13,51],[14,15,40,25,26],[18,19,37],[24,46,30,50],[10,11,45,41],[6,52,7,8,53,9,56,57],[17,21,27,28],[29,42,33,39],[47,54,48,49],[23,31,34,35,36,43,44]];
+var record_base;
+var record_ship;
+var record_option;
+const aircraft_type_id = [7, 8, 9, 10, 11, 45, 47, 48, 57];
+const tab_type_ship = [
+    [2], 3, 4, 5, 6, [8, 9], 10, 7, 11, 18, 16, [1, 13, 14, 21, 17, 19, 20, 22]
+];
+const tab_type_equipment = [
+    [1, 16, 2, 3],
+    [4, 20],
+    [5, 32, 22],
+    [12, 13, 51],
+    [14, 15, 40, 25, 26],
+    [18, 19, 37],
+    [24, 46, 30, 50],
+    [10, 11, 45, 41],
+    [6, 52, 7, 8, 53, 9, 56, 57],
+    [17, 21, 27, 28],
+    [29, 42, 33, 39],
+    [47, 54, 48, 49],
+    [23, 31, 34, 35, 36, 43, 44]
+];
 
 var p1 = getJson("json/ship_id.json");
 var p2 = getJson("json/ship_type.json");
@@ -18,20 +35,19 @@ var p6 = getJson("json/enemy_id.json");
 var p7 = getJson("json/equipment_id_enemy.json");
 var p8 = getJson("json/equipment_type_enemy.json");
 var p9 = getJson("json/map.json")
-var p10 = preload();
 
 function getJson(json_url) {
     return $.ajax({
         type: "GET",
         url: json_url,
         dataType: "json",
-    }).done(function (data, textStatus, xhr){
+    }).done(function(data, textStatus, xhr) {
         switch (json_url.split("/")[1]) {
             case "ship_type.json":
-                data_ship_type  = data;
+                data_ship_type = data;
                 break;
             case "ship_id.json":
-                data_ship_id  = data;
+                data_ship_id = data;
                 break;
             case "ship_model.json":
                 data_ship_model = data;
@@ -57,10 +73,26 @@ function getJson(json_url) {
             default:
         }
     })
-    console.info("getJson: " + (json_url.split("/")[1] + " end")
+    console.info("getJson: " + (json_url.split("/")[1] + " end"))
 }
 
-var p11 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
+function preload() {
+    Object.keys(data_map).forEach(function(key) {
+        Object.keys(this[key]).forEach(function(key2) {
+            $("<img>").attr("src", "img/map/" + key + "-" + key2 + ".png");
+        })
+    }, data_map)
+    Object.keys(data_enemy_id).forEach(function(key) {
+        $("<img>").attr("src", "img/enemy/banner/" + key + ".png");
+    })
+    Object.keys(data_ship_id).forEach(function(key) {
+        $("<img>").attr("src", "img/ship/banner/" + key + ".png");
+    })
+    console.info("preload end");
+}
+
+
+var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
 
     /**
      * ==========================================================
@@ -76,19 +108,19 @@ var p11 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
         title: "選択",
         resizable: false,
         close: function() {
-            $("div[class*=active]").each(function(){
+            $("div[class*=active]").each(function() {
                 $(this).removeClass("show").removeClass("active");
             });
-            $('a[class="nav-link active show"]').each(function(){
+            $('a[class="nav-link active show"]').each(function() {
                 $(this).removeClass("show").removeClass("active");
             });
-            $('a[class="nav-link dropdown-toggle active"]').each(function(){
+            $('a[class="nav-link dropdown-toggle active"]').each(function() {
                 $(this).removeClass("active");
             });
-            $('a[class="dropdown-item active show"]').each(function(){
+            $('a[class="dropdown-item active show"]').each(function() {
                 $(this).removeClass("show").removeClass("active");
             });
-            $('a[class="list-group-item list-group-item-action active show"]').each(function(){
+            $('a[class="list-group-item list-group-item-action active show"]').each(function() {
                 $(this).removeClass("show").removeClass("active");
             });
             $("#btn-select-ship").prop("disabled", true);
@@ -101,19 +133,19 @@ var p11 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
         title: "選択",
         resizable: false,
         close: function() {
-            $("div[class*=active]").each(function(){
+            $("div[class*=active]").each(function() {
                 $(this).removeClass("show").removeClass("active");
             });
-            $('a[class="nav-link active show"]').each(function(){
+            $('a[class="nav-link active show"]').each(function() {
                 $(this).removeClass("show").removeClass("active");
             });
-            $('a[class="nav-link dropdown-toggle active"]').each(function(){
+            $('a[class="nav-link dropdown-toggle active"]').each(function() {
                 $(this).removeClass("active");
             });
-            $('a[class="dropdown-item active show"]').each(function(){
+            $('a[class="dropdown-item active show"]').each(function() {
                 $(this).removeClass("show").removeClass("active");
             });
-            $('a[class="list-group-item list-group-item-action active show"]').each(function(){
+            $('a[class="list-group-item list-group-item-action active show"]').each(function() {
                 $(this).removeClass("show").removeClass("active");
             });
             $("#btn-select-equipment").prop("disabled", true);
@@ -126,7 +158,7 @@ var p11 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
         title: "メッセージ",
         resizable: false,
     });
-    $('a[class="list-group-item list-group-item-action"]').on("shown.bs.tab", function(e){
+    $('a[class="list-group-item list-group-item-action"]').on("shown.bs.tab", function(e) {
         $("#btn-select-" + $(this).attr("href").split("-")[1]).prop("disabled", false);
     });
     $(".dialog-remove").on('click', function() {
@@ -138,9 +170,16 @@ var p11 = Promise.all([p1,p2,p3,p4,p5]).then(function () {
             $("#dialog-select-ship").dialog('close');
         }
     });
+    $(".list-group-item-action").dblclick(function() {
+        if (record_target.attr("id").split("-")[0] == "equipment") {
+            selectItem('equipment')
+        } else {
+            selectItem('ship')
+        }
+    })
     console.info("dialog display");
 })
-var p12 = Promise.all([p9]).then(function () {
+var p11 = Promise.all([p9]).then(function() {
     /**
      * ==========================================================
      * MAP画面関係
@@ -160,7 +199,7 @@ var p12 = Promise.all([p9]).then(function () {
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $("#map-cell").siblings('button').prop('disabled', true);
-    $("#map-area").on('changed.bs.select', function(){
+    $("#map-area").on('changed.bs.select', function() {
         changeArea($(this).val(), true);
         updateResult();
         updateRecord(0, false)
@@ -170,7 +209,7 @@ var p12 = Promise.all([p9]).then(function () {
         updateResult();
         updateRecord(0, false)
     });
-    $("#map-cell").on('changed.bs.select', function(){
+    $("#map-cell").on('changed.bs.select', function() {
         changeCell($(this).val(), true);
         updateResult();
         updateRecord(0, false)
@@ -182,12 +221,13 @@ var p12 = Promise.all([p9]).then(function () {
     });
     console.info("map display");
 })
-Promise.all([p10,p11,p12]).then(function() {
+Promise.all([p10, p11]).then(function() {
+    preload()
     expandRecord(0);
     console.info("expand record");
 })
 
-$(function () {
+$(function() {
     console.info("function() start");
     /**
      * ==========================================================
@@ -195,17 +235,17 @@ $(function () {
      * ==========================================================
      */
     $(".space-ship").selectpicker({
-         width: 30,
-         size: 5,
-         container: 'body',
-         style: 'page-link text-dark d-inline-block'
+        width: 30,
+        size: 5,
+        container: 'body',
+        style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $(".space-ship").siblings('button').prop('disabled', true);
     $(".space-base").selectpicker({
-         width: 30,
-         size: 5,
-         container: 'body',
-         style: 'page-link text-dark d-inline-block'
+        width: 30,
+        size: 5,
+        container: 'body',
+        style: 'page-link text-dark d-inline-block'
     })
     $(".skill").selectpicker({
         width: 40,
@@ -241,16 +281,22 @@ $(function () {
      * ==========================================================
      */
     $("#tab-fleet").tabs();
-    $("#tab-fleet").tabs("option", "disabled", [1,2]);
+    $("#tab-fleet").tabs("option", "disabled", [1, 2]);
     $("#tab-fleet").children("ul").show();
     $(".equipment-name-base").on("click", function() {
         record_target = $(this);
-        for (let i=0; i<tab_type_equipment.length; i++) {
+        if (record_target.text().indexOf("装備選択") == -1) {
+            $(".dialog-remove").prop("disabled", false)
+        } else {
+            $(".dialog-remove").prop("disabled", true)
+        }
+
+        for (let i = 0; i < tab_type_equipment.length; i++) {
             switch (i) {
                 case 7:
                 case 8:
                 case 11:
-                    for (var j=0; j<tab_type_equipment[i].length; j++) {
+                    for (var j = 0; j < tab_type_equipment[i].length; j++) {
                         var equipment_type = tab_type_equipment[i][j];
                         $("#tab-equipment-" + i + "-" + equipment_type).show();
                     }
@@ -268,19 +314,24 @@ $(function () {
         let element_equipment_id = $(this).attr("id").split("-")[4]
         let ship_id = Number($("#grade-" + element_ship_id).val())
         let ship_type = data_ship_id[ship_id].type;
+        if (record_target.text().indexOf("装備選択") == -1 && record_target.text().indexOf("補強増設") == -1) {
+            $(".dialog-remove").prop("disabled", false)
+        } else {
+            $(".dialog-remove").prop("disabled", true)
+        }
 
-        for (let i=0; i<tab_type_equipment.length; i++) {
+        for (let i = 0; i < tab_type_equipment.length; i++) {
             let flag = 0;
-            for (let j=0; j<tab_type_equipment[i].length; j++) {
+            for (let j = 0; j < tab_type_equipment[i].length; j++) {
                 let equipment_type = tab_type_equipment[i][j];
                 let data = data_equipment_type_ship[equipment_type];
                 if (equipment_type == 20) {
-                    for (var k=0; k<data.id.length; k++) {
+                    for (var k = 0; k < data.id.length; k++) {
                         $("#list-equipment-" + equipment_type + "-" + data.id[k]).show();
                     }
                 }
 
-                if (checkEquipmentTypeAvailable (element_equipment_id, ship_id, ship_type, equipment_type, true)) {
+                if (checkEquipmentTypeAvailable(element_equipment_id, ship_id, ship_type, equipment_type, true)) {
                     flag = 1;
                     $("#tab-equipment-" + i + "-" + equipment_type).show();
                 } else {
@@ -297,14 +348,19 @@ $(function () {
     });
     $(".ship-name").on("click", function() {
         record_target = $(this);
+        if (record_target.text().indexOf("艦娘") == -1) {
+            $(".dialog-remove").prop("disabled", false)
+        } else {
+            $(".dialog-remove").prop("disabled", true)
+        }
         openSelectDialog('ship');
     });
-    $(".grade select").on('changed.bs.select', function(){
-        setShipItem($(this).val(), $(this).attr("id").split('-')[1]);
+    $(".grade select").on('changed.bs.select', function() {
+        setShipItem($(this).val(), $(this).attr("id").split('-')[1], false, true);
         updateResult();
         updateRecord(0, false)
     });
-    $(".space select").on('changed.bs.select', function(){
+    $(".space select").on('changed.bs.select', function() {
         let element_target_type = $(this).attr("id").split("-")[1];
         let element_target_id = $(this).attr("id").split("-")[2];
         let element_equipment_id = $(this).attr("id").split("-")[3];
@@ -317,7 +373,7 @@ $(function () {
         updateResult();
         updateRecord(0, false)
     });
-    $(".improvement select").on('changed.bs.select', function(){
+    $(".improvement select").on('changed.bs.select', function() {
         let element_target_type = $(this).attr("id").split("-")[1];
         let element_target_id = $(this).attr("id").split("-")[2];
         let element_equipment_id = $(this).attr("id").split("-")[3];
@@ -330,7 +386,7 @@ $(function () {
         updateResult();
         updateRecord(0, false)
     });
-    $(".skill select").on('changed.bs.select', function(){
+    $(".skill select").on('changed.bs.select', function() {
         let element_target_type = $(this).attr("id").split("-")[1];
         let element_target_id = $(this).attr("id").split("-")[2];
         let element_equipment_id = $(this).attr("id").split("-")[3];
@@ -358,8 +414,8 @@ $(function () {
         let id = $(this).attr("id").split("-")[3]
         let line = (type == "base") ? 3 : 19;
         let item = (type == "base") ? 4 : 6;
-        for (let i=0; i<line; i++) {
-            for (let j=0; j<item; j++) {
+        for (let i = 0; i < line; i++) {
+            for (let j = 0; j < item; j++) {
                 if ($("#equipment-name-" + type + "-" + i + "-" + j).children().length == 0) continue;
 
                 let element_skill = $("#skill-" + type + "-" + i + "-" + j);
@@ -431,37 +487,36 @@ $(function () {
         updateResult();
         updateRecord(0, false)
     })
-    $('input[class*="airpower"]').each(function(){
-        $(this).keypress(function(e){
+    $('input[class*="airpower"]').each(function() {
+        $(this).on("input", function(e) {
+            let str = $(this).val();
+            while (str.match(/[^\d]/)) {
+                str = str.replace(/[^\d]/, "");
+            }
+            $(this).val(str);
+            updateResult();
+        })
+        $(this).keypress(function(e) {
             let str = $(this).val()
-            let pattern = new RegExp("[^0-9]")
-            if (str.length >= 3 || pattern.test(e.key) || (str == 0 && e.key == 0)) {
+            if (str.length >= 3) {
                 e.preventDefault();
             }
         })
-        $(this).keyup(function(e){
-            let str = $(this).val()
-            str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
-                return String.fromCharCode(s.charCodeAt(0) - 65248);
-            });
-            $(this).val(str)
-            updateResult();
-        })
-        $(this).blue(function(e){
+        $(this).change(function(e) {
             let str = $(this).val()
             $(this).val(Number(str));
         })
     });
-    $(".base-name").each(function(){
+    $(".base-name").each(function() {
         addDDEvent(this);
     });
-    $(".ship-name").each(function(){
+    $(".ship-name").each(function() {
         addDDEvent(this);
     });
-    $(".equipment-name-base").each(function(){
+    $(".equipment-name-base").each(function() {
         addDDEvent(this);
     });
-    $(".equipment-name-ship").each(function(){
+    $(".equipment-name-ship").each(function() {
         addDDEvent(this);
     });
 
@@ -470,12 +525,24 @@ $(function () {
      * 結果画面関係
      * ==========================================================
      */
-     $(".downRate select").on('changed.bs.select', function(){
-         let id = Number($(this).attr("id").split("-")[1])
-         record_option.downRate[id] = Number($(this).val())
-         updateResult();
-         updateRecord(0, false)
-     });
+
+    $(".downRate").slider({
+        ticks: [0, 50, 100],
+        // ticks_labels: ['0%', '50%', '100%'],
+        min: 0,
+        max: 20,
+        step: 10,
+        value: 0
+    });
+
+    $("#detail-downRate").tooltip();
+
+    $(".downRate").change(function() {
+        let id = Number($(this).attr("id").split("-")[1])
+        record_option.downRate[id] = Number($(this).val())
+        updateResult();
+        updateRecord(0, false)
+    });
 
     chart = Highcharts.chart('myChart', {
         chart: {
@@ -492,30 +559,37 @@ $(function () {
             title: {
                 text: null
             },
-            tickPositions: [0, 1/3, 2/3, 1.5, 3, 3.5],
+            tickPositions: [0, 1 / 3, 2 / 3, 1.5, 3, 3.5],
             labels: {
                 y: 20,
-                style: { color: "black", fontSize: "14px" },
+                style: {
+                    color: "black",
+                    fontSize: "14px"
+                },
                 formatter: function() {
                     switch (this.value) {
-                        case 0:   return "喪失";
-                        case 1/3: return "劣勢";
-                        case 2/3: return "均衡";
-                        case 1.5: return "優勢";
-                        case 3:   return "確保";
-                        default:  return "";
+                        case 0:
+                            return "喪失";
+                        case 1 / 3:
+                            return "劣勢";
+                        case 2 / 3:
+                            return "均衡";
+                        case 1.5:
+                            return "優勢";
+                        case 3:
+                            return "確保";
+                        default:
+                            return "";
                     }
                 }
             },
-            plotLines: [
-                {
-                    value: 2/6,
-                    color: 'green',
-                    dashStyle: 'shortdash',
-                    width: 2,
-                    zIndex: 4
-                }
-            ]
+            plotLines: [{
+                value: 2 / 6,
+                color: 'green',
+                dashStyle: 'shortdash',
+                width: 2,
+                zIndex: 4
+            }]
         },
         tooltip: {
             enabled: false
@@ -533,19 +607,23 @@ $(function () {
         credits: {
             enabled: false
         },
-        series:[{
+        series: [{
             name: 'test',
             type: 'column',
-            data: [0,0,0,0,0,0,0]
+            data: [0, 0, 0, 0, 0, 0, 0]
         }, {
             name: 'test2',
             type: 'errorbar',
-            data: [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
+            data: [
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0]
+            ]
         }]
     })
     console.info("function() end");
-});
-
-$(window).load(function(){
-
 });

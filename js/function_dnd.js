@@ -175,6 +175,7 @@ function exchangeEquipment(e, t) {
     let ship_id_source = (element_type === "ship") ? Number($("#grade-" + element_target_id_source).val()) : null;
     let ship_type_source = (element_type === "ship") ? data_ship_id[ship_id_source].type : null;
     let equipment_type_target = (element_type === "ship" && t.innerHTML.indexOf("装備選択") == -1 && t.innerHTML.indexOf("補強増設") == -1) ? data_equipment_id_ship[record_ship[element_target_id_target][element_equipment_id_target].id].type : 0;
+    // let equipment_type_source = (element_type === "ship") ? data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type : null;
     let equipment_type_source = (element_type === "ship") ? data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type : null;
 
     if (element_type == "ship") {
@@ -183,18 +184,20 @@ function exchangeEquipment(e, t) {
 
         if (t.innerHTML.indexOf("装備選択") == -1 && t.innerHTML.indexOf("補強増設") == -1) {
             record_ship[element_target_id_source][element_equipment_id_source].id = record_ship[element_target_id_target][element_equipment_id_target].id
-            $(drag_source).attr("draggable", true).empty().html(t.innerHTML).css('visibility','visible');
+            $(drag_source).attr("draggable", true).empty().html(t.innerHTML).css('visibility', 'visible');
+            $(drag_source).css('font-size', getFontSize($(drag_source).text(), 13, "メイリオ, sans-serif", 240))
         } else {
             let num = element_equipment_id_source % 6;
             record_ship[element_target_id_source][element_equipment_id_source].id = 0;
             if (data_ship_id[ship_id_source].slot != num) {
-                $(drag_source).attr("draggable", false).empty().html("&nbsp;装備選択").css('visibility','visible');
+                $(drag_source).attr("draggable", false).empty().html("&nbsp;装備選択").css({'visibility':'visible','font-size':'13px'});
             } else {
-                $(drag_source).attr("draggable", false).empty().html("&nbsp;補強増設").css('visibility','visible');
+                $(drag_source).attr("draggable", false).empty().html("&nbsp;補強増設").css({'visibility':'visible','font-size':'13px'});
             }
         }
         record_ship[element_target_id_target][element_equipment_id_target].id = Number(e.dataTransfer.getData("equipment_id"));
-        $(t).attr("draggable", true).empty().html(e.dataTransfer.getData('html')).css('visibility','visible');
+        $(t).attr("draggable", true).empty().html(e.dataTransfer.getData('html')).css('visibility', 'visible');
+        $(t).css('font-size', getFontSize($(t).text(), 13, "メイリオ, sans-serif", 240))
 
         record_ship[element_target_id_source][element_equipment_id_source].improvement = Number(element_improvement_target.val());
         record_ship[element_target_id_target][element_equipment_id_target].improvement = Number(e.dataTransfer.getData('improvement_value'));

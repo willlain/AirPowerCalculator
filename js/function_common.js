@@ -65,16 +65,13 @@ function openMessageDialog(type, message) {
  */
 function checkEquipmentAvailable(equipment_type, ship_id, ship_type, expansion_flag) {
     let data = data_equipment_type_ship[equipment_type];
-
     if (!expansion_flag) {
         if (data.exclusion_ship_id.indexOf(ship_id) != -1) {
             return false;
-            } else {
-         if (data.available_ship_type.indexOf(ship_type) != -1 || data.available_ship_id.indexOf(ship_id) != -1) {
-                return true;
-            } else {
-                return false;
-            }
+        } else if (data.available_ship_type.indexOf(ship_type) != -1 || data.available_ship_id.indexOf(ship_id) != -1) {
+            return true;
+        } else {
+            return false;
         }
     } else {
         if (equipment_type == 20) {
@@ -94,14 +91,12 @@ function checkEquipmentAvailableException(equipment_type, ship_id) {
     switch (equipment_type) {
         case 20:
             for (let i=0; i<data.expansion_ship_id.length; i++) {
-                if (data.expansion_ship_id[i].indexOf(ship_id) != -1) {
-                    result = data.expansion_equipment_id[i];
-                }
+                if (data.expansion_ship_id[i].indexOf(ship_id) != -1) result = data.expansion_equipment_id[i];
             }
             return result;
             break;
-        default:
     }
+    return result;
 }
 
 function checkEquipmentTypeAvailable(element_equipment_id, ship_id, ship_type, equipment_type, tab_flag) {
@@ -123,23 +118,27 @@ function checkEquipmentTypeAvailable(element_equipment_id, ship_id, ship_type, e
         } else {
             return false;
         }
-    } else if (equipment_type == 20) {
-        let result = checkEquipmentAvailableException(equipment_type, ship_id);
-        if (result.length != 0) {
-            return true;
-        } else {
-            return false;
-        }
-        if (tab_flag) {
-            for (let i=0; i<data_equipment_type_ship[equipment_type].id.length; i++) {
-                if (result.indexOf(data.id[i]) != -1) {
-                    $("#list-equipment-" + equipment_type + "-" + data_equipment_type_ship[equipment_type].id[i]).show();
-                } else {
-                    $("#list-equipment-" + equipment_type + "-" + data_equipment_type_ship[equipment_type].id[i]).hide();
+    } else {
+        // 高角副砲
+        if (equipment_type == 20) {
+            let result = checkEquipmentAvailableException(equipment_type, ship_id);
+            if (tab_flag) {
+                for (let i=0; i<data_equipment_type_ship[equipment_type].id.length; i++) {
+                    if (result.length == 0) break;
+                    if (result.indexOf(data.id[i]) != -1) {
+                        $("#list-equipment-" + equipment_type + "-" + data_equipment_type_ship[equipment_type].id[i]).show();
+                    } else {
+                        $("#list-equipment-" + equipment_type + "-" + data_equipment_type_ship[equipment_type].id[i]).hide();
+                    }
                 }
             }
+            if (result.length != 0) {
+                return true;
+            } else {
+                return false;
+            }
         }
-    } else {
+
         if (checkEquipmentAvailable(equipment_type, ship_id, ship_type, true)) {
             return true;
         } else {
@@ -176,25 +175,16 @@ function parseStrToBoolean(str) {
     return (str == 'true') ? true : false;
 }
 
-function strWidth(str, size, family) {
-    let element = $("#ruler");
-    element.css({"font-size":size, "font-family": family});
-    let width = element.text(str).get(0).offsetWidth;
-    element.empty();
-    return width;
-}
-
-function preload() {
-    Object.keys(data_map).forEach(function(key) {
-        Object.keys(this[key]).forEach(function(key2) {
-            $("<img>").attr("src", "img/map/" + key + "-" + key2 + ".png");
-        })
-    }, data_map)
-    Object.keys(data_enemy_id).forEach(function(key) {
-        $("<img>").attr("src", "img/enemy/banner/" + key + .png);
-    })
-    Object.keys(data_ship_id).forEach(function(key) {
-        $("<img>").attr("src", "img/ship/banner/" + key + .png);
-    })
-    console.info("preload end");
+function getFontSize(str, default_size, family, element_width) {
+    let element = $("#checkWidth")
+    let size = default_size
+    element.css({"font-size":size, "font-family": family, "white-space":"nowrap"});
+    while(1) {
+        let width = element.text(str).get(0).offsetWidth;
+        element.empty();
+        if (!width) return 0;
+        if (element_width > width) return size;
+        size -= 1;
+        element.css("font-size", size);
+    }
 }

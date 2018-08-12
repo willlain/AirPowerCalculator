@@ -47,7 +47,7 @@ function setFleet(type, fleet, line, item) {
         html += "<div class='top'>"             // targetの上部
         html += "<div class='input-group'>"
         html += "<div class='input-group-prepend'><button class='btn btn-secondary remove' onclick=\"removeItem('" + type + "'," + i + ")\">×</button></div>"
-        html += "<input type='number' class='airpower form-control' id='airpower-" + type + "-" + i + "' value='0' onpaste='return false' oncontextmenu='return false'>"
+        html += "<input class='airpower form-control' id='airpower-" + type + "-" + i + "' value='0' onpaste='return false' oncontextmenu='return false'>"
         if (type == "base") {
             html += "<div class='input-group-append'><span class='radius' id='radius-" + i + "'>0</span></div>"
             html += "</div>"
@@ -197,22 +197,21 @@ function displayMap() {
 
 function displayResultOption() {
     let html = "";
-    let label_list = ["有効無効（＋撃墜率） 第一航空隊 1波 "," 2波","第二航空隊 1波 "," 2波","第三航空隊 1波 "," 2波"]
+    let label_list = ["第一航空隊&ensp;1波","2波","第二航空隊&ensp;1波","2波","第三航空隊&ensp;1波","2波"]
+    let tooltip_downRate = "制空状態による撃墜数の割合（ex.優勢時は0～80%）を変動します。"
     for (let i=0; i<6; i++) {
         if (i%2 == 0) {
-            html += "<div class='form-check form-check-inline' style='width:100%'>"
+            if (i === 0) html += "<div class='form-check form-check-inline' style='width:100%'><div data-toggle='tooltip' title='" + tooltip_downRate + "' id='detail-downRate' style='width:72px;border-bottom: 1px dotted black;'>撃墜率調整</div>"
+            if (i != 0) html += "<div class='form-check form-check-inline' style='width:100%;margin-top:30px;'><div style='width:72px'></div>"
             html += "<label class='activate-base-label'>" + label_list[i] + "</label>";
         } else {
-            html += "<label class='form-check-label'>" + label_list[i] + "</label>";
+            html += "<label class='form-check-label' style='margin-left:20px;'>" + label_list[i] + "</label>";
         }
+        html += "<input class='downRate' id='downRate-" + i + "' type='text'/>"
 
-        html += "<label class='form-check-label'><select class='downRate selectpicker' id='downRate-" + i + "'>"
-        for (let j=0; j<=10; j++) {
-            html += "<option value='" + j*10 + "'>" + j*10 + "</option>"
-        }
-        html += "</select>%</label>"
         if (i%2 === 1) html += "</div>";
     }
+    html += "<div id='downRate-label'><span style='margin-left:192px'>0%</span><span style='margin-left:52px;'>50%</span><span style='margin-left:43px;'>100%</span><span style='margin-left:30px;'>0%</span><span style='margin-left:52px;'>50%</span><span style='margin-left:43px;'>100%</span></div>"
     document.write(html);
 }
 
@@ -309,6 +308,7 @@ function displayListEquipment() {
                 item_id = list_id[j] + "-" + id_list[j][k]
 
                 html_content += "<a href='#" + info_id + "' data-toggle='pill' class='list-group-item list-group-item-action' id='" + item_id + "'>" + data.name + "</a>"
+                // let size = getFontSize(data.name, 30, "Meiryo UI", 350)
 
                 html_info += "<div class='tab-pane' id='" + info_id + "'>";
                 html_info += "<span class='select-name'>" + data.name + "</span>";

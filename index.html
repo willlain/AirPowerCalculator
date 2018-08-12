@@ -9,6 +9,7 @@
     <link href="css/jquery-ui.min.css" rel="stylesheet" />
     <link href="css/bootstrap.min.css" rel="stylesheet" />
     <link href="css/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="css/bootstrap-slider.min.css" rel="stylesheet" />
     <link href="css/index.css" rel="stylesheet" />
     <link href="css/highcharts.css" rel="stylesheet" />
 
@@ -16,6 +17,7 @@
     <script type="text/javascript" src="js/popper.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-slider.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/footerFixed.js"></script>
     <script type="text/javascript" src="js/highcharts.js"></script>
@@ -54,7 +56,7 @@
                 <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-base">△</button>&nbsp;基地航空隊</h1>
                 <div id="base-content">
                     <div class="option-input">
-                        <div id="radius-enemy">必要航続距離：<span id='radius-enemy-value'>0</span></div>
+                        <div id="radius-enemy">必要距離：<div id='radius-enemy-value'>0</div></div>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label">熟練度</label>
                             <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-base-0" checked>戦闘機</label>
@@ -73,7 +75,7 @@
                             <input type="text" class="form-control form-control-sm" id="deckbuilder" placeholder="デッキビルダー"></input>
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-primary btn-sm" onclick="inputDeckbuilder()">入力</button>
-                                <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" title="編成をクリップボードにコピーしました" onclick="outputDeckbuilder()">出力</button>
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" onclick="outputDeckbuilder()">出力</button>
                             </div>
                         </div>
                         <div class="form-check form-check-inline">
@@ -104,7 +106,6 @@
                     <div id="chart-content">
                         <div id="myChart"></div>
                         <script type="text/javascript">displayResultAirPowerInfo()</script>
-                        <!-- <div class="result-airPower">+100</div> -->
                     </div>
                     <table id="result-info">
                         <tr>
@@ -142,6 +143,7 @@
         <div class="dialog" id="dialog-select-equipment">
             <!-- <script type="text/javascript">displayList('equipment')</script> -->
         </div>
+        <span id="checkWidth"></span>
         <footer id="footer">
             <div>バグ・改善点・実装してほしい機能などの連絡はこちらまで：<a href="https://peing.net/willlain" target="_blank">質問箱</a></div>
             <div>製作者：ウィル@ハムスター <a href="https://twitter.com/Willlain" target="_blank">twitter</a></div>
