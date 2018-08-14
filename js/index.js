@@ -360,16 +360,19 @@ $(function() {
         updateResult();
         updateRecord(0, false)
     });
-    $(".space select").on('changed.bs.select', function() {
-        let element_target_type = $(this).attr("id").split("-")[1];
+    $(".space-base select").on('changed.bs.select', function() {
         let element_target_id = $(this).attr("id").split("-")[2];
         let element_equipment_id = $(this).attr("id").split("-")[3];
-        updateAirPowerFrends(element_target_type, element_target_id, element_equipment_id)
-        if (element_target_type === "base") {
-            record_base[element_target_id][element_equipment_id].space = Number($("#space-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
-        } else {
-            record_ship[element_target_id][element_equipment_id].space = Number($("#space-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
-        }
+        updateAirPowerFrends("base", element_target_id, element_equipment_id)
+        record_base[element_target_id][element_equipment_id].space = Number($("#space-base-" + element_target_id + "-" + element_equipment_id).val());
+        updateResult();
+        updateRecord(0, false)
+    });
+    $(".space-ship select").on('changed.bs.select', function() {
+        let element_target_id = $(this).attr("id").split("-")[2];
+        let element_equipment_id = $(this).attr("id").split("-")[3];
+        updateAirPowerFrends("ship", element_target_id, element_equipment_id)
+        record_ship[element_target_id][element_equipment_id].space = Number($("#space-ship-" + element_target_id + "-" + element_equipment_id).val());
         updateResult();
         updateRecord(0, false)
     });

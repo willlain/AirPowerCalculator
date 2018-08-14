@@ -113,7 +113,17 @@ function expandRecord(num) {
             Object.keys(this[key]).forEach(function(key2){
                 if (this[key2].id != 0) {
                     setEquipmentItem("base", key, key2, data_equipment_id_ship[this[key2].id].type, this[key2].id, this[key2].improvement, this[key2].skill)
-                    $("#space-base-" + key + "-" + key2).val(this[key2].space).selectpicker('refresh');
+                    let space = this[key2].space;
+                    switch (data_equipment_id_ship[this[key2].id].type) {
+                        case 9:
+                        case 10:
+                        case 41:
+                        case 56:
+                            space = (this[key2].space > 4) ? 4 : this[key2].space;
+                            break;
+                        default:
+                    }
+                    $("#space-base-" + key + "-" + key2).val(space).selectpicker('refresh');
                 }
             }, record_base[key])
         }, record_base);
@@ -439,6 +449,7 @@ function setEquipmentItem(element_type, element_target_id, element_equipment_id,
     let element_space = $("#space-base-" + element_target_id + "-" + element_equipment_id);
 
     if (element_type == "base") {
+        console.info(record_base, element_target_id)
         record_base[element_target_id][element_equipment_id].id = equipment_id
         record_base[element_target_id][element_equipment_id].improvement = 0
         record_base[element_target_id][element_equipment_id].skill = 0;

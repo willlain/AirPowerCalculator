@@ -4271,8 +4271,8 @@
         "bombing": 0,
         "range": 0,
         "radius": 7,
-        "antiBobing": 5,
-        "interception": 1
+        "antiBobing": 1,
+        "interception": 5
     },
     "226": {
         "name": "九五式爆雷",

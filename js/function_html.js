@@ -198,7 +198,7 @@ function displayMap() {
 function displayResultOption() {
     let html = "";
     let label_list = ["第一航空隊&ensp;1波","2波","第二航空隊&ensp;1波","2波","第三航空隊&ensp;1波","2波"]
-    let tooltip_downRate = "制空状態による撃墜数の割合（ex.優勢時は0～80%）を変動します。"
+    let tooltip_downRate = "制空状態による撃墜数の割合（e.g.優勢時は0～80%）を変動します。"
     for (let i=0; i<6; i++) {
         if (i%2 == 0) {
             if (i === 0) html += "<div class='form-check form-check-inline' style='width:100%'><div data-toggle='tooltip' title='" + tooltip_downRate + "' id='detail-downRate' style='width:72px;border-bottom: 1px dotted black;'>撃墜率調整</div>"
