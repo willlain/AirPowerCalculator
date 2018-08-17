@@ -179,7 +179,7 @@ div.ship div.top .grade {
 }
 div.grade button.btn {
     font-size: 14px;
-    padding: 0;
+    /* padding: 0; */
 }
 /* section#result div.form-check label.form-check-label div.downRate {
     width: 40px;
@@ -227,12 +227,7 @@ input.airpower {
     font-size: 12px;
     height: 20px;
 }
-/* input.downRate {
-    width: 35px;
-    height: 20px;
-    padding: 0 3px;
-    font-size: 12px;
-} */
+
 button.remove {
     height: 20px;
     padding: 0 2px;
@@ -240,7 +235,13 @@ button.remove {
 }
 div.bootstrap-select button.dropdown-toggle div.filter-option {
     /* height: 18px; */
-    text-align: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content:center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
+    padding: 0;
 }
 .bootstrap-select .dropdown-toggle:before, .bootstrap-select .dropdown-toggle:after, .dropdown-toggle:after {
     display: none;
@@ -338,14 +339,12 @@ div.top div.improvement {
 div.skill button.btn, div.improvement button.btn {
     font-size: 14px;
     font-weight: 600;
-    padding: 0;
 }
 div.top div.skill {
     margin: 0 2px 0 1px;
 }
 div.space-base button.btn, div.space-ship button.btn {
-    padding: 3px 0;
-    margin-left: auto;
+    padding: 12px;
 }
 
 div.equipment-toggle {
@@ -396,7 +395,7 @@ div#map-content-right {
 }
 
 div.area button.btn, div.cell button.btn {
-    padding: 7px 0;
+    padding: 15px;
 }
 div#difficulty, div#enemy-fleet-step {
     margin-left: 10px;
@@ -568,6 +567,7 @@ div.dialog-left {
     width:500px;
 }
 div.dialog-right {
+    display: none;
     width:350px;
     margin-left:10px;
 }

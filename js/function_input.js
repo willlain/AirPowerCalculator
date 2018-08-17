@@ -253,25 +253,27 @@ function updateRecord(num, del_flag) {
 function selectItem(type) {
     let pattern;
     if (type == "equipment") {
-        $("div[class*=active]").each(function(){
+        $("a[class*=active]").each(function(){
             pattern = /^info-equipment/;
             if (pattern.test($(this).attr('id'))) {
-                let equipment_type = Number($(this).attr('id').split('-')[2]);
-                let equipment_id = $(this).attr('id').split('-')[3];
+                let equipment_type = Number($(this).attr('id').split('-')[3]);
+                let equipment_id = $(this).attr('id').split('-')[4];
                 let element_type = record_target.attr('id').split('-')[2];
                 let element_target_id = record_target.attr('id').split('-')[3];
                 let element_equipment_id = record_target.attr('id').split('-')[4];
                 setEquipmentItem(element_type, element_target_id, element_equipment_id, equipment_type, equipment_id);
+                return false;
             }
         });
         $("#dialog-select-equipment").dialog('close');
     } else {
-        $("div[class*=active]").each(function(){
+        $("a[class*=active]").each(function(){
             pattern = /^info-ship/;
             if (pattern.test($(this).attr('id'))) {
                 let ship_id = Number($(this).attr('id').split('-')[3]);
                 let element_id = record_target.attr('id').split('-')[2];
                 setShipItem(ship_id, element_id, true, true);
+                return false;
             }
         });
         $("#dialog-select-ship").dialog('close');

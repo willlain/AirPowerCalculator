@@ -76,22 +76,6 @@ function getJson(json_url) {
     })
 }
 
-function preload() {
-    Object.keys(data_map).forEach(function(key) {
-        Object.keys(this[key]).forEach(function(key2) {
-            $("<img>").attr("src", "img/map/" + key + "-" + key2 + ".png");
-        })
-    }, data_map)
-    Object.keys(data_enemy_id).forEach(function(key) {
-        $("<img>").attr("src", "img/enemy/banner/" + key + ".png");
-    })
-    Object.keys(data_ship_id).forEach(function(key) {
-        $("<img>").attr("src", "img/ship/banner/" + key + ".png");
-    })
-    console.info("preload end");
-}
-
-
 var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
 
     /**
@@ -124,6 +108,7 @@ var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
                 $(this).removeClass("show").removeClass("active");
             });
             $("#btn-select-ship").prop("disabled", true);
+            $(".dialog-right").hide();
         }
     });
     $("#dialog-select-equipment").dialog({
@@ -149,6 +134,7 @@ var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
                 $(this).removeClass("show").removeClass("active");
             });
             $("#btn-select-equipment").prop("disabled", true);
+            $(".dialog-right").hide();
         }
     });
     $("#dialog-message").dialog({
@@ -157,9 +143,6 @@ var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
         // width: 900,
         title: "メッセージ",
         resizable: false,
-    });
-    $('a[class="list-group-item list-group-item-action"]').on("shown.bs.tab", function(e) {
-        $("#btn-select-" + $(this).attr("href").split("-")[1]).prop("disabled", false);
     });
     $(".dialog-remove").on('click', function() {
         if (record_target.attr("id").split("-")[0] == "equipment") {
@@ -170,7 +153,103 @@ var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
             $("#dialog-select-ship").dialog('close');
         }
     });
-    $(".list-group-item-action").dblclick(function() {
+    $(".list-group-item-action").on('click', function() {
+        if ($(this).attr("id").split("-")[1] == "equipment") {
+            let tab = Number($(this).attr("id").split("-")[2])
+            let id = Number($(this).attr("id").split("-")[4])
+            let data = data_equipment_id_ship[id]
+            $("#select-equipment-name").text(data.name);
+            $("#select-equipment-firePower").text(data.firePower);
+            $("#select-equipment-torpedo").text(data.torpedo);
+            $("#select-equipment-antiAir").text(data.antiAir);
+            $("#select-equipment-armor").text(data.armor);
+            $("#select-equipment-asw").text(data.asw);
+            $("#select-equipment-evasion").text(data.evasion);
+            $("#select-equipment-los").text(data.los)
+            $("#select-equipment-accuracy").text(data.accuracy);
+            if (tab === 7 || tab === 8) {
+                $("#select-equipment-aircraft-row-0").show();
+                $("#select-equipment-radius").text(data.radius);
+                $("#select-equipment-bombing").text(data.bombing);
+                $("#select-equipment-aircraft-row-1").hide();
+            } else if (tab === 11) {
+                $("#select-equipment-aircraft-row-0").show();
+                $("#select-equipment-radius").text(data.radius);
+                $("#select-equipment-bombing").text(data.bombing);
+                $("#select-equipment-aircraft-row-1").show();
+                $("#select-equipment-antiBobing").text(data.antiBobing);
+                $("#select-equipment-interception").text(data.interception);
+            } else {
+                $("#select-equipment-aircraft-row-0").hide();
+                $("#select-equipment-aircraft-row-1").hide();
+            }
+            let range = "短";
+            switch (data.range) {
+                case 1:
+                    range = "短";
+                    break;
+                case 2:
+                    range = "中";
+                    break;
+                case 3:
+                    range = "長";
+                    break;
+                case 4:
+                    range = "超長";
+                    break;
+            }
+            $("#select-equipment-range").text(range)
+            $("#select-equipment-image").attr("src", "img/equipment/item/" + ('000' + Number(id)).slice(-3) + ".png")
+            $(".dialog-right").show();
+        } else {
+            let id = Number($(this).attr("id").split("-")[$(this).attr("id").split("-").length-1])
+            let data = data_ship_id[id]
+            $("#select-ship-hp-min").text(data.HP_min)
+            $("#select-ship-hp-ring").text(data.HP_max)
+            $("#select-ship-firePower").text(data.firePower);
+            $("#select-ship-torpedo").text(data.torpedo);
+            $("#select-ship-asw-ring").text(data.ASW_ring)
+            $("#select-ship-evasion-ring").text(data.evasion_ring);
+            $("#select-ship-antiAir").text(data.antiAir);
+            $("#select-ship-armor").text(data.armor);
+            $("#select-ship-luck-min").text(data.luck_min);
+            $("#select-ship-luck-max").text(data.luck_max);
+
+            let range = "短";
+            switch (data.range) {
+                case 1:
+                    range = "短";
+                    break;
+                case 2:
+                    range = "中";
+                    break;
+                case 3:
+                    range = "長";
+                    break;
+                case 4:
+                    range = "超長";
+                    break;
+            }
+            let speed = "低速";
+            switch (data.speed) {
+                case 10:
+                    speed = "高速";
+                    break;
+            }
+            $("#select-ship-range").text(range);
+            $("#select-ship-speed").text(speed);
+
+            let space = "";
+            for (let i=0; i<data.slot; i++) {
+                space += data.space[i];
+                if (i != data.slot-1) space += "/";
+            }
+            $("#select-ship-space").text(space)
+            $("#select-ship-image").attr("src", "img/ship/body/" + id + ".png")
+            $(".dialog-right").show();
+        }
+        $("#btn-select-" + $(this).attr("id").split("-")[1]).prop("disabled", false);
+    }).dblclick(function() {
         if (record_target.attr("id").split("-")[0] == "equipment") {
             selectItem('equipment')
         } else {
@@ -189,13 +268,13 @@ var p11 = Promise.all([p9]).then(function() {
     $("#map-area").selectpicker({
         width: 70,
         size: 5,
-        container: 'body',
+        container: 'article',
         style: 'page-link text-dark d-inline-block'
     });
     $("#map-cell").selectpicker({
         width: 80,
         size: 5,
-        container: 'body',
+        container: 'article',
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $("#map-cell").siblings('button').prop('disabled', true);
@@ -221,12 +300,6 @@ var p11 = Promise.all([p9]).then(function() {
     });
     console.info("map display");
 })
-Promise.all([p10, p11]).then(function() {
-    preload()
-    expandRecord(0);
-    console.info("expand record");
-})
-
 $(function() {
     console.info("function() start");
     /**
@@ -237,43 +310,38 @@ $(function() {
     $(".space-ship").selectpicker({
         width: 30,
         size: 5,
-        container: 'body',
+        container: 'article',
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $(".space-ship").siblings('button').prop('disabled', true);
+
     $(".space-base").selectpicker({
         width: 30,
         size: 5,
-        container: 'body',
+        container: 'article',
         style: 'page-link text-dark d-inline-block'
     })
     $(".skill").selectpicker({
         width: 40,
         size: 5,
-        container: 'body',
+        container: 'article',
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $(".skill").siblings('button').prop('disabled', true);
     $(".improvement").selectpicker({
         width: 50,
         size: 5,
-        container: 'body',
+        container: 'article',
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $(".improvement").siblings('button').prop('disabled', true);
     $(".grade").selectpicker({
         width: 50,
         size: 5,
-        container: 'body',
+        container: 'article',
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $(".grade").siblings('button').prop('disabled', true);
-    $(".downRate").selectpicker({
-        width: 40,
-        size: 5,
-        container: 'body',
-        style: 'page-link text-dark d-inline-block'
-    })
 
     /**
      * ==========================================================
@@ -630,3 +698,26 @@ $(function() {
     })
     console.info("function() end");
 });
+
+$(window).on('load', function() {
+    Promise.all([p10, p11]).then(function() {
+        expandRecord(0);
+        preload()
+        console.info("expand record");
+    })
+})
+
+function preload() {
+    Object.keys(data_map).forEach(function(key) {
+        Object.keys(this[key]).forEach(function(key2) {
+            $("<img>").attr("src", "img/map/" + key + "-" + key2 + ".png");
+        })
+    }, data_map)
+    Object.keys(data_enemy_id).forEach(function(key) {
+        $("<img>").attr("src", "img/enemy/banner/" + key + ".png");
+    })
+    Object.keys(data_ship_id).forEach(function(key) {
+        $("<img>").attr("src", "img/ship/banner/" + key + ".png");
+    })
+    console.info("preload end");
+}
