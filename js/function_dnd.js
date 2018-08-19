@@ -27,6 +27,7 @@ function handleDragStart(e) {
             let element_equipment_id = $(this).attr("id").split("-")[4];
             let element_improvement = $("#improvement-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
             let element_skill = $("#skill-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
+            let element_space = $("#space-" + element_type + "-" + element_target_id + "-" + element_equipment_id);
             if (element_type == "base") {
                 e.dataTransfer.setData('equipment_id', record_base[element_target_id][element_equipment_id].id)
             } else {
@@ -36,6 +37,7 @@ function handleDragStart(e) {
             e.dataTransfer.setData('improvement_able', element_improvement.is(":disabled"));
             e.dataTransfer.setData('skill_value', element_skill.val());
             e.dataTransfer.setData('skill_able', element_skill.is(":disabled"));
+            e.dataTransfer.setData('space_value', element_space.val())
             break;
         case "ship":
             let element_ship_id = $(this).attr("id").split("-")[2];
@@ -166,17 +168,21 @@ function exchangeEquipment(e, t) {
     let element_equipment_id_target = $(t).attr("id").split("-")[4];
     let element_improvement_target = $("#improvement-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
     let element_skill_target = $("#skill-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
+    let element_space_target = $("#space-" + element_type + "-" + element_target_id_target + "-" + element_equipment_id_target);
     let element_target_id_source = $(drag_source).attr("id").split("-")[3];
     let element_equipment_id_source = $(drag_source).attr("id").split("-")[4];
     let element_improvement_source = $("#improvement-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source)
     let element_skill_source = $("#skill-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source);
+    let element_space_source = $("#space-" + element_type + "-" + element_target_id_source + "-" + element_equipment_id_source);
     let ship_id_target = (element_type === "ship") ? Number($("#grade-" + element_target_id_target).val()) : null;
     let ship_type_target = (element_type === "ship") ? data_ship_id[ship_id_target].type : null;
     let ship_id_source = (element_type === "ship") ? Number($("#grade-" + element_target_id_source).val()) : null;
     let ship_type_source = (element_type === "ship") ? data_ship_id[ship_id_source].type : null;
-    let equipment_type_target = (element_type === "ship" && t.innerHTML.indexOf("装備選択") == -1 && t.innerHTML.indexOf("補強増設") == -1) ? data_equipment_id_ship[record_ship[element_target_id_target][element_equipment_id_target].id].type : 0;
-    // let equipment_type_source = (element_type === "ship") ? data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type : null;
-    let equipment_type_source = (element_type === "ship") ? data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type : null;
+    let equipment_type_target = 0;
+    if (t.innerHTML.indexOf("装備選択") == -1 && t.innerHTML.indexOf("補強増設") == -1) {
+        equipment_type_target = (element_type === "ship") ? data_equipment_id_ship[record_ship[element_target_id_target][element_equipment_id_target].id].type : data_equipment_id_ship[record_base[element_target_id_target][element_equipment_id_target].id].type;
+    }
+    let equipment_type_source = (element_type === "ship") ? data_equipment_id_ship[record_ship[element_target_id_source][element_equipment_id_source].id].type : data_equipment_id_ship[record_base[element_target_id_source][element_equipment_id_source].id].type;
 
     if (element_type == "ship") {
         if (!checkEquipmentTypeAvailable(element_equipment_id_target, ship_id_target, ship_type_target, equipment_type_source)) return false;
@@ -213,19 +219,59 @@ function exchangeEquipment(e, t) {
 
     } else {
         drag_source.innerHTML = t.innerHTML;
-        t.innerHTML = e.dataTransfer.getData('html');
-        if (t.innerHTML.indexOf("装備選択") != -1) {
+        if (t.innerHTML.indexOf("装備選択") == -1) {
             $(drag_source).attr("draggable", true);
         } else {
             $(drag_source).attr("draggable", false);
         }
+        t.innerHTML = e.dataTransfer.getData('html');
         $(t).attr("draggable", true);
+
         record_base[element_target_id_source][element_equipment_id_source].id = record_base[element_target_id_target][element_equipment_id_target].id
         record_base[element_target_id_target][element_equipment_id_target].id = Number(e.dataTransfer.getData("equipment_id"));
         record_base[element_target_id_source][element_equipment_id_source].improvement = Number(element_improvement_target.val());
         record_base[element_target_id_target][element_equipment_id_target].improvement = Number(e.dataTransfer.getData('improvement_value'));
         record_base[element_target_id_source][element_equipment_id_source].skill = Number(element_skill_target.val())
         record_base[element_target_id_target][element_equipment_id_target].skill = Number(e.dataTransfer.getData('skill_value'))
+        record_base[element_target_id_source][element_equipment_id_source].space = Number(element_space_target.val())
+        record_base[element_target_id_target][element_equipment_id_target].space = Number(e.dataTransfer.getData('space_value'))
+
+        let html = "";
+        switch (equipment_type_source) {
+            case 9:
+            case 10:
+            case 41:
+            case 56:
+                for (let j=4; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                toggleEnabledSelection(element_space_target, false, record_base[element_target_id_target][element_equipment_id_target].space, $(html))
+                break;
+            default:
+                for (let j=18; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                toggleEnabledSelection(element_space_target, false, record_base[element_target_id_target][element_equipment_id_target].space, $(html))
+                break;
+        }
+        html = "";
+        switch (equipment_type_target) {
+            case 9:
+            case 10:
+            case 41:
+            case 56:
+                for (let j=4; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                toggleEnabledSelection(element_space_source, false, record_base[element_target_id_source][element_equipment_id_source].space, $(html))
+                break;
+            default:
+                for (let j=18; j>=0; j--) {
+                    html += "<option value='" + j + "'>" + j + "</option>"
+                }
+                toggleEnabledSelection(element_space_source, false, record_base[element_target_id_source][element_equipment_id_source].space, $(html))
+                break;
+        }
         toggleEnabledSelection(element_improvement_source, element_improvement_target.is(":disabled"), element_improvement_target.val())
         toggleEnabledSelection(element_improvement_target, parseStrToBoolean(e.dataTransfer.getData('improvement_able')), e.dataTransfer.getData('improvement_value'));
         toggleEnabledSelection(element_skill_source, element_skill_target.is(":disabled"), element_skill_target.val())

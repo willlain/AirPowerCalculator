@@ -451,7 +451,6 @@ function setEquipmentItem(element_type, element_target_id, element_equipment_id,
     let element_space = $("#space-base-" + element_target_id + "-" + element_equipment_id);
 
     if (element_type == "base") {
-        console.info(record_base, element_target_id)
         record_base[element_target_id][element_equipment_id].id = equipment_id
         record_base[element_target_id][element_equipment_id].improvement = 0
         record_base[element_target_id][element_equipment_id].skill = 0;
