@@ -2123,7 +2123,7 @@
         "luck_max": 30,
         "speed": 10,
         "range": 0,
-        "slot": 3,
+        "slot": 4,
         "space": [32,32,27,5,0],
         "equipment": [547,548,549,549,0]
     },
@@ -3019,7 +3019,7 @@
         "luck_max": 0,
         "speed": 10,
         "range": 0,
-        "slot": 3,
+        "slot": 4,
         "space": [32,32,27,5,0],
         "equipment": [556,548,558,549,0]
     },
@@ -3047,7 +3047,7 @@
         "luck_max": 0,
         "speed": 10,
         "range": 0,
-        "slot": 3,
+        "slot": 4,
         "space": [32,32,27,5,0],
         "equipment": [556,557,558,558,0]
     },
@@ -3075,7 +3075,7 @@
         "luck_max": 0,
         "speed": 10,
         "range": 0,
-        "slot": 3,
+        "slot": 4,
         "space": [36,36,36,36,0],
         "equipment": [547,548,549,549,0]
     },
@@ -3103,7 +3103,7 @@
         "luck_max": 0,
         "speed": 10,
         "range": 0,
-        "slot": 3,
+        "slot": 4,
         "space": [36,36,36,36,0],
         "equipment": [556,548,558,549,0]
     },
@@ -3131,7 +3131,7 @@
         "luck_max": 0,
         "speed": 10,
         "range": 0,
-        "slot": 3,
+        "slot": 4,
         "space": [36,36,36,36,0],
         "equipment": [556,557,558,558,0]
     },

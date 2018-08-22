@@ -114,26 +114,24 @@ function updateCombatRadius(element_target_id, element_equipment_id, equipment_i
  * @return {[type]}       [description]
  */
 function updateAirPowerEnemy() {
-    for(var i=0; i<12; i++) {
-        var enemy_id = record_map.fleet[i];
-        if (enemy_id == 0) {
-            continue;
-        }
+    for(let i=0; i<12; i++) {
+        let enemy_id = record_map.fleet[i];
+        if (enemy_id == 0) continue;
         if (data_enemy_id[enemy_id].space[0] == -1) {
             $("#airpower-enemy-" + i).empty().append("<input type='number' class='airpower form-control'>")
             continue;
         }
 
-        var power_base = 0;
-        var power_ship = 0;
-        for (var j=0; j<data_enemy_id[enemy_id].slot; j++) {
-            var equipment_id = data_enemy_id[enemy_id].equipment[j]
+        let power_base = 0;
+        let power_ship = 0;
+        for (let j=0; j<data_enemy_id[enemy_id].slot; j++) {
+            let equipment_id = data_enemy_id[enemy_id].equipment[j]
             switch(data_equipment_id_enemy[equipment_id].type) {
                 case 9:
                 case 10:
                 case 41:
                 case 56:
-                    power_base += data_equipment_id_enemy[equipment_id].antiAir * Math.sqrt(data_enemy_id[enemy_id].space[j])
+                    power_base += parseInt(data_equipment_id_enemy[equipment_id].antiAir * Math.sqrt(data_enemy_id[enemy_id].space[j]))
                     break;
                 case 6:
                 case 7:
@@ -147,7 +145,7 @@ function updateAirPowerEnemy() {
                 case 53:
                 case 54:
                 case 57:
-                    power_ship += data_equipment_id_enemy[equipment_id].antiAir * Math.sqrt(data_enemy_id[enemy_id].space[j])
+                    power_ship += parseInt(data_equipment_id_enemy[equipment_id].antiAir * Math.sqrt(data_enemy_id[enemy_id].space[j]))
                     break;
                 default:
             }
