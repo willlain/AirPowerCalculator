@@ -58,6 +58,17 @@ function openMessageDialog(type, message) {
     $("#dialog-message").html(message).dialog("open")
 }
 
+function openResultDialog() {
+    $("#dialog-message").dialog({
+        buttons: {
+            '閉じる': function() {
+                $(this).dialog('close');
+            }
+        }
+    })
+    $("#dialog-message").html().dialog("open")
+}
+
 /**
  * ==========================================================
  * バリデーションチェック関係
