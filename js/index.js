@@ -144,16 +144,6 @@ var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
         title: "メッセージ",
         resizable: false,
     });
-    $("#dialog-result").dialog({
-        autoOpen: false,
-        modal: false,
-        width: 1000,
-        title: "計算結果",
-        resizable: false,
-        close: function() {
-
-        }
-    });
 
     $(".dialog-remove").on('click', function() {
         if (record_target.attr("id").split("-")[0] == "equipment") {
@@ -625,10 +615,6 @@ $(function() {
         updateResult();
         updateRecord(0, false)
     });
-
-    $("").on("click", function() {
-
-    })
 
     chart = Highcharts.chart('myChart', {
         chart: {
