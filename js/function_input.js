@@ -365,7 +365,9 @@ function removeItem(type, element_target_id, element_equipment_id) {
 /**
  * [initEquipmentCell 装備欄の初期化]
  * @param {int} ship_id    [セットされた艦娘の識別番号]
- * @param {int} element_id [対応する列番号]
+ * @param  {[type]} element_target_id [description]
+ * @param  {[type]} record_flag       [description]
+ * @return {[type]}                   [description]
  */
 function initEquipmentCell(ship_id, element_target_id, record_flag) {
     for (var i=0; i<6; i++) {
@@ -780,7 +782,7 @@ function changeFleet(fleet) {
 /**
  * [changeArea 海域変更：マップ画像、難易度セレクトの表示非表示、マスセレクトの内容変更]
  * マップセレクトを変更すると発火
- * @param  {string} area [海域番号(x-y)]
+ * @param  {[string]} area [海域番号(x-y)]
  */
 function changeArea(area, flag) {
     let html = "";
@@ -818,7 +820,7 @@ function changeArea(area, flag) {
 
 /**
  * [changeDiffculty 海域難易度の変更]
- * @param  {int} difficulty [難易度に対応した番号]
+ * @param  {[int]} difficulty [難易度に対応した番号]
  * トリガー：難易度をラジオボタンで変更した際
  */
 function changeDiffculty(difficulty, flag) {
@@ -849,12 +851,32 @@ function changeDiffculty(difficulty, flag) {
 /**
  * [changeCell マス変更：ゲージ段階セレクトの表示非表示、敵編成の変更]
  * マスセレクトを変更した際に発火
- * @param  {string} cell [マスのアルファベット]
+ * @param  {[string]} cell [マスのアルファベット]
+ * @param  {[type]} flag [履歴を更新するか否か]
+ * @return {[type]}      [description]
  */
 function changeCell(cell, flag) {
     let area = $("#map-area").val()
     let difficulty = $("[name=difficulty]:checked").val()
-    if (flag) record_map["cell"] = cell;
+
+    if (flag) {
+        if ((cell === "防空" && record_map["cell"] != "防空") || (cell != "防空" && record_map["cell"] === "防空")) {
+            for (let i=0; i<3; i++) {
+                for (let j=0; j<4; j++) {
+                    updateAirPowerFrends("base", i, j);
+                }
+            }
+        }
+        record_map["cell"] = cell;
+    } else {
+        if (cell === "防空") {
+            for (let i=0; i<3; i++) {
+                for (let j=0; j<4; j++) {
+                    updateAirPowerFrends("base", i, j);
+                }
+            }
+        }
+    }
 
     if (cell != 0) {
         let step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];

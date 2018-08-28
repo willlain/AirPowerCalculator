@@ -39,103 +39,100 @@
         <header>
             <h1>制空計算機B改【v2.0.0α】</h1>
             <div style="margin-bottom:5px;">本サイトはブラウザ版艦これの計算機です。基地航空隊による敵制空値減少を推定し、制空状態を表示します。</div>
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">UI設定</label>
+                <label class='form-check-label'><input type='radio' class='form-check-input' name='ui' value='0' checked>縦ワイド</label>
+                <label class="form-check-label"><input type="radio" class="form-check-input" name='ui' value='1'>横ワイド</label>
+            </div>
         </header>
         <article>
-            <!-- <div class="form-check form-check-inline">
-                        <select class="form-control form-control-sm"></select>
-                        <button type="button" class="btn btn-primary btn-sm">保存</button>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="$('#dialog-history').dialog('open')">履歴一覧</button>
-                    </div>
-                </div>
-            </div> -->
-            <!-- <section id="history">
-                <div class="form-check form-check-inline">
-
-                </div>
-            </section> -->
-            <section id="base">
-                <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-base">△</button>&nbsp;基地航空隊</h1>
-                <div id="base-content">
-                    <div class="option-input">
-                        <div id="radius-enemy">必要距離：<div id='radius-enemy-value'>0</div></div>
-                        <div class="form-check form-check-inline">
-                            <label class="form-check-label">熟練度</label>
-                            <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-base-0" checked>戦闘機</label>
-                            <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-base-1">攻撃機</label>
-                            <button type="button" class="btn btn-primary btn-sm" id="reset-base">リセット</button>
-                        </div>
-                    </div>
-                    <script type="text/javascript">displayBase()</script>
-                </div>
-            </section>
-            <section id="ship">
-                <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-ship">△</button>&nbsp;艦娘</h1>
-                <div id="ship-content">
-                    <div class="option-input">
-                        <div class="input-group deckbuilder">
-                            <input type="text" class="form-control form-control-sm" id="deckbuilder" placeholder="デッキビルダー" />
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-primary btn-sm" onclick="inputDeckbuilder()">入力</button>
-                                <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" onclick="outputDeckbuilder()">出力</button>
+            <div class="ui-option">
+                <section id="base">
+                    <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-base">△</button>&nbsp;基地航空隊</h1>
+                    <div id="base-content">
+                        <div class="option-input">
+                            <div id="radius-enemy">必要距離：<div id='radius-enemy-value'>0</div></div>
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label">熟練度</label>
+                                <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-base-0" checked>戦闘機</label>
+                                <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-base-1">攻撃機</label>
+                                <button type="button" class="btn btn-primary btn-sm" id="reset-base">リセット</button>
                             </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <label class="form-check-label">編成</label>
-                            <label class='form-check-label'><input type='radio' class='form-check-input' name='fleet' value='0' checked>通常艦隊</label>
-                            <label class="form-check-label"><input type="radio" class="form-check-input" name='fleet' value='1'>連合艦隊</label>
-                            <label class="form-check-label"><input type="radio" class="form-check-input" name='fleet' value='2'>遊撃部隊</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <label class="form-check-label">熟練度</label>
-                            <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-ship-0" checked>戦闘機</label>
-                            <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-ship-1">攻撃機</label>
-                            <button type="button" class="btn btn-primary btn-sm" id="reset-ship">リセット</button>
-                        </div>
+                        <script type="text/javascript">displayBase()</script>
                     </div>
-                    <script type="text/javascript">displayShip()</script>
-                </div>
-            </section>
-            <section id="map">
-                <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-map">△</button>&nbsp;海域</h1>
-                <div id="map-content"></div>
-            </section>
-            <section id="result" style="padding-bottom:10px">
-                <h1>計算結果</h1>
-                <script type="text/javascript">displayResultOption()</script>
-                <div id="error-message" style="margin-top:10px"></div>
-                <div id="result-content">
-                    <div id="chart-content">
-                        <div id="myChart"></div>
-                        <script type="text/javascript">displayResultAirPowerInfo()</script>
+                </section>
+                <section id="ship">
+                    <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-ship">△</button>&nbsp;艦娘</h1>
+                    <div id="ship-content">
+                        <div class="option-input">
+                            <div class="input-group deckbuilder">
+                                <input type="text" class="form-control form-control-sm" id="deckbuilder" placeholder="デッキビルダー" />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="inputDeckbuilder()" disabled>入力</button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" onclick="outputDeckbuilder()" disabled>出力</button>
+                                </div>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label">編成</label>
+                                <label class='form-check-label'><input type='radio' class='form-check-input' name='fleet' value='0' checked>通常艦隊</label>
+                                <label class="form-check-label"><input type="radio" class="form-check-input" name='fleet' value='1'>連合艦隊</label>
+                                <label class="form-check-label"><input type="radio" class="form-check-input" name='fleet' value='2'>遊撃部隊</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label">熟練度</label>
+                                <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-ship-0" checked>戦闘機</label>
+                                <label class="form-check-label"><input type="checkbox" class="checkbox form-check-input" id="skill-max-ship-1">攻撃機</label>
+                                <button type="button" class="btn btn-primary btn-sm" id="reset-ship">リセット</button>
+                            </div>
+                        </div>
+                        <script type="text/javascript">displayShip()</script>
                     </div>
-                    <table id="result-info">
-                        <tr>
-                            <th class="column-phase">phase</th><th class="column-airpower">艦娘制空</th><th class="column-airpower">深海制空</th><th class="column-status">制空状態</th><th>確率（実装予定）</th>
-                        </tr>
-                        <tr>
-                            <td>1-1</td><td id="result-ship-0">-</td><td id="result-enemy-0">-</td><td id="result-status-0">-</td><th>-</th>
-                        </tr>
-                        <tr>
-                            <td>1-2</td><td id="result-ship-1">-</td><td id="result-enemy-1">-</td><td id="result-status-1">-</td><th>-</th>
-                        </tr>
-                        <tr>
-                            <td>2-1</td><td id="result-ship-2">-</td><td id="result-enemy-2">-</td><td id="result-status-2">-</td><th>-</th>
-                        </tr>
-                        <tr>
-                            <td>2-2</td><td id="result-ship-3">-</td><td id="result-enemy-3">-</td><td id="result-status-3">-</td><th>-</th>
-                        </tr>
-                        <tr>
-                            <td>3-1</td><td id="result-ship-4">-</td><td id="result-enemy-4">-</td><td id="result-status-4">-</td><th>-</th>
-                        </tr>
-                        <tr>
-                            <td>3-2</td><td id="result-ship-5">-</td><td id="result-enemy-5">-</td><td id="result-status-5">-</td><th>-</th>
-                        </tr>
-                        <tr>
-                            <td>本体</td><td id="result-ship-6">-</td><td id="result-enemy-6">-</td><td id="result-status-6">-</td><th>-</th>
-                        </tr>
-                    </table>
-                </div>
-            </section>
+                </section>
+            </div>
+            <div class="ui-option">
+                <section id="map">
+                    <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-map">△</button>&nbsp;海域</h1>
+                    <div id="map-content"></div>
+                </section>
+                <section id="result" style="padding-bottom:10px">
+                    <h1>計算結果</h1>
+                    <script type="text/javascript">displayResultOption()</script>
+                    <div id="error-message" style="margin-top:10px"></div>
+                    <div id="result-content">
+                        <div id="chart-content">
+                            <div id="myChart"></div>
+                            <script type="text/javascript">displayResultAirPowerInfo()</script>
+                        </div>
+                        <table id="result-info">
+                            <tr>
+                                <th class="column-phase">phase</th><th class="column-airpower">艦娘制空</th><th class="column-airpower">深海制空</th><th class="column-status">制空状態</th>
+                            </tr>
+                            <tr>
+                                <td>1-1</td><td id="result-ship-0">-</td><td id="result-enemy-0">-</td><td id="result-status-0">-</td>
+                            </tr>
+                            <tr>
+                                <td>1-2</td><td id="result-ship-1">-</td><td id="result-enemy-1">-</td><td id="result-status-1">-</td>
+                            </tr>
+                            <tr>
+                                <td>2-1</td><td id="result-ship-2">-</td><td id="result-enemy-2">-</td><td id="result-status-2">-</td>
+                            </tr>
+                            <tr>
+                                <td>2-2</td><td id="result-ship-3">-</td><td id="result-enemy-3">-</td><td id="result-status-3">-</td>
+                            </tr>
+                            <tr>
+                                <td>3-1</td><td id="result-ship-4">-</td><td id="result-enemy-4">-</td><td id="result-status-4">-</td>
+                            </tr>
+                            <tr>
+                                <td>3-2</td><td id="result-ship-5">-</td><td id="result-enemy-5">-</td><td id="result-status-5">-</td>
+                            </tr>
+                            <tr>
+                                <td>本体</td><td id="result-ship-6">-</td><td id="result-enemy-6">-</td><td id="result-status-6">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </section>
+            </div>
         </article>
         <div class="dialog" id="dialog-message"></div>
         <div class="dialog" id="dialog-select-ship">

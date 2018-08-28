@@ -37,7 +37,7 @@ function updateAirPowerFrends(element_type, element_target_id, element_equipment
             case 48:
             case 49:
             case 54:
-                power = getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0.2, 1.5, 0);
+                power = ($("#map-cell").val() != "防空") ? getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0.2, 1.5, 0) : getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0.2, 1, 2);
                 // power = getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0.2, 1, 2);
                 break;
             default:
@@ -174,24 +174,9 @@ function updateResult() {
         footerFixed();
         return;
     }
-    if () {
-        updateSortieResult();
-    } else {
-        updateABResult();
-    }
-}
 
-function checkCombatRadius(){
-    for (let i=0; i<3; i++) {
-        if (Number($("#downRate-" + Number(2*i)).val()) === 0 && Number($("#downRate-" + Number(2*i+1)).val()) === 0) continue;
-        if (Number($("#radius-" + i).text()) === 0) continue;
-        if (Number($("#radius-enemy-value").text()) > Number($("#radius-" + i).text())) return false;
-    }
-    return true;
-}
+    let result = ($("#map-cell").val() != "防空") ? getSortieResult() : getABResult();
 
-function updateSortieResult() {
-    let result = getSortieResult();
     // 基地航空隊分
     for (let i=0; i<6; i++) {
         chart.series[0].data[i].update(result["probe"][i], true, { duration: 300 });
@@ -214,6 +199,7 @@ function updateSortieResult() {
     $("#result-ship-6").text(airPower_ship);
     $("#result-enemy-6").text(result["airPower_enemy"][6]);
 
+    // グラフ装飾
     for (let i=0; i<7; i++) {
         for (let j=0; j<7; j++) {
             if (result["airPower_info"][i][j] || result["airPower_info"][i][j] === 0) {
@@ -227,6 +213,15 @@ function updateSortieResult() {
             }
         }
     }
+}
+
+function checkCombatRadius(){
+    for (let i=0; i<3; i++) {
+        if (Number($("#downRate-" + Number(2*i)).val()) === 0 && Number($("#downRate-" + Number(2*i+1)).val()) === 0) continue;
+        if (Number($("#radius-" + i).text()) === 0) continue;
+        if (Number($("#radius-enemy-value").text()) > Number($("#radius-" + i).text())) return false;
+    }
+    return true;
 }
 
 function getSortieResult() {
@@ -330,8 +325,7 @@ function getSortieResult() {
 
     // 基地航空隊
     for (let i=0; i<6; i++) {
-        let quotient, down_rate, rand_max, short, excess;
-        let rand_table = [];
+        let quotient, down_rate, short, excess;
 
         power = 0;
         Object.keys(enemy_info).forEach(function(key) {
@@ -364,7 +358,6 @@ function getSortieResult() {
                 result["color"].push('rgba(255,99,132,1)');
                 short = result["airPower_ship"][i] - parseInt(power * (1/3)) -1;
                 result["airPower_info"].push({1:short});
-                rand_max = 1;
                 down_rate *= 0.1;
             } else if (quotient <= 2/3) {
                 result["status"].push("劣勢");
@@ -372,7 +365,6 @@ function getSortieResult() {
                 excess = result["airPower_ship"][i] - parseInt(power * (1/3)) -1;
                 short = result["airPower_ship"][i] - parseInt(power * (2/3)) -1;
                 result["airPower_info"].push({0:excess, 2:short});
-                rand_max = 4;
                 down_rate *= 0.4;
             } else if (quotient < 3/2) {
                 result["status"].push("均衡");
@@ -380,7 +372,6 @@ function getSortieResult() {
                 excess = result["airPower_ship"][i] - parseInt(power * (2/3)) -1;
                 short = result["airPower_ship"][i] - parseInt(power * (3/2)) -1;
                 result["airPower_info"].push({1:excess, 4:short});
-                rand_max = 6;
                 down_rate *= 0.6;
             } else if (quotient < 3) {
                 result["status"].push("優勢");
@@ -388,14 +379,12 @@ function getSortieResult() {
                 excess = result["airPower_ship"][i] - parseInt(power * (3/2)) -1;
                 short = result["airPower_ship"][i] - parseInt(power * 3) -1;
                 result["airPower_info"].push({3:excess, 6:short});
-                rand_max = 8;
                 down_rate *= 0.8;
             } else {
                 result["status"].push("確保");
                 result["color"].push('rgba(75, 192, 192, 1)');
                 excess = result["airPower_ship"][i] - parseInt(power * 3) -1;
                 result["airPower_info"].push({5:excess});
-                rand_max = 10;
                 down_rate *= 1.0;
             }
         } else {
@@ -468,10 +457,10 @@ function getSortieResult() {
     return result;
 }
 
-function updateABResult() {
-
-}
-
+/**
+ * [getABResult description]
+ * @return {[type]} [description]
+ */
 function getABResult() {
     let result = {
         "status": [],
@@ -541,84 +530,69 @@ function getABResult() {
         if (!flag) delete enemy_info[i];
     }
 
+    let airPower_AB = 0;
     for (let i=0; i<3; i++) {
-        result["airPower_ship"].push(Number($("#airpower-base-" + i).val()))
-        result["airPower_ship"].push(Number($("#airpower-base-" + i).val()))
+        airPower_AB += Number($("#airpower-base-" + i).val());
     }
-    let power = 0;
-    switch (Number($("[name=fleet]:checked").val())) {
-        case 1:
-            for (let i=0; i<6; i++) {
-                power += Number($("#airpower-ship-" + i).val())
-            }
-            result["airPower_ship"].push(power);
-            power = 0;
-            for (let i=6; i<12; i++) {
-                power += Number($("#airpower-ship-" + i).val())
-            }
-            result["airPower_ship"].push(power);
-            break;
-        case 2:
-            for (let i=12; i<19; i++) {
-                power += Number($("#airpower-ship-" + i).val())
-            }
-            result["airPower_ship"].push(power);
-            break;
-        default:
-            for (let i=0; i<6; i++) {
-                power += Number($("#airpower-ship-" + i).val())
-            }
-            result["airPower_ship"].push(power);
-    }
+    result["airPower_ship"].push(airPower_AB);
 
-    // 通常航空戦
-    power = 0;
+    // 敵の制空値計算
+    let power = 0;
     Object.keys(enemy_info).forEach(function(key) {
         Object.keys(this[key]).forEach(function(key2) {
-            power += parseInt(this[key2].antiAir_ship*Math.sqrt(this[key2].space))
+            power += parseInt(this[key2].antiAir_base*Math.sqrt(this[key2].space))
         }, enemy_info[key])
     }, enemy_info)
     result["airPower_enemy"].push(power);
 
-    let airPower_ship = (Number($("[name=fleet]:checked").val()) === 1 && enemy_info[6]) ? (result["airPower_ship"][6] + result["airPower_ship"][7]) : result["airPower_ship"][6]
     if (power != 0) {
-        quotient = (Math.round(airPower_ship*10000/power)/10000 < 3.5) ? Math.round(airPower_ship*10000/power)/10000 : 3.5;
+        let quotient = (Math.round(result["airPower_ship"][0]*10000/power)/10000 < 3.5) ? Math.round(result["airPower_ship"][0]*10000/power)/10000 : 3.5;
         result["probe"].push(quotient);
         if (quotient <= 1/3) {
             result["status"].push("喪失");
             result["color"].push('rgba(255,99,132,1)');
-            short = airPower_ship - parseInt(power * (1/3)) -1;
+            short = result["airPower_ship"][0] - parseInt(power * (1/3)) -1;
             result["airPower_info"].push({1:short});
         } else if (quotient <= 2/3) {
             result["status"].push("劣勢");
             result["color"].push('rgba(255, 159, 64, 1)');
-            excess = airPower_ship - parseInt(power * (1/3)) -1;
-            short = airPower_ship - parseInt(power * (2/3)) -1;
+            excess = result["airPower_ship"][0] - parseInt(power * (1/3)) -1;
+            short = result["airPower_ship"][0] - parseInt(power * (2/3)) -1;
             result["airPower_info"].push({0:excess, 2:short});
         } else if (quotient < 3/2) {
             result["status"].push("均衡");
             result["color"].push('rgba(255, 206, 86, 1)');
-            excess = airPower_ship - parseInt(power * (2/3)) -1;
-            short = airPower_ship - parseInt(power * (3/2)) -1;
+            excess = result["airPower_ship"][0] - parseInt(power * (2/3)) -1;
+            short = result["airPower_ship"][0] - parseInt(power * (3/2)) -1;
             result["airPower_info"].push({1:excess, 4:short});
         } else if (quotient < 3) {
             result["status"].push("優勢");
             result["color"].push('rgba(54, 162, 235, 1)');
-            excess = airPower_ship - parseInt(power * (3/2)) -1;
-            short = airPower_ship - parseInt(power * 3) -1;
+            excess = result["airPower_ship"][0] - parseInt(power * (3/2)) -1;
+            short = result["airPower_ship"][0] - parseInt(power * 3) -1;
             result["airPower_info"].push({3:excess, 6:short});
         } else {
             result["status"].push("確保");
             result["color"].push('rgba(75, 192, 192, 1)');
-            excess = airPower_ship - parseInt(power * 3) -1;
+            excess = result["airPower_ship"][0] - parseInt(power * 3) -1;
             result["airPower_info"].push({5:excess});
         }
     } else {
         result["status"].push("確保");
-        result["probe"].push(3.5);
         result["color"].push('rgba(75, 192, 192, 1)');
-        excess = airPower_ship - parseInt(power * 3) -1;
+        result["probe"].push(3.5);
+        excess = result["airPower_ship"][0] - parseInt(power * 3) -1;
         result["airPower_info"].push({5:excess});
     }
+
+    for (let i=0; i<6; i++) {
+        result["airPower_enemy"].push("-");
+        result["airPower_ship"].push("-");
+        result["status"].push("-");
+        result["color"].push('rgba(0,0,0,0)');
+        result["probe"].push(0);
+        result["airPower_info"].push({})
+    }
+
     return result;
 }

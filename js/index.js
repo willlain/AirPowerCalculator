@@ -6,6 +6,7 @@ var chart = null;
 var record_base = {};
 var record_ship = {};
 var record_option = {};
+
 const aircraft_type_id = [7, 8, 9, 10, 11, 45, 47, 48, 57];
 const tab_type_ship = [
     [2], 3, 4, 5, 6, [8, 9], 10, 7, 11, 18, 16, [1, 13, 14, 21, 17, 19, 20, 22]
@@ -591,7 +592,17 @@ $(function() {
     $(".equipment-name-ship").each(function() {
         addDDEvent(this);
     });
+    $("[name=ui]").change(function() {
+        if (Number($(this).val()) === 0) {
+            
+        } else {
 
+        }
+        // changeFleet(Number($(this).val()));
+        // record_option.fleet = Number($(this).val())
+        // updateResult();
+        // updateRecord(0, false)
+    })
     /**
      * ==========================================================
      * 結果画面関係
@@ -606,7 +617,6 @@ $(function() {
         step: 10,
         value: 0
     });
-
     $("#detail-downRate").tooltip();
 
     $(".downRate").change(function() {

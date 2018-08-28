@@ -29,8 +29,8 @@ a:hover {
 /*****HEADER*****/
 header{
     display: block;
-    width:950px;
-    padding:0px 10px 0px 10px;
+    width: 950px;
+    padding: 0px 10px 0px 10px;
     overflow: hidden;
     margin: auto;
 }
@@ -181,9 +181,6 @@ div.grade button.btn {
     font-size: 14px;
     /* padding: 0; */
 }
-/* section#result div.form-check label.form-check-label div.downRate {
-    width: 40px;
-} */
 div.downRate button.btn {
     font-size: 14px;
     padding: 0;
