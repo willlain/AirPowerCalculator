@@ -589,7 +589,7 @@
         "interception": 0
     },
     "32": {
-        "name": "14号対空電探",
+        "name": "42号対空電探",
         "type": 13,
         "improvement": 0,
         "firePower": 0,
@@ -760,7 +760,7 @@
         "interception": 0
     },
     "41": {
-        "name": "甲標的",
+        "name": "甲標的 甲型",
         "type": 22,
         "improvement": 0,
         "firePower": 0,
@@ -893,7 +893,7 @@
         "interception": 0
     },
     "48": {
-        "name": "12.7cm単装高角砲",
+        "name": "12cm単装高角砲",
         "type": 16,
         "improvement": 0,
         "firePower": 1,
@@ -4237,7 +4237,7 @@
         "interception": 3
     },
     "224": {
-        "name": "爆装一式戦 隼III型改(55戦隊)",
+        "name": "爆装一式戦 隼III型改(65戦隊)",
         "type": 47,
         "improvement": 0,
         "firePower": 3,
@@ -5579,6 +5579,25 @@
         "los": 0,
         "luck": 0,
         "accuracy": 1,
+        "bombing": 0,
+        "range": 1,
+        "radius": 0,
+        "antiBobing": 0,
+        "interception": 0
+    },
+    "297": {
+        "name": "12.7cm連装砲A型",
+        "type": 1,
+        "improvement": 0,
+        "firePower": 2,
+        "torpedo": 0,
+        "antiAir": 1,
+        "armor": 0,
+        "asw": 0,
+        "evasion": 0,
+        "los": 0,
+        "luck": 0,
+        "accuracy": 0,
         "bombing": 0,
         "range": 1,
         "radius": 0,

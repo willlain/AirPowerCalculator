@@ -637,7 +637,7 @@ function displayListShip() {
 
 function displayResultAirPowerInfo() {
     let html = "";
-    let top = ["10px", "32px", "54px", "76px", "98px", "120px", "140px"];
+    let top = ["11px", "32px", "53px", "74px", "96px", "117px", "138px"];
     let left = ["55px", "100px", "145px", "220px", "260px", "430px", "470px"];
     for (let i=0; i<7; i++) {
         for (let j=0; j<7; j++) {
