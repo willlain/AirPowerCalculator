@@ -350,7 +350,11 @@ $(function() {
      * 編成画面関係
      * ==========================================================
      */
-    $("#tab-input").tabs();
+    $("#tab-input").tabs({
+        activate: function(event, ui) {
+            footerFixed();
+        }
+    });
     $("#tab-input").children("ul").show();
     $("#tab-fleet").tabs();
     $("#tab-fleet").tabs("option", "disabled", [1, 2]);
@@ -612,6 +616,7 @@ $(function() {
             $("#map").hide();
             $("#tab-input").show();
         }
+        footerFixed();
     })
     /**
      * ==========================================================

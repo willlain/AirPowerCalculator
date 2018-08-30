@@ -510,7 +510,7 @@ div#result-content {
 }
 div#chart-content {
     width: 550px;
-    height: 300px;
+    /* height: 300px; */
     position: relative;
 }
 div#myChart {
