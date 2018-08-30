@@ -148,6 +148,15 @@ div#tab-fleet ul {
 div#fleet-1, div#fleet-2 {
     display: none;
 }
+div#tab-input {
+    display: none;
+}
+div#tab-input div.input-content {
+    padding: 3px;
+}
+div#tab-input ul {
+    display: none;
+}
 
 /* ###############################
     input target

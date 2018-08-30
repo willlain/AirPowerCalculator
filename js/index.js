@@ -350,6 +350,8 @@ $(function() {
      * 編成画面関係
      * ==========================================================
      */
+    $("#tab-input").tabs();
+    $("#tab-input").children("ul").show();
     $("#tab-fleet").tabs();
     $("#tab-fleet").tabs("option", "disabled", [1, 2]);
     $("#tab-fleet").children("ul").show();
@@ -594,14 +596,22 @@ $(function() {
     });
     $("[name=ui]").change(function() {
         if (Number($(this).val()) === 0) {
-            
+            $("#base-content").appendTo("#base");
+            $("#ship-content").appendTo("#ship");
+            $("#map-content").appendTo("#map");
+            $("#base").show();
+            $("#ship").show();
+            $("#map").show();
+            $("#tab-input").hide();
         } else {
-
+            $("#base-content").appendTo("#tab-base");
+            $("#ship-content").appendTo("#tab-ship");
+            $("#map-content").appendTo("#tab-map");
+            $("#base").hide();
+            $("#ship").hide();
+            $("#map").hide();
+            $("#tab-input").show();
         }
-        // changeFleet(Number($(this).val()));
-        // record_option.fleet = Number($(this).val())
-        // updateResult();
-        // updateRecord(0, false)
     })
     /**
      * ==========================================================

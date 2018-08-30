@@ -231,6 +231,8 @@ function displayListEquipment() {
     html_content += "</div>"
     html_content += "<div class='btn-group action' role='group'>"
     html_content += "<button type='button' class='btn btn-primary btn-sm' id='btn-select-equipment' onclick=\"selectItem(\'equipment\')\" disabled>OK</button>"
+    html_content += "</div>"
+    html_content += "<div class='btn-group action' role='group'>"
     html_content += "<button type='button' class='btn btn-primary btn-sm' onclick=\"$(\'#dialog-select-equipment\').dialog(\'close\')\">キャンセル</button>"
     html_content += "</div>"
     html_content += "</div>"
@@ -305,45 +307,7 @@ function displayListEquipment() {
             for (k=0; k<id_list[j].length; k++) {
                 data = data_id[id_list[j][k]];
                 info_id = "info-equipment-" + i + "-" + tab[i][j] + "-" + id_list[j][k]
-                // item_id = list_id[j] + "-" + id_list[j][k]
-
                 html_content += "<a href='#' data-toggle='pill' class='list-group-item list-group-item-action' id='" + info_id + "'>" + data.name + "</a>"
-                // html_content += "<a href='#" + info_id + "' data-toggle='pill' class='list-group-item list-group-item-action' id='" + item_id + "'>" + data.name + "</a>"
-                // let size = getFontSize(data.name, 30, "Meiryo UI", 350)
-
-                // html_info += "<div class='tab-pane' id='" + info_id + "'>";
-                // html_info += "<span class='select-name'>" + data.name + "</span>";
-                // html_info += "<table class='info-data'>";
-                // html_info += "<tr><td class='item'>火力</td><td class='value'>" + data.firePower + "</td><td class='item'>雷装</td><td class='value'>" + data.torpedo + "</td></tr>";
-                // html_info += "<tr><td>対空</td><td>" + data.antiAir + "</td><td>装甲</td><td>" + data.armor + "</td></tr>";
-                // html_info += "<tr><td>対潜</td><td>" + data.asw + "</td><td>回避</td><td>" + data.evasion + "</td></tr>";
-                // html_info += "<tr><td>索敵</td><td>" + data.los + "</td><td>命中</td><td>" + data.accuracy + "</td></tr>";
-                // if (i == 7 || i== 8 || i == 11) {
-                //     html_info += "<tr><td class='item'>行動半径</td><td class='value'>" + data.radius + "</td><td class='item'>爆装</td><td class='value'>" + data.bombing + "</td></tr>";
-                // }
-                // if (i == 11) {
-                //     html_info += "<tr><td class='item'>対爆</td><td class='value'>" + data.antiBobing + "</td><td class='item'>迎撃</td><td class='value'>" + data.interception + "</td></tr>";
-                // }
-                // switch (data.range) {
-                //     case 1:
-                //         range = "短";
-                //         break;
-                //     case 2:
-                //         range = "中";
-                //         break;
-                //     case 3:
-                //         range = "長";
-                //         break;
-                //     case 4:
-                //         range = "超長";
-                //         break;
-                //     default:
-                //         range = "短";
-                // }
-                // html_info += "<tr><td>射程</td><td colspan='3'>" + range + "</td>";
-                // html_info += "</table>"
-                // html_info += "<p class='info-img'><img src='img/equipment/item/" + ('000' + Number(id_list[j][k])).slice(-3) + ".png' /></p>"
-                // html_info += "</div>";
             }
             html_content += "</div>";   // 一覧リスト
             html_content += "</div>";   // 一覧リストの1つ
@@ -394,6 +358,8 @@ function displayListShip() {
     html_content += "</div>"
     html_content += "<div class='btn-group action' role='group'>"
     html_content += "<button type='button' class='btn btn-primary btn-sm' id='btn-select-ship' onclick=\"selectItem(\'ship\')\" disabled>OK</button>"
+    html_content += "</div>"
+    html_content += "<div class='btn-group action' role='group'>"
     html_content += "<button type='button' class='btn btn-primary btn-sm' onclick=\"$(\'#dialog-select-ship\').dialog(\'close\')\">キャンセル</button>"
     html_content += "</div>"
     html_content += "</div>"
@@ -437,57 +403,7 @@ function displayListShip() {
             for (j=0; j<id_list.length; j++) {
                 data = data_id[id_list[j]];
                 info_id = "info-ship-" + tab[i] + "-" + id_list[j];
-                // item_id = list_id + "-" + id_list[j]
                 html_content += "<a href='#' data-toggle='pill' class='list-group-item list-group-item-action' id='" + info_id + "'>" + data.name + "</a>";
-                // html_content += "<a href='#" + info_id + "' data-toggle='pill' class='list-group-item list-group-item-action'>" + data.name + "</a>";
-
-                // html_info += "<div class='tab-pane' id='" + info_id + "'>";
-                // html_info += "<span class='select-name'>" + data.name + "</span>";
-                // html_info += "<table class='info-data'>";
-                // html_info += "<tr><td class='item'>耐久（初期）</td><td class='value'>" + data.HP_min + "</td><td class='item'>耐久（ケッコン）</td><td class='value'>" + data.HP_ring + "</td></tr>";
-                // html_info += "<tr><td>火力</td><td>" + data.firePower + "</td><td>雷装</td><td>" + data.torpedo + "</td></tr>";
-                // html_info += "<tr><td>対潜</td><td>" + data.ASW_ring + "</td><td>回避</td><td>" + data.evasion_ring + "</td></tr>";
-                // html_info += "<tr><td>対空</td><td>" + data.antiAir + "</td><td>装甲</td><td>" + data.armor + "</td></tr>";
-                // html_info += "<tr><td>運（初期）</td><td>" + data.luck_min + "</td><td>運（最大）</td><td>" + data.luck_max + "</td></tr>";
-                //
-                // switch (data.range) {
-                //     case 1:
-                //         range = "短";
-                //         break;
-                //     case 2:
-                //         range = "中";
-                //         break;
-                //     case 3:
-                //         range = "長";
-                //         break;
-                //     case 4:
-                //         range = "超長";
-                //         break;
-                //     default:
-                //         range = "短";
-                // }
-                // switch (data.speed) {
-                //     case 10:
-                //         speed = "高速";
-                //         break;
-                //     default:
-                //         speed = "低速";
-                // }
-                // html_info += "<tr><td>射程</td><td>" + range + "</td><td>速力</td><td>" + speed + "</td></tr>";
-                // html_info += "<tr>";
-                // html_info += "<td>機数</td>";
-                // html_info += "<td colspan='3'>"
-                // for (k=0; k<data.slot; k++) {
-                //     html_info += data.space[k];
-                //     if (k != data.slot-1) {
-                //         html_info += "/";
-                //     }
-                // }
-                // html_info += "</td>";
-                // html_info += "</tr>";
-                // html_info += "</table>"
-                // html_info += "<p class='info-img'><img src='img/ship/body/" + id_list[j] + ".png' height='430'/></p>"
-                // html_info += "</div>";
             }
             html_content += "</div>";   // 一覧リスト
             html_content += "</div>";   // 一覧リストの1つ
@@ -551,58 +467,7 @@ function displayListShip() {
                 for (k=0; k<id_list[j].length; k++) {
                     data = data_id[id_list[j][k]];
                     info_id = "info-ship-" + tab[i][j] + "-" + id_list[j][k]
-                    // item_id = list_id[j] + "-" + id_list[j][k]
                     html_content += "<a href='#' data-toggle='pill' class='list-group-item list-group-item-action' id='" + info_id + "'>" + data.name + "</a>"
-                    // html_content += "<a href='#" + info_id + "' data-toggle='pill' class='list-group-item list-group-item-action' id='" + item_id + "'>" + data.name + "</a>"
-
-                    // html_info += "<div class='tab-pane' id='" + info_id + "'>";
-                    // html_info += "<span class='select-name'>" + data.name + "</span>";
-                    // html_info += "<table class='info-data'>";
-                    // html_info += "<tr><td class='item'>耐久（初期）</td><td class='value'>" + data.HP_min + "</td><td class='item'>耐久（ケッコン）</td><td class='value'>" + data.HP_ring + "</td></tr>";
-                    // html_info += "<tr><td>火力</td><td>" + data.firePower + "</td><td>雷装</td><td>" + data.torpedo + "</td></tr>";
-                    // html_info += "<tr><td>対空</td><td>" + data.antiAir + "</td><td>装甲</td><td>" + data.armor + "</td></tr>";
-                    // html_info += "<tr><td>対潜</td><td>" + data.ASW_ring + "</td><td>回避</td><td>" + data.evasion_ring + "</td></tr>";
-                    // html_info += "<tr><td>運（初期）</td><td>" + data.luck_min + "</td><td>運（最大）</td><td>" + data.luck_max + "</td></tr>";
-                    //
-                    // switch (data.range) {
-                    //     case 1:
-                    //         range = "短";
-                    //         break;
-                    //     case 2:
-                    //         range = "中";
-                    //         break;
-                    //     case 3:
-                    //         range = "長";
-                    //         break;
-                    //     case 4:
-                    //         range = "超長";
-                    //         break;
-                    //     default:
-                    //         range = "短";
-                    // }
-                    // switch (data.speed) {
-                    //     case 10:
-                    //         speed = "高速";
-                    //         break;
-                    //     default:
-                    //         speed = "低速";
-                    // }
-                    // html_info += "<tr><td>射程</td><td>" + range + "</td><td>速力</td><td>" + speed + "</td></tr>";
-                    // html_info += "<tr>";
-                    // html_info += "<td>機数</td>";
-                    // html_info += "<td colspan='3'>"
-                    // for (l=0; l<data.slot; l++) {
-                    //     html_info += data.space[l];
-                    //     if (l != data.slot-1) {
-                    //         html_info += "/";
-                    //     }
-                    // }
-                    // html_info += "</td>";
-                    // html_info += "</tr>";
-                    // html_info += "</table>"
-                    // html_info += "<p class='info-img'><img src='img/ship/body/" + id_list[j][k] + ".png' height='430'/></p>"
-                    // html_info += "</div>";
-
                 }
                 html_content += "</div>";   // 一覧リスト
                 html_content += "</div>";   // 一覧リストの1つ
