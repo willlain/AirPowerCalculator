@@ -39,23 +39,42 @@
         <header>
             <h1>制空計算機B改【v2.0.0β】</h1>
             <div style="margin-bottom:5px;">本サイトはブラウザ版艦これの計算機です。基地航空隊による敵制空値減少を推定し、制空状態を表示します。</div>
-            <div class="form-check form-check-inline" style="margin-bottom: 10px;">
-                <label class="form-check-label">UI設定</label>
-                <label class='form-check-label'><input type='radio' class='form-check-input' name='ui' value='0' checked>縦ワイド</label>
-                <label class="form-check-label"><input type="radio" class="form-check-input" name='ui' value='1'>コンパクト</label>
+            <div class="option-input" style="margin-bottom: 10px;">
+                <div class="form-check form-check-inline">
+                    <select class='selectpicker' id="history-name">
+                        <option value='0'>編成選択</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="">展開</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="">削除</button>
+                    </div>
+                    <input type="text" class="form-control form-control-sm" id="deck-name" placeholder="編成名" />
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="">保存</button>
+                    </div>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">UI設定</label>
+                    <label class='form-check-label'><input type='radio' class='form-check-input' name='ui' value='0' checked>縦ワイド</label>
+                    <label class="form-check-label"><input type="radio" class="form-check-input" name='ui' value='1'>コンパクト</label>
+                </div>
             </div>
         </header>
         <article>
             <div id="tab-input">
                 <ul>
+                    <li><a href="#tab-map">海域</a></li>
                     <li><a href="#tab-base">基地航空隊</a></li>
                     <li><a href="#tab-ship">艦娘</a></li>
-                    <li><a href="#tab-map">海域</a></li>
                 </ul>
+                <div class="input-content" id="tab-map" style="padding-top:10px;"></div>
                 <div class="input-content" id="tab-base" style="padding-top:10px;"></div>
                 <div class="input-content" id="tab-ship" style="padding-top:10px;"></div>
-                <div class="input-content" id="tab-map" style="padding-top:10px;"></div>
             </div>
+            <section id="map">
+                <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-map">△</button>&nbsp;海域</h1>
+                <div id="map-content"></div>
+            </section>
             <section id="base">
                 <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-base">△</button>&nbsp;基地航空隊</h1>
                 <div id="base-content">
@@ -97,10 +116,6 @@
                     </div>
                     <script type="text/javascript">displayShip()</script>
                 </div>
-            </section>
-            <section id="map">
-                <h1><button type="button" class="btn btn-outline-info btn-sm" id="toggle-display-btn-map">△</button>&nbsp;海域</h1>
-                <div id="map-content"></div>
             </section>
             <section id="result" style="padding-bottom:10px">
                 <h1>計算結果</h1>
