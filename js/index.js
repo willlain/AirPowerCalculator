@@ -599,24 +599,8 @@ $(function() {
         addDDEvent(this);
     });
     $("[name=ui]").change(function() {
-        if (Number($(this).val()) === 0) {
-            $("#base-content").appendTo("#base");
-            $("#ship-content").appendTo("#ship");
-            $("#map-content").appendTo("#map");
-            $("#base").show();
-            $("#ship").show();
-            $("#map").show();
-            $("#tab-input").hide();
-        } else {
-            $("#base-content").appendTo("#tab-base");
-            $("#ship-content").appendTo("#tab-ship");
-            $("#map-content").appendTo("#tab-map");
-            $("#base").hide();
-            $("#ship").hide();
-            $("#map").hide();
-            $("#tab-input").show();
-        }
-        footerFixed();
+        changeUi(Number($(this).val()));
+        record_option.ui = Number($(this).val());
     })
     /**
      * ==========================================================

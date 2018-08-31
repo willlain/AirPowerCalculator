@@ -585,8 +585,11 @@ div.btn-toolbar {
     margin:5px 0;
     /* height:31px; */
 }
-div.action {
+div.btn-ok {
     margin-left: auto;
+}
+div.btn-cancel {
+    margin-left: 10px;
 }
 div.data-list {
     height:500px;

@@ -108,7 +108,7 @@ function expandRecord(num) {
         record_base = JSON.parse(localStorage.getItem("record"))[num].base;
         record_ship = JSON.parse(localStorage.getItem("record"))[num].ship;
         record_map = JSON.parse(localStorage.getItem("record"))[num].map;
-        record_option = (JSON.parse(localStorage.getItem("record"))[num].option) ? JSON.parse(localStorage.getItem("record"))[num].option : {"skill_ship": [0,0], "skill_base": [0,0], "fleet": 0, "downRate": [0,0,0,0,0,0]};
+        record_option = (JSON.parse(localStorage.getItem("record"))[num].option) ? JSON.parse(localStorage.getItem("record"))[num].option : {"skill_ship": [0,0], "skill_base": [0,0], "fleet": 0, "ui": 0, "downRate": [0,0,0,0,0,0]};
         Object.keys(record_base).forEach(function(key){
             Object.keys(this[key]).forEach(function(key2){
                 if (this[key2].id != 0) {
@@ -166,6 +166,10 @@ function expandRecord(num) {
         if (record_option["skill_ship"][1] != 0) {
             $("#skill-max-base-0").prop('checked', true);
         }
+        if (record_option.ui != 0) {
+            $('input[name="ui"]:eq(1)').prop('checked', true);
+            changeUi(record_option.ui);
+        }
         if (record_option.fleet != 0) {
             $('input[name="fleet"]:eq(' + record[num].option["fleet"] + ')').prop('checked', true);
             changeFleet(record_option.fleet)
@@ -209,6 +213,7 @@ function expandRecord(num) {
             "skill_ship": [0,0],
             "skill_base": [0,0],
             "fleet": 0,
+            "ui": 0,
             "downRate": [0,0,0,0,0,0]
         }
     }
@@ -769,6 +774,33 @@ function changeFleet(fleet) {
             tab.tabs("option","active",2);
             break;
         default:
+    }
+    footerFixed();
+}
+
+function changeUi(value) {
+    if (value === 0) {
+        $("#base-content").appendTo("#base");
+        if ($("#toggle-display-btn-base").text() === "▽") $("#base-content").hide();
+        $("#ship-content").appendTo("#ship");
+        if ($("#toggle-display-btn-ship").text() === "▽") $("#ship-content").hide();
+        $("#map-content").appendTo("#map");
+        if ($("#toggle-display-btn-map").text() === "▽") $("#map-content").hide();
+        $("#base").show();
+        $("#ship").show();
+        $("#map").show();
+        $("#tab-input").hide();
+    } else {
+        $("#base-content").appendTo("#tab-base");
+        if ($("#toggle-display-btn-base").text() === "▽") $("#base-content").show();
+        $("#ship-content").appendTo("#tab-ship");
+        if ($("#toggle-display-btn-ship").text() === "▽") $("#ship-content").show();
+        $("#map-content").appendTo("#tab-map");
+        if ($("#toggle-display-btn-map").text() === "▽") $("#map-content").show();
+        $("#base").hide();
+        $("#ship").hide();
+        $("#map").hide();
+        $("#tab-input").show();
     }
     footerFixed();
 }
