@@ -117,8 +117,19 @@ div.option-input input.checkbox {
 }
 div.option-input button {
     padding: 3px;
-    font-size: 85%;
+    font-size: 1em;
 }
+div.option-input button#deck-read-btn {
+    margin-left: 10px;
+}
+div.option-input button#deck-overwrite-btn {
+    margin-right: 10px;
+}
+div.option-input button#deck-delete-btn {
+    margin: 0px 5px 0px 5px;
+}
+
+
 div#radius-enemy {
     margin-right: auto;
     display: -webkit-flex;
@@ -520,7 +531,7 @@ div#myChart {
 table#result-info {
     table-layout: fixed;
     /* width: 100%; */
-    font-size: 85%;
+    /* font-size: 85%; */
     margin-left: 10px;
 }
 table#result-info tr th {
@@ -535,7 +546,7 @@ table#result-info tr th.column-phase {
     width: 50px;
 }
 table#result-info tr th.column-airpower, table#result-info tr th.column-status {
-    width: 60px;
+    width: 70px;
 }
 table#result-info tr td {
     border: 1px solid #DDD;
@@ -549,12 +560,16 @@ table#result-info tr td {
 div.result-airPower-right {
     position: absolute;
     text-align: right;
-    width: 35px
+    width: 35px;
+    font-size: 1em;
+    font-weight: 700;
 }
 div.result-airPower-left {
     position: absolute;
     text-align: left;
-    width: 35px
+    width: 35px;
+    font-size: 1em;
+    font-weight: 700;
 }
 
 /* ###############################

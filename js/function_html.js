@@ -198,7 +198,7 @@ function displayMap() {
 function displayResultOption() {
     let html = "";
     let label_list = ["第一航空隊&ensp;1波","2波","第二航空隊&ensp;1波","2波","第三航空隊&ensp;1波","2波"]
-    let tooltip_downRate = "制空状態による撃墜数の割合（e.g.優勢時は0～80%）を変動します。"
+    let tooltip_downRate = "制空状態による撃墜数の割合 喪失：0～10% 劣勢：0～40% 均衡：0～60% 優勢：0～80% 確保：0～100%を変動します"
     for (let i=0; i<6; i++) {
         if (i%2 == 0) {
             if (i === 0) html += "<div class='form-check form-check-inline' style='width:100%'><div data-toggle='tooltip' title='" + tooltip_downRate + "' id='detail-downRate' style='width:72px;border-bottom: 1px dotted black;'>撃墜率調整</div>"
@@ -356,11 +356,11 @@ function displayListShip() {
     html_content += "<div class='btn-group' role='group'>"
     html_content += "<button type='button' class='btn btn-primary btn-sm dialog-remove'>外す</button>";
     html_content += "</div>"
-    html_content += "<div class='btn-group action' role='group'>"
-    html_content += "<button type='button' class='btn btn-primary btn-sm' id='btn-select-ship' onclick=\"selectItem(\'ship\')\" disabled>OK</button>"
+    html_content += "<div class='btn-group btn-ok' role='group'>"
+    html_content += "<button type='button' class='btn btn-primary btn-sm' id='btn-select-equipment' onclick=\"selectItem(\'equipment\')\" disabled>OK</button>"
     html_content += "</div>"
-    html_content += "<div class='btn-group action' role='group'>"
-    html_content += "<button type='button' class='btn btn-primary btn-sm' onclick=\"$(\'#dialog-select-ship\').dialog(\'close\')\">キャンセル</button>"
+    html_content += "<div class='btn-group btn-cancel' role='group'>"
+    html_content += "<button type='button' class='btn btn-primary btn-sm' onclick=\"$(\'#dialog-select-equipment\').dialog(\'close\')\">キャンセル</button>"
     html_content += "</div>"
     html_content += "</div>"
     html_content += "<div class='data-list tab-content'>";    // 下部の全一覧リスト
@@ -502,7 +502,7 @@ function displayListShip() {
 
 function displayResultAirPowerInfo() {
     let html = "";
-    let top = ["11px", "32px", "53px", "74px", "96px", "117px", "138px"];
+    let top = ["11px", "32px", "53px", "74px", "95px", "116px", "138px"];
     let left = ["55px", "100px", "145px", "220px", "260px", "430px", "470px"];
     for (let i=0; i<7; i++) {
         for (let j=0; j<7; j++) {

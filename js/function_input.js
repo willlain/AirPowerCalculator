@@ -42,7 +42,7 @@ function inputDeckbuilder() {
             default:
         }
     });
-    updateRecord(0, false)
+    updateRecord(0, false, null)
 }
 
 /**
@@ -225,12 +225,12 @@ function expandRecord(num) {
  * @param  {boolen} del_flag [削除処理のフラグ]
  * トリガー：履歴保存または削除ボタンを押した際
  */
-function updateRecord(num, del_flag) {
+function updateRecord(num, del_flag, name) {
     if (('localStorage' in window) && (window.localStorage !== null)) {
         if (del_flag) {
             delete record[num];
+            console.info(record, num);
         } else {
-            var name = "";
             record[num] = {
                 "name": name,
                 "base": record_base,
@@ -284,7 +284,7 @@ function selectItem(type) {
         $("#dialog-select-ship").dialog('close');
     }
     updateResult();
-    updateRecord(0, false)
+    updateRecord(0, false, null)
 }
 
 /**
@@ -364,7 +364,7 @@ function removeItem(type, element_target_id, element_equipment_id) {
         }
     }
     updateResult();
-    updateRecord(0, false)
+    updateRecord(0, false, null)
 }
 
 /**
@@ -965,7 +965,7 @@ function clearEnemyFleet(flag) {
         $("#airpower-enemy-" + i).empty();
     }
     if (flag) record_map["step"] = 0;
-    $("#radius-enemy-value").text(0)
+    $("#radius-enemy-value").text(0);
     $("[name=enemy-fleet-step]").val(["0"])
     $("#enemy-fleet-step").css('display','none');
     updateAirPowerEnemy();

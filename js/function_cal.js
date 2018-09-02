@@ -325,7 +325,7 @@ function getSortieResult() {
 
     // 基地航空隊
     for (let i=0; i<6; i++) {
-        let quotient, down_rate, short, excess;
+        let quotient, down_rate_val, short, excess, down_rate_max;
 
         power = 0;
         Object.keys(enemy_info).forEach(function(key) {
@@ -337,9 +337,10 @@ function getSortieResult() {
 
         // 撃墜率チェック
         // 無効の場合は、continue
-        down_rate = 0;
+        down_rate_val = 0;
         short = 0;
         excess = 0;
+        down_rate_max = 0;
         if (Number($("#downRate-" + i).val()) === 0 || Number($("#radius-" + parseInt(i/2)).text()) === 0) {
             result["status"].push("-");
             result["color"].push('rgba(0,0,0,0)');
@@ -347,7 +348,7 @@ function getSortieResult() {
             result["airPower_info"].push({})
             continue;
         } else {
-            down_rate = Number($("#downRate-" + i).val()) / 100;
+            down_rate_val = Number($("#downRate-" + i).val());
         }
 
         if (power != 0) {
@@ -358,34 +359,34 @@ function getSortieResult() {
                 result["color"].push('rgba(255,99,132,1)');
                 short = result["airPower_ship"][i] - parseInt(power * (1/3)) -1;
                 result["airPower_info"].push({1:short});
-                down_rate *= 0.1;
+                down_rate_max = 10;
             } else if (quotient <= 2/3) {
                 result["status"].push("劣勢");
                 result["color"].push('rgba(255, 159, 64, 1)');
                 excess = result["airPower_ship"][i] - parseInt(power * (1/3)) -1;
                 short = result["airPower_ship"][i] - parseInt(power * (2/3)) -1;
                 result["airPower_info"].push({0:excess, 2:short});
-                down_rate *= 0.4;
+                down_rate_max = 40;
             } else if (quotient < 3/2) {
                 result["status"].push("均衡");
                 result["color"].push('rgba(255, 206, 86, 1)');
                 excess = result["airPower_ship"][i] - parseInt(power * (2/3)) -1;
                 short = result["airPower_ship"][i] - parseInt(power * (3/2)) -1;
                 result["airPower_info"].push({1:excess, 4:short});
-                down_rate *= 0.6;
+                down_rate_max = 60;
             } else if (quotient < 3) {
                 result["status"].push("優勢");
                 result["color"].push('rgba(54, 162, 235, 1)');
                 excess = result["airPower_ship"][i] - parseInt(power * (3/2)) -1;
                 short = result["airPower_ship"][i] - parseInt(power * 3) -1;
                 result["airPower_info"].push({3:excess, 6:short});
-                down_rate *= 0.8;
+                down_rate_max = 80;
             } else {
                 result["status"].push("確保");
                 result["color"].push('rgba(75, 192, 192, 1)');
                 excess = result["airPower_ship"][i] - parseInt(power * 3) -1;
                 result["airPower_info"].push({5:excess});
-                down_rate *= 1.0;
+                down_rate_max = 100;
             }
         } else {
             result["status"].push("確保");
@@ -393,13 +394,16 @@ function getSortieResult() {
             result["probe"].push(3.5);
             excess = result["airPower_ship"][i] - parseInt(power * 3) -1;
             result["airPower_info"].push({5:excess});
-            down_rate *= 1.0;
+            down_rate_max = 100;
         }
+        down_rate_val = (down_rate_val > down_rate_max) ? down_rate_max : down_rate_val;
+        $("#downRate-" + i).slider('setValue', down_rate_val);
 
+        down_rate_val /= 100;
         Object.keys(enemy_info).forEach(function(key) {
             Object.keys(this[key]).forEach(function(key2) {
                 let space = this[key2].space;
-                space -= parseInt(space*down_rate)
+                space -= parseInt(space*down_rate_val)
                 this[key2].space = space;
             }, enemy_info[key])
         }, enemy_info)

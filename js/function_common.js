@@ -54,6 +54,20 @@ function openMessageDialog(type, message) {
                 }
             }
         })
+    } else if (type == "delete-history") {
+        $("#dialog-message").dialog({
+            buttons: {
+                'OK': function() {
+                    updateRecord(Number($("#history-name").val()), true, null);
+                    $("#history-name option:selected").remove();
+                    $("#history-name").selectpicker('val', 0).selectpicker("refresh");
+                    $(this).dialog('close');
+                },
+                'Cancel': function () {
+                    $(this).dialog('close');
+                }
+            }
+        })
     }
     $("#dialog-message").html(message).dialog("open")
 }

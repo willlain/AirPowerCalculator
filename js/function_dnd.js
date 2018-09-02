@@ -143,7 +143,7 @@ function handleDrop(e) {
         exchangeTarget(e, this, type);
     }
     updateResult();
-    updateRecord(0, false)
+    updateRecord(0, false, null)
     return false;
 }
 

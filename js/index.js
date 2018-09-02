@@ -283,22 +283,22 @@ var p11 = Promise.all([p9]).then(function() {
     $("#map-area").on('changed.bs.select', function() {
         changeArea($(this).val(), true);
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $('input[name="difficulty"]:radio').change(function() {
         changeDiffculty($("[name=difficulty]:checked").val(), true);
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $("#map-cell").on('changed.bs.select', function() {
         changeCell($(this).val(), true);
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $('input[name="enemy-fleet-step"]:radio').change(function() {
         changeStep($("[name=enemy-fleet-step]:checked").val(), true);
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     console.info("map display");
 })
@@ -344,6 +344,12 @@ $(function() {
         style: 'page-link text-dark d-inline-block'
     }).prop('disabled', true).selectpicker('refresh');
     $(".grade").siblings('button').prop('disabled', true);
+    $("#history-name").selectpicker({
+        width: 200,
+        size: 5,
+        container: 'article',
+        style: 'page-link text-dark d-inline-block'
+    })
 
     /**
      * ==========================================================
@@ -359,6 +365,69 @@ $(function() {
     $("#tab-fleet").tabs();
     $("#tab-fleet").tabs("option", "disabled", [1, 2]);
     $("#tab-fleet").children("ul").show();
+
+    $("#history-name").on('changed.bs.select', function() {
+        if ($(this).val() == 0) {
+            $("#deck-read-btn").prop("disabled", true);
+            $("#deck-overwrite-btn").prop("disabled", true);
+            $("#deck-delete-btn").prop("disabled", true);
+        } else {
+            $("#deck-read-btn").prop("disabled", false);
+            $("#deck-overwrite-btn").prop("disabled", false);
+            $("#deck-delete-btn").prop("disabled", false);
+        }
+    })
+
+    $("#deck-read-btn").on("click", function(){
+        expandRecord($("#history-name").val());
+        $("[data-toggle='tooltip-read']").attr("title", "編成 " + $("#history-name option:selected").text() + " を展開しました");
+        $("[data-toggle='tooltip-read']").on('hidden.bs.tooltip', function(){
+            $(this).tooltip('dispose');
+        });
+        $("[data-toggle='tooltip-read']").tooltip({delay:{show:0, hide:1500}}).tooltip('show').tooltip('toggle');
+        $("[data-toggle='tooltip-read']").removeAttr("title");
+    })
+    $("#deck-overwrite-btn").on("click", function() {
+        updateRecord(Number($("#history-name").val()), false, $("#history-name option:selected").text());
+        $("[data-toggle='tooltip-overwrite']").attr("title", "編成 " + $("#history-name option:selected").text() + " を上書き保存しました");
+        $("[data-toggle='tooltip-overwrite']").on('hidden.bs.tooltip', function(){
+            $(this).tooltip('dispose');
+        });
+        $("[data-toggle='tooltip-overwrite']").tooltip({delay:{show:0, hide:1500}}).tooltip('show').tooltip('toggle');
+        $("[data-toggle='tooltip-overwrite']").removeAttr("title");
+    })
+    $("#deck-delete-btn").on("click", function() {
+        openMessageDialog("delete-history", "編成 " + $("#history-name option:selected").text() + "を削除しますか？")
+    })
+    $("#deck-save-btn").on("click", function() {
+        let index = 0;
+        let blank = 0;
+        $("#history-name option").each(function(i) {
+            if ($(this).val() == 0) return true;
+            if ($(this).text() === $("#deck-name").val()) {
+                index = Number($(this).val());
+                return false;
+            }
+            if (blank == 0 && Number($(this).val()) != i) {
+                blank = i;
+            }
+        })
+        if (index === 0 || blank != 0) {
+            // 新規保存
+            index = (blank == 0) ? $("#history-name option").length : blank;
+            $("#history-name").append("<option value='" + index + "'>" + $("#deck-name").val() + "</option>").selectpicker("refresh");
+            $("[data-toggle='tooltip-save']").attr("title", "編成 " + $("#deck-name").val() + " を新規保存しました");
+        } else {
+            $("[data-toggle='tooltip-save']").attr("title", "編成 " + $("#deck-name").val() + " を上書き保存しました");
+        }
+        updateRecord(index, false, $("#deck-name").val());
+        $("[data-toggle='tooltip-save']").on('hidden.bs.tooltip', function(){
+            $(this).tooltip('dispose');
+        });
+        $("[data-toggle='tooltip-save']").tooltip({delay:{show:0, hide:1500}}).tooltip('show').tooltip('toggle');
+        $("[data-toggle='tooltip-save']").removeAttr("title");
+    })
+
     $(".equipment-name-base").on("click", function() {
         record_target = $(this);
         if (record_target.text().indexOf("装備選択") == -1) {
@@ -434,7 +503,7 @@ $(function() {
     $(".grade select").on('changed.bs.select', function() {
         setShipItem($(this).val(), $(this).attr("id").split('-')[1], false, true);
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $(".space-base select").on('changed.bs.select', function() {
         let element_target_id = $(this).attr("id").split("-")[2];
@@ -442,7 +511,7 @@ $(function() {
         updateAirPowerFrends("base", element_target_id, element_equipment_id)
         record_base[element_target_id][element_equipment_id].space = Number($("#space-base-" + element_target_id + "-" + element_equipment_id).val());
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $(".space-ship select").on('changed.bs.select', function() {
         let element_target_id = $(this).attr("id").split("-")[2];
@@ -450,7 +519,7 @@ $(function() {
         updateAirPowerFrends("ship", element_target_id, element_equipment_id)
         record_ship[element_target_id][element_equipment_id].space = Number($("#space-ship-" + element_target_id + "-" + element_equipment_id).val());
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $(".improvement select").on('changed.bs.select', function() {
         let element_target_type = $(this).attr("id").split("-")[1];
@@ -463,7 +532,7 @@ $(function() {
             record_ship[element_target_id][element_equipment_id].improvement = Number($("#improvement-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
         }
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $(".skill select").on('changed.bs.select', function() {
         let element_target_type = $(this).attr("id").split("-")[1];
@@ -476,7 +545,7 @@ $(function() {
             record_ship[element_target_id][element_equipment_id].skill = Number($("#skill-" + element_target_type + "-" + element_target_id + "-" + element_equipment_id).val());
         }
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $("#reset-base").on("click", function() {
         openMessageDialog("reset-base", "基地航空隊をリセットしますか？")
@@ -548,7 +617,7 @@ $(function() {
             }
         }
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
     $("h1 > button").on("click", function() {
         let content = $("#" + $(this).attr("id").split("-")[3] + "-content");
@@ -564,7 +633,7 @@ $(function() {
         changeFleet(Number($(this).val()));
         record_option.fleet = Number($(this).val())
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     })
     $('input[class*="airpower"]').each(function() {
         $(this).on("input", function(e) {
@@ -610,9 +679,8 @@ $(function() {
 
     $(".downRate").slider({
         ticks: [0, 50, 100],
-        // ticks_labels: ['0%', '50%', '100%'],
         min: 0,
-        max: 20,
+        max: 10,
         step: 10,
         value: 0
     });
@@ -622,7 +690,7 @@ $(function() {
         let id = Number($(this).attr("id").split("-")[1])
         record_option.downRate[id] = Number($(this).val())
         updateResult();
-        updateRecord(0, false)
+        updateRecord(0, false, null)
     });
 
     chart = Highcharts.chart('myChart', {
@@ -712,6 +780,13 @@ $(function() {
 $(window).on('load', function() {
     Promise.all([p10, p11]).then(function() {
         expandRecord(0);
+        if (('localStorage' in window) && (window.localStorage !== null) && localStorage.getItem("record")) {
+            record = JSON.parse(localStorage.getItem("record"));
+            Object.keys(record).forEach(function(key) {
+                if (key == 0) return;
+                $("#history-name").append("<option value='" + key + "'>" + record[key].name + "</option>").selectpicker("refresh");
+            })
+        }
         preload()
         console.info("expand record");
     })

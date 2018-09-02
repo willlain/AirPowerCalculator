@@ -39,21 +39,28 @@
         <header>
             <h1>制空計算機B改【v2.0.0β】</h1>
             <div style="margin-bottom:5px;">本サイトはブラウザ版艦これの計算機です。基地航空隊による敵制空値減少を推定し、制空状態を表示します。</div>
-            <div class="option-input" style="margin-bottom: 10px;">
+            <div class="option-input">
                 <div class="form-check form-check-inline">
-                    <select class='selectpicker' id="history-name">
+                    <select class='selectpicker area' id="history-name">
                         <option value='0'>編成選択</option>
                     </select>
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="">展開</button>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="">削除</button>
+                        <button type="button" class="btn btn-primary" id="deck-read-btn" data-toggle="tooltip-read" disabled>展開</button>
                     </div>
-                    <input type="text" class="form-control form-control-sm" id="deck-name" placeholder="編成名" />
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="">保存</button>
+                        <button type="button" class="btn btn-primary" id="deck-delete-btn" disabled>削除</button>
+                    </div>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary" data-toggle="tooltip-overwrite" id="deck-overwrite-btn" disabled>保存</button>
+                    </div>
+                    <div class="input-group deckbuilder">
+                        <input type="text" class="form-control form-control-sm" id="deck-name" placeholder="編成名" />
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip-save" id="deck-save-btn">新規作成</button>
+                        </div>
                     </div>
                 </div>
-                <div class="form-check form-check-inline">
+                <div class="form-check form-check-inline" style="margin-left: auto;">
                     <label class="form-check-label">UI設定</label>
                     <label class='form-check-label'><input type='radio' class='form-check-input' name='ui' value='0' checked>縦ワイド</label>
                     <label class="form-check-label"><input type="radio" class="form-check-input" name='ui' value='1'>コンパクト</label>
