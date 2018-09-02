@@ -357,7 +357,7 @@ function displayListShip() {
     html_content += "<button type='button' class='btn btn-primary btn-sm dialog-remove'>外す</button>";
     html_content += "</div>"
     html_content += "<div class='btn-group btn-ok' role='group'>"
-    html_content += "<button type='button' class='btn btn-primary btn-sm' id='btn-select-equipment' onclick=\"selectItem(\'equipment\')\" disabled>OK</button>"
+    html_content += "<button type='button' class='btn btn-primary btn-sm' id='btn-select-ship' onclick=\"selectItem(\'equipment\')\" disabled>OK</button>"
     html_content += "</div>"
     html_content += "<div class='btn-group btn-cancel' role='group'>"
     html_content += "<button type='button' class='btn btn-primary btn-sm' onclick=\"$(\'#dialog-select-equipment\').dialog(\'close\')\">キャンセル</button>"

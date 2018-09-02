@@ -110,6 +110,9 @@ var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
             });
             $("#btn-select-ship").prop("disabled", true);
             $(".dialog-right").hide();
+            $(".downRate").each(function(i) {
+                $(this).slider("setAttribute", "tooltip", "show").slider("refresh").slider('setValue', record_option.downRate[i]);
+            })
         }
     });
     $("#dialog-select-equipment").dialog({
@@ -136,6 +139,9 @@ var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
             });
             $("#btn-select-equipment").prop("disabled", true);
             $(".dialog-right").hide();
+            $(".downRate").each(function(i) {
+                $(this).slider("setAttribute", "tooltip", "show").slider("refresh").slider('setValue', record_option.downRate[i]);
+            })
         }
     });
     $("#dialog-message").dialog({

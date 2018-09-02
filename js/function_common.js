@@ -10,6 +10,10 @@
  */
 function openSelectDialog(type) {
     $("#dialog-select-" + type).dialog("open");
+    // $(".downRate").slider({ticks: [0, 50, 100], min: 0, max: 10, step: 10, value: 0, tooltip: "hide"}).slider("refresh")
+    $(".downRate").each(function(i) {
+        $(this).slider("setAttribute", "tooltip", "hide").slider("refresh").slider('setValue', record_option.downRate[i]);
+    })
 }
 /**
  * [openMessageDialog description]
