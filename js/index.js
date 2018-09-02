@@ -302,6 +302,7 @@ var p11 = Promise.all([p9]).then(function() {
     });
     console.info("map display");
 })
+
 $(function() {
     console.info("function() start");
     /**
@@ -669,7 +670,8 @@ $(function() {
     });
     $("[name=ui]").change(function() {
         changeUi(Number($(this).val()));
-        record_option.ui = Number($(this).val());
+        record_option["ui"] = Number($(this).val());
+        updateRecord(0, false, null)
     })
     /**
      * ==========================================================
@@ -779,7 +781,6 @@ $(function() {
 
 $(window).on('load', function() {
     Promise.all([p10, p11]).then(function() {
-        expandRecord(0);
         if (('localStorage' in window) && (window.localStorage !== null) && localStorage.getItem("record")) {
             record = JSON.parse(localStorage.getItem("record"));
             Object.keys(record).forEach(function(key) {
@@ -787,8 +788,13 @@ $(window).on('load', function() {
                 $("#history-name").append("<option value='" + key + "'>" + record[key].name + "</option>").selectpicker("refresh");
             })
         }
-        preload()
+        expandRecord(0)
         console.info("expand record");
+    })
+
+    Promise.all([p1, p6, p9]).then(function() {
+        preload()
+        console.info("preload end");
     })
 })
 
@@ -804,5 +810,4 @@ function preload() {
     Object.keys(data_ship_id).forEach(function(key) {
         $("<img>").attr("src", "img/ship/banner/" + key + ".png");
     })
-    console.info("preload end");
 }
