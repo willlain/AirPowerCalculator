@@ -74,6 +74,9 @@ function openMessageDialog(type, message) {
         })
     }
     $("#dialog-message").html(message).dialog("open")
+    $(".downRate").each(function(i) {
+        $(this).slider("setAttribute", "tooltip", "hide").slider("refresh").slider('setValue', record_option.downRate[i]);
+    })
 }
 
 /**

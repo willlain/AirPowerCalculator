@@ -150,6 +150,11 @@ var p10 = Promise.all([p1, p2, p3, p4, p5]).then(function() {
         // width: 900,
         title: "メッセージ",
         resizable: false,
+        close: function() {
+            $(".downRate").each(function(i) {
+                $(this).slider("setAttribute", "tooltip", "show").slider("refresh").slider('setValue', record_option.downRate[i]);
+            })
+        }
     });
 
     $(".dialog-remove").on('click', function() {
