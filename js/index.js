@@ -810,15 +810,25 @@ $(window).on('load', function() {
 })
 
 function preload() {
-    Object.keys(data_map).forEach(function(key) {
+    let p12 = Object.keys(data_map).forEach(function(key) {
         Object.keys(this[key]).forEach(function(key2) {
             $("<img>").attr("src", "img/map/" + key + "-" + key2 + ".png");
         })
     }, data_map)
-    Object.keys(data_enemy_id).forEach(function(key) {
+    let p13 = Object.keys(data_enemy_id).forEach(function(key) {
         $("<img>").attr("src", "img/enemy/banner/" + key + ".png");
     })
-    Object.keys(data_ship_id).forEach(function(key) {
+    let p14 = Object.keys(data_ship_id).forEach(function(key) {
         $("<img>").attr("src", "img/ship/banner/" + key + ".png");
+    })
+    Promise.all([p12,p13,p14]).then(function() {
+        Object.keys(data_equipment_id_ship).forEach(function(key) {
+            $("<img>").attr("src", "img/equipment/item/" + ('000' + Number(key)).slice(-3) + ".png");
+        })
+        Object.keys(data_ship_type).forEach(function(key) {
+            for(let i=0; i<this[key].id.length; i++) {
+                $("<img>").attr("src", "img/ship/body/" + this[key].id[i] + ".png");
+            }
+        }, data_ship_type)
     })
 }

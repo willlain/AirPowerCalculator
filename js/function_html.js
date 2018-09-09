@@ -137,7 +137,19 @@ function displayMap() {
     html += "<select class='selectpicker area' id='map-area'>";
     html += "<option value='0'>海域</option>"
     Object.keys(data_map).forEach(function(key){
+        if (key == "E") {
+            html += "<optgroup label='18初秋'>"
+            Object.keys(data_map[key]).forEach(function(key2){
+                text = key + "-" + key2
+                html += "<option value='" + text + "'>" + text + "</option>"
+            });
+        }
+    });
+
+    Object.keys(data_map).forEach(function(key){
         switch (key) {
+            case "E":
+                return;
             case "6":
                 html += "<optgroup label='通常海域'>"
                 Object.keys(data_map[key]).forEach(function(key2){
@@ -147,13 +159,15 @@ function displayMap() {
                 html += "</optgroup>"
                 break;
             default:
+                html += "<optgroup label='限定海域'>"
                 Object.keys(data_map[key]).forEach(function(key2){
                     text = key + "-" + key2
                     html += "<option value='" + text + "'>" + text + "</option>"
                 });
         }
-
     });
+
+
     html += "</select>"
     html += "<div class='form-check-inline' id='difficulty'>"
     html += "<label class='form-check-label'><input class='form-check-input' type='radio' name='difficulty' value='0' checked>甲</label>"
