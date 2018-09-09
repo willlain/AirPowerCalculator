@@ -116,7 +116,10 @@ function updateCombatRadius(element_target_id, element_equipment_id, equipment_i
 function updateAirPowerEnemy() {
     for(let i=0; i<12; i++) {
         let enemy_id = record_map.fleet[i];
-        if (enemy_id == 0) continue;
+        if (enemy_id == 0) {
+            $("#airpower-enemy-" + i).empty()
+            continue;
+        }
         if (data_enemy_id[enemy_id].space[0] == -1) {
             $("#airpower-enemy-" + i).empty().append("<input type='number' class='airpower form-control'>")
             continue;
@@ -126,6 +129,7 @@ function updateAirPowerEnemy() {
         let power_ship = 0;
         for (let j=0; j<data_enemy_id[enemy_id].slot; j++) {
             let equipment_id = data_enemy_id[enemy_id].equipment[j]
+            if (equipment_id === 0) continue;
             switch(data_equipment_id_enemy[equipment_id].type) {
                 case 9:
                 case 10:

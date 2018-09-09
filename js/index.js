@@ -804,7 +804,7 @@ $(window).on('load', function() {
     })
 
     Promise.all([p1, p6, p9]).then(function() {
-        preload()
+        // preload()
         console.info("preload end");
     })
 })
