@@ -1358,5 +1358,21 @@
         "bombing": 0,
         "range": 4,
         "radius": 0
+    },
+    "586": {
+        "name": "深海攻撃哨戒鷹改二",
+        "type": 8,
+        "firePower": 9,
+        "torpedo": 0,
+        "antiAir": 10,
+        "armor": 3,
+        "ASW": 29,
+        "evasion": 5,
+        "LOS": 5,
+        "luck": 0,
+        "accuracy": 13,
+        "bombing": 27,
+        "range": 4,
+        "radius": 0
     }
 }

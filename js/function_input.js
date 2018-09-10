@@ -828,16 +828,17 @@ function changeArea(area, flag) {
 
     clearEnemyFleet(flag);
     if (area != 0) {
-        let difficulty = data_map[area.split("-")[0]][area.split("-")[1]]
-        let cell = difficulty[0]
+        let cell = data_map[area.split("-")[0]][area.split("-")[1]]
+        // let difficulty = cell[0]
         $("#map-img").empty().append($("<img src='img/map/" + area + ".png' width=\"500\" height=\"320\">"));
 
-        if (Object.keys(difficulty).length != 1) {
+        if (area.split("-")[0] != "6") {
             $("#difficulty").css('display','flex');
         } else {
             $("[name=difficulty]").val(["0"])
             $("#difficulty").css('display','none');
         }
+
         Object.keys(cell).forEach(function(key){
             html += "<option value='" + key + "'>" + key + "</option>"
         }, cell);
@@ -861,7 +862,7 @@ function changeDiffculty(difficulty, flag) {
     if (flag) record_map["difficulty"] = difficulty;
 
     if (cell != 0) {
-        let step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
+        let step = data_map[area.split('-')[0]][area.split('-')[1]][cell][difficulty];
         let fleet = (Object.keys(step).indexOf("1") != -1) ? step[$("[name=enemy-fleet-step]:checked").val()].fleet : step[0].fleet;
         if (flag) record_map["step"] = (Object.keys(step).indexOf("1") != -1) ? Number($("[name=enemy-fleet-step]:checked").val()) : 0;
         if (Object.keys(step).indexOf("1") != -1) {
@@ -911,8 +912,8 @@ function changeCell(cell, flag) {
     }
 
     if (cell != 0) {
-        let step = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell];
-        $("#radius-enemy-value").text(step["radius"]);
+        let step = data_map[area.split('-')[0]][area.split('-')[1]][cell][difficulty];
+        $("#radius-enemy-value").text(data_map[area.split('-')[0]][area.split('-')[1]][cell]["radius"]);
         let fleet = (Object.keys(step).indexOf("1") != -1) ? step[$("[name=enemy-fleet-step]:checked").val()].fleet : step[0].fleet;
         if (flag) record_map["step"] = (Object.keys(step).indexOf("1") != -1) ? Number($("[name=enemy-fleet-step]:checked").val()) : 0;
         if (Object.keys(step).indexOf("1") != -1) {
@@ -944,7 +945,7 @@ function changeStep(step, flag) {
     let area = $("#map-area").val()
     let difficulty = $("[name=difficulty]:checked").val()
     let cell = $("#map-cell").val()
-    let fleet = data_map[area.split('-')[0]][area.split('-')[1]][difficulty][cell][step].fleet;
+    let fleet = data_map[area.split('-')[0]][area.split('-')[1]][cell][difficulty][step].fleet;
     if (flag) record_map["step"] = step;
 
     for (let i=0; i<12; i++) {

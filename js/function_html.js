@@ -204,6 +204,7 @@ function displayMap() {
         html += "</tr>"     // データ部
     }
     html += "</table>"      // table全体
+    html += "<div>新敵データは一時的に甲データに統一されています。</div>"
     html += "</div>"
     // document.write(html);
     return html;

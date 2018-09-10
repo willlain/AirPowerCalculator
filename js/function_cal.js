@@ -259,6 +259,7 @@ function getSortieResult() {
         let flag = false;
         for (let j=0; j<data_enemy_id[enemy_id].slot; j++) {
             let equipment_id = data_enemy_id[enemy_id].equipment[j]
+            if (equipment_id === 0) continue;
             let equipment_type = data_equipment_id_enemy[equipment_id].type
             enemy_info[i][j] = {
                 "id": equipment_id,
