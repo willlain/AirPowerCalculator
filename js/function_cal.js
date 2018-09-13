@@ -38,7 +38,6 @@ function updateAirPowerFrends(element_type, element_target_id, element_equipment
             case 49:
             case 54:
                 power = ($("#map-cell").val() != "防空") ? getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0.2, 1.5, 0) : getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0.2, 1, 2);
-                // power = getAirPower(element_type, element_target_id, element_equipment_id, equipment_id, equipment_type, 0.2, 1, 2);
                 break;
             default:
         }
@@ -46,13 +45,41 @@ function updateAirPowerFrends(element_type, element_target_id, element_equipment
     element_airPower_equipment.text(power);
 
     power = 0;
+    let rate = 1;
     let item = (element_type == "base") ? 4 : 6;
     element_airPower_target.prop("disabled", false);
     for (let i=0; i<item; i++) {
-        if (element_type == "base" && record_base[element_target_id][i].id != 0) element_airPower_target.prop("disabled", true);
-        if (element_type == "ship" && record_ship[element_target_id][i].id != 0) element_airPower_target.prop("disabled", true);
+        let equipment_id = (element_type == "base") ? record_base[element_target_id][i].id : record_ship[element_target_id][i].id;
+        if (equipment_id === 0) continue;
+
+        element_airPower_target.prop("disabled", true);
         power += Number($("#airpower-" + element_type + "-" + element_target_id + "-" + i).text())
+
+        if (element_type == "base" && $("#map-cell").val() == "防空") {
+            switch (data_equipment_id_ship[equipment_id].type) {
+                case 9:
+                case 56:
+                    if (Number(data_equipment_id_ship[equipment_id].los) >= 9) {
+                        rate = (rate < 1.3) ? 1.3 : rate;
+                    } else {
+                        rate = (rate < 1.2) ? 1.2 : rate;
+                    }
+                    break;
+                case 10:
+                case 41:
+                    if (Number(data_equipment_id_ship[equipment_id].los) >= 9) {
+                        rate = (rate < 1.16) ? 1.16 : rate;
+                    } else if (Number(data_equipment_id_ship[equipment_id].los) === 8) {
+                        rate = (rate < 1.13) ? 1.13 : rate;
+                    } else {
+                        rate = (rate < 1.1) ? 1.1 : rate;
+                    }
+                    break;
+                default:
+            }
+        }
     }
+    power *= rate;
     element_airPower_target.val(power);
 }
 
