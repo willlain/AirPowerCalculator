@@ -839,9 +839,21 @@ function changeArea(area, flag) {
             $("#difficulty").css('display','none');
         }
 
+        let boss = "";
+        let gimmick = "";
+        let normal = "";
         Object.keys(cell).forEach(function(key){
-            html += "<option value='" + key + "'>" + key + "</option>"
+            if (key.indexOf("ボス") != -1) {
+                boss += "<option value='" + key + "'>" + key + "</option>"
+            } else if (key.indexOf("ギミック") != -1) {
+                gimmick += "<option value='" + key + "'>" + key + "</option>"
+            } else {
+                normal += "<option value='" + key + "'>" + key + "</option>"
+            }
         }, cell);
+        html += boss;
+        html += gimmick;
+        html += normal;
         toggleEnabledSelection(map_cell, false, 0, $(html))
     } else {
         $("[name=difficulty]").val(["0"]);

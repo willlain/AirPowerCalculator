@@ -285,7 +285,7 @@ var p11 = Promise.all([p9]).then(function() {
         style: 'page-link text-dark d-inline-block'
     });
     $("#map-cell").selectpicker({
-        width: 80,
+        width: 120,
         size: 5,
         container: 'article',
         style: 'page-link text-dark d-inline-block'

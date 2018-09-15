@@ -1374,5 +1374,21 @@
         "bombing": 27,
         "range": 4,
         "radius": 0
+    },
+    "587": {
+        "name": "深海16inch三連装砲改二",
+        "type": 3,
+        "firePower": 28,
+        "torpedo": 0,
+        "antiAir": 5,
+        "armor": 6,
+        "ASW": 0,
+        "evasion": 3,
+        "LOS": 0,
+        "luck": 0,
+        "accuracy": 24,
+        "bombing": 0,
+        "range": 4,
+        "radius": 0
     }
 }

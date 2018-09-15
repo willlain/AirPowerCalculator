@@ -79,7 +79,7 @@ function updateAirPowerFrends(element_type, element_target_id, element_equipment
             }
         }
     }
-    power *= rate;
+    power = parseInt(power*rate);
     element_airPower_target.val(power);
 }
 

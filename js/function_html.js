@@ -131,42 +131,46 @@ function setFleet(type, fleet, line, item) {
 function displayMap() {
     let html = "";
     let text = "";
+    let map_event = "";
+    let map_normal = "";
+    let map_old = "";
 
     html += "<div id='map-content-left'>";
     html += "<div class='form-check-inline'>"
     html += "<select class='selectpicker area' id='map-area'>";
     html += "<option value='0'>海域</option>"
-    Object.keys(data_map).forEach(function(key){
-        if (key == "E") {
-            html += "<optgroup label='18初秋'>"
-            Object.keys(data_map[key]).forEach(function(key2){
-                text = key + "-" + key2
-                html += "<option value='" + text + "'>" + text + "</option>"
-            });
-        }
-    });
 
     Object.keys(data_map).forEach(function(key){
         switch (key) {
             case "E":
-                return;
-            case "6":
-                html += "<optgroup label='通常海域'>"
+                map_event += "<optgroup label='18初秋'>"
                 Object.keys(data_map[key]).forEach(function(key2){
                     text = key + "-" + key2
-                    html += "<option value='" + text + "'>" + text + "</option>"
+                    map_event += "<option value='" + text + "'>" + text + "</option>"
                 });
-                html += "</optgroup>"
+                map_event += "</optgroup>";
+                break;
+            case "6":
+                map_normal += "<optgroup label='通常海域'>"
+                Object.keys(data_map[key]).forEach(function(key2){
+                    text = key + "-" + key2
+                    map_normal += "<option value='" + text + "'>" + text + "</option>"
+                });
+                map_normal += "</optgroup>";
                 break;
             default:
-                html += "<optgroup label='限定海域'>"
+                map_old += "<optgroup label='限定海域'>"
                 Object.keys(data_map[key]).forEach(function(key2){
                     text = key + "-" + key2
-                    html += "<option value='" + text + "'>" + text + "</option>"
+                    map_old += "<option value='" + text + "'>" + text + "</option>"
                 });
+                map_old += "</optgroup>";
         }
     });
 
+    html += map_event;
+    html += map_normal;
+    html += map_old;
 
     html += "</select>"
     html += "<div class='form-check-inline' id='difficulty'>"
