@@ -92,7 +92,7 @@ function getAirPower(element_type, element_target_id, element_equipment_id, equi
     if (coefficient_interception != 0) anti_air += coefficient_interception * data_equipment_id_ship[equipment_id].interception + coefficient_antiBobing * data_equipment_id_ship[equipment_id].antiBobing
 
     let power = anti_air * Math.sqrt(Number(element_space.val()))
-    power += data_equipment_type_ship[equipment_type].skill_bonus[element_skill.val()]
+    if (Number(element_space.val() != 0) power += data_equipment_type_ship[equipment_type].skill_bonus[element_skill.val()]
     return parseInt(power);
 }
 
